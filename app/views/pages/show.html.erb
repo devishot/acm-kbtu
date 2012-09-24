@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Text title:</b>
+  <%= @page.text_title %>
+</p>
+
+<p>
+  <b>Text body:</b>
+  <%= @page.text_body %>
+</p>
+
+<p>
+  <b>Author:</b>
+  <%= @page.author %>
+</p>
+
+<p>
+  <b>Parent:</b>
+  <%= @page.parent %>
+</p>
+
+<p>
+  <b>Path:</b>
+  <%= @page.path %>
+</p>
+
+<p>
+  <b>Order:</b>
+  <%= @page.order %>
+</p>
+
+
+<%= link_to 'Edit', edit_page_path(@page) %> |
+<%= link_to 'Back', pages_path %>

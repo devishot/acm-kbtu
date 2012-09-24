@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  text_title: 
+  text_body: 
+  author: 
+  parent: 
+  path: 
+  order: 1
+
+two:
+  text_title: 
+  text_body: 
+  author: 
+  parent: 
+  path: 
+  order: 1
