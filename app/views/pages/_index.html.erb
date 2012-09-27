@@ -1,0 +1,34 @@
+<h2>Listing pages</h2>
+<%= link_to 'New Page', new_page_path %>
+<br />
+
+<table style="padding-left:30px;">
+  <tr>
+    <th></th>
+    <th>Title</th>
+    <th>Body</th>
+    <th>Author</th>
+    <th>Path</th>
+    <th>Order</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+    <% @nodes.each do |node| %>
+        <% node.page.sort{ |a, b| a.order <=> b.order }.each do |page| %>
+          <tr>
+            <td> <h3><%= node.name %></h3> </td>
+            <td><%= page.text_title %></td>
+            <td><%= page.text_body[0..100] %></td>
+            <td><%= page.author %></td>
+            <td><%= page.path %></td>
+            <td><%= page.order %></td>
+            <td><%= link_to 'Show', '/pages/'+page.node.path+'/'+page.path %></td>
+            <td><%= link_to 'Edit', '/pages/'+page.node.path+'/'+page.path+'/edit' %></td>
+            <td><%= link_to 'Destroy', '/pages/'+page.node.path+'/'+page.path+'/destroy', data: { confirm: 'Are you sure?' } %></td>
+          </tr>
+        <% end %>
+    <% end %>
+
+</table>

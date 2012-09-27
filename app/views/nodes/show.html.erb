@@ -1,0 +1,29 @@
+<%= render 'layouts/header' %>
+
+<p id="notice"><%= notice %></p>
+
+<% @node.page.sort{ |a, b| a.order <=> b.order }.each do |page| %>
+	<div>
+		<p>
+		  <b>Title:</b>
+		  <%= page.text_title %>
+		</p>
+
+		<p>
+		  <b>Author:</b>
+		  <%= page.author %>
+		</p>
+
+		<p>
+		  <b>Body:</b>
+		  <%= page.text_body[0..500] %>
+		  <% if page.text_body.length>500 %>
+		  	...
+		  <% end %>
+		</p>
+
+		<%= link_to "read more", '/pages/'+page.node.path+'/'+page.path %>
+	</div>
+
+	<br/>
+<% end %>

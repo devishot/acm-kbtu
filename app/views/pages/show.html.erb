@@ -1,13 +1,8 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <b>Text title:</b>
+  <b>Title:</b>
   <%= @page.text_title %>
-</p>
-
-<p>
-  <b>Text body:</b>
-  <%= @page.text_body %>
 </p>
 
 <p>
@@ -16,20 +11,9 @@
 </p>
 
 <p>
-  <b>Parent:</b>
-  <%= @page.parent %>
+  <b>Body:</b>
+  <%= @page.text_body %>
 </p>
 
-<p>
-  <b>Path:</b>
-  <%= @page.path %>
-</p>
-
-<p>
-  <b>Order:</b>
-  <%= @page.order %>
-</p>
-
-
-<%= link_to 'Edit', edit_page_path(@page) %> |
-<%= link_to 'Back', pages_path %>
+<%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %> |
+<%= link_to 'Back', :back %>

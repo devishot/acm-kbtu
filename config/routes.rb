@@ -1,5 +1,16 @@
 AcmKbtu::Application.routes.draw do
+
+  root :to => 'pages#main'
+
+  resources :nodes
+
   resources :pages
+
+  match '/list' => 'pages#list'
+
+  match '/pages/:node/:page' => 'pages#show'
+  match '/pages/:node/:page/edit' => 'pages#edit'
+  match '/pages/:node/:page/destroy' => 'pages#destroy'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -50,7 +61,7 @@ AcmKbtu::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'pages#index'
+  #root :to => 'pages#index'
 
   # See how all your routes lay out with "rake routes"
 
