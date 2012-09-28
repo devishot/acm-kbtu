@@ -5,6 +5,14 @@
 <nav>
 	<%= link_to 'Main', root_path %>
 	<%= link_to 'Edit..', list_path %>
+  |
+  <% if user_signed_in? %>
+    <h2> <%= current_user %> </h2>
+    <%= link_to 'sign out', destroy_user_session_path %>
+  <% else %>
+    <%= link_to 'sign in', new_user_session_path %>
+    <%= link_to 'registrate', new_user_registration_path %>
+  <% end %>
 </nav>
 
 <hr/>
