@@ -1,4 +1,7 @@
 class PagesController < ApplicationController
+
+  before_filter :authenticate_user!, :except => [:main, :show]
+
   # GET /pages
   # GET /pages.json
   def main
