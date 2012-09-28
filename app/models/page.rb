@@ -10,6 +10,6 @@ class Page
   field :old_node, type: String
   field :old_path, type: String
 
-  embedded_in :node
+  belongs_to :node
   belongs_to :user
 end

@@ -13,6 +13,10 @@ class PagesController < ApplicationController
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
   end
 
+  def account
+    @pages = current_user.pages
+  end
+
 
   def index
     
@@ -59,7 +63,14 @@ class PagesController < ApplicationController
   # POST /pages
   # POST /pages.json
   def create
+
+    raise "#{params}"
+
     @page = Page.new(params[:page])
+    @page.user = current_user
+
+    @page.author = current_user.name
+
 
     parent = Node.find_by(path: "#{params[:page][:parent]}")
     parent.page << @page
@@ -110,6 +121,7 @@ class PagesController < ApplicationController
         end
       end
     end
+
   end
 
   # DELETE /pages/1

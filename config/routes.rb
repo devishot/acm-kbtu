@@ -10,6 +10,8 @@ AcmKbtu::Application.routes.draw do
 
   match '/list' => 'pages#list'
 
+  match '/my_account' => 'pages#account'
+
   match '/pages/:node/:page' => 'pages#show'
   match '/pages/:node/:page/edit' => 'pages#edit'
   match '/pages/:node/:page/destroy' => 'pages#destroy'
