@@ -2,6 +2,8 @@ AcmKbtu::Application.routes.draw do
 
   devise_for :users
 
+  resources :users
+
   root :to => 'pages#main'
 
   resources :nodes
@@ -10,7 +12,7 @@ AcmKbtu::Application.routes.draw do
 
   match '/list' => 'pages#list'
 
-  match '/my_account' => 'pages#account'
+  match '/my_account' => 'users#my_account'
 
   match '/pages/:node/:page' => 'pages#show'
   match '/pages/:node/:page/edit' => 'pages#edit'

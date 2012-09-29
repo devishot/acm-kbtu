@@ -2,6 +2,7 @@ class User
   include Mongoid::Document
 
   has_many :pages
+
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
@@ -11,6 +12,16 @@ class User
   ## Database authenticatable
   field :email,              :type => String, :default => ""
   field :encrypted_password, :type => String, :default => ""
+
+
+  ROLES = %w[admin moderator author]
+  
+  field :role, :type => String, :default => "author"
+
+  def admin?; role == 'admin'; end
+  def moderator?; role == 'moderator'; end
+  def author?; role == 'author'; end
+
 
   validates_presence_of :email
   validates_presence_of :encrypted_password
@@ -28,15 +39,6 @@ class User
   field :last_sign_in_at,    :type => Time
   field :current_sign_in_ip, :type => String
   field :last_sign_in_ip,    :type => String
-
-
-  ROLES = %w[admin moderator author]
-
-  field :role, :type => String, :default => "author"
-
-  def admin?; role == 'admin'; end
-  def moderator?; role == 'moderator'; end
-  def author?; role == 'author'; end
 
   ## Confirmable
   # field :confirmation_token,   :type => String

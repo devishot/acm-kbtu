@@ -1,7 +1,8 @@
 class PagesController < ApplicationController
   #load_and_authorize_resource
 
-  before_filter :authenticate_user!, :except => [:main, :show]
+  #before_filter :authenticate_user!, :except => [:main, :show]
+  load_and_authorize_resource :except => [:main, :show]
 
   # GET /pages
   # GET /pages.json
@@ -15,13 +16,9 @@ class PagesController < ApplicationController
     @users = User.all
   end
 
-  def account
-    @pages = current_user.pages
-  end
 
 
   def index
-    
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @pages }
