@@ -77,6 +77,7 @@ class NodesController < ApplicationController
   # DELETE /nodes/1.json
   def destroy
     @node = Node.find(params[:id])
+    @node.page.delete_all
     @node.destroy
 
     respond_to do |format|

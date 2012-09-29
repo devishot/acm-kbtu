@@ -10,22 +10,23 @@
 <h2>Your pages</h2>
 
 <table style="padding-left:30px;">
-  <tr>
-    <th>Title</th>
-    <th>Body</th>
-    <th>Author</th>
-    <th>Path</th>
-    <th>Order</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
+    <tr>
+        <th>Title</th>
+        <th>Body</th>
+        <th>Author</th>
+        <th>Path</th>
+        <th>Order</th>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tr>
+
 
     <% @pages.each do |page| %>
       <tr>
         <td><%= page.text_title %></td>
         <td><%= page.text_body[0..100] %></td>
-        <td><%= page.user.name %></td>
+        <td><%= page.author %></td>
         <td><%= page.path %></td>
         <td><%= page.order %></td>
         <td><%= link_to 'Show', '/pages/'+page.node.path+'/'+page.path %></td>

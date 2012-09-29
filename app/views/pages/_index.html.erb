@@ -21,7 +21,7 @@
             <td> <h3><%= node.name %></h3> </td>
             <td><%= page.text_title %></td>
             <td><%= page.text_body[0..100] %></td>
-            <td><%= page.user.name %></td>
+            <td><%= page.author %></td>
             <td><%= page.path %></td>
             <td><%= page.order %></td>
             <td><%= link_to 'Show', '/pages/'+page.node.path+'/'+page.path %></td>
