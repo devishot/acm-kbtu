@@ -4,14 +4,14 @@
 <table style="padding-left:30px;">
   <tr>
     <th>Name</th>
-    <th></th>
+    <th>Role</th>
     <th>email</th>
   </tr>
 
     <% @users.each do |user| %>
       <tr>
         <td><%= user.name %></td>
-        <td></td>
+        <td><%= user.role %></td>
         <td><%= user.email %></td>
       </tr>
     <% end %>
