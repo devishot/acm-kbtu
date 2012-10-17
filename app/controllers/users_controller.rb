@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   # GET /users.json
 
   #before_filter :authenticate_user!
-  load_and_authorize_resource
+  load_and_authorize_resource :except => :my_account
 
   def my_account
     @pages = current_user.pages

@@ -1,16 +1,21 @@
 <h1>Edit</h1>
 
-<br/>
 
-<%= render '/users/index' %>
+<% if can? :manage, User %>
+  <br/>
+  <%= render '/users/index' %>
+<% end %>
 
-<br/>
-<br/>
 
-<%= render '/nodes/index' %>
+<% if can? :manage, Node %>
+  <br/>
+  <br/>
+  <%= render '/nodes/index' %>
+<% end %>
 
-<br/>
-<br/>
 
-<%= render '/pages/index' %>
-	
+<% if can? :manage, Page %>
+  <br/>
+  <br/>
+  <%= render '/pages/index' %>
+<% end %>	

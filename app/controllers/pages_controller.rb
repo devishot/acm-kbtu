@@ -29,7 +29,7 @@ class PagesController < ApplicationController
   # GET /pages/1.json
   def show
     node = Node.find_by(path: params[:node])
-    @page = node.page.find_by(path: params[:page])
+    @page = node.pages.find_by(path: params[:page])
 
     respond_to do |format|
       format.html # show.html.erb
@@ -41,6 +41,7 @@ class PagesController < ApplicationController
   # GET /pages/new.json
   def new
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
+
     @page = Page.new
 
     respond_to do |format|
@@ -54,9 +55,10 @@ class PagesController < ApplicationController
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
 
     node = Node.find_by(path: params[:node])
-    @page = node.page.find_by(path: params[:page])
-    @page.old_path = @page.path
+    @page = node.pages.find_by(path: params[:page])
     @page.old_node = @page.node.path
+
+    can? :update, @page 
   end
 
   # POST /pages
@@ -64,16 +66,17 @@ class PagesController < ApplicationController
   def create
 
     @page = Page.new(params[:page])
-    @page.author = current_user.name
+    @page.path = Page.count()
+    @page.author = current_user.id
     current_user.pages << @page
     #@page.user = current_user
 
     parent = Node.find_by(path: "#{params[:page][:parent]}")
-    parent.page << @page
+    parent.pages << @page
 
     respond_to do |format|
-      format.html { redirect_to list_path, notice: 'Page was successfully created.' }
-      format.json { render json: list_path, status: :created, location: list_path }
+      format.html { redirect_to '/nodes/'+parent.path, notice: 'Page was successfully created.' }
+      format.json { render json: '/nodes/'+parent.path, status: :created, location: list_path }
     end
 
     # respond_to do |format|
@@ -91,25 +94,25 @@ class PagesController < ApplicationController
   # PUT /pages/1.json
   def update
 
-    if params[:page][:parent] != params[:page][:old_node] || params[:page][:path] != params[:page][:old_path]
+    if params[:page][:parent] != params[:page][:old_node]
       old_node = Node.find_by(path: params[:page][:old_node])
-      old_page = old_node.page.find_by(path: params[:page][:old_path])
-      old_node.page.delete(old_page)
+      old_page = old_node.pages.find_by(path: params[:page][:path])
+      old_node.pages.delete(old_page)
 
       new_node = Node.find_by(path: "#{params[:page][:parent]}")
-      new_node.page << Page.new(params[:page])
+      new_node.pages << Page.new(params[:page])
 
       respond_to do |format|
-        format.html { redirect_to list_path, notice: 'Page was successfully updated.' }
+        format.html { redirect_to '/nodes/'+new_node.path, notice: 'Page was successfully updated.' }
         format.json { head :no_content }
       end
     else
       node = Node.find_by(path: params[:page][:parent])
-      @page = node.page.find_by(path: params[:page][:path])
+      @page = node.pages.find_by(path: params[:page][:path])
 
       respond_to do |format|
         if @page.update_attributes(params[:page])
-          format.html { redirect_to list_path, notice: 'Page was successfully updated.' }
+          format.html { redirect_to '/nodes/'+node.path, notice: 'Page was successfully updated.' }
           format.json { head :no_content }
         else
           format.html { render action: "edit" }
@@ -125,12 +128,15 @@ class PagesController < ApplicationController
   def destroy
 
     node = Node.find_by(path: params[:node])
-    @page = node.page.find_by(path: params[:page])
+    @page = node.pages.find_by(path: params[:page])
 
-    node.page.delete(@page)
+    can? :destroy, @page
+
+    node.pages.delete(@page)
+    (@page.user).pages.delete(@page)
 
     respond_to do |format|
-      format.html { redirect_to list_path }
+      format.html { redirect_to '/nodes/'+node.path }
       format.json { head :no_content }
     end
   end

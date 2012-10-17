@@ -27,10 +27,6 @@
     <%= f.label :parent %><br />
     <%= f.collection_select(:parent, @nodes, :path, :name) %>
   </div> 
- <div class="field">
-    <%= f.label :path %><br />
-    <%= f.text_field :path %>
-  </div>
   <div class="field">
     <%= f.label :order %><br />
     <%= f.number_field :order %>
@@ -38,7 +34,7 @@
 
   <div class="field" style="display: none;">
     <%= f.text_field :old_node %>
-    <%= f.text_field :old_path %>
+    <%= f.text_field :path %>
   </div>
 
   <div class="actions">

@@ -7,7 +7,7 @@
 
 <p>
   <b>Author:</b>
-  <%= @page.author %>
+  <%= User.find(@page.author).name %>
 </p>
 
 <p>
@@ -15,5 +15,6 @@
   <%= @page.text_body %>
 </p>
 
-<%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %> |
+<%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/destroy' %> |
+<%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/edit' %> |
 <%= link_to 'Back', :back %>

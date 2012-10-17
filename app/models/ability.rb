@@ -9,12 +9,9 @@ class Ability
     elsif user.moderator?
         can :manage, [Node, Page]
     elsif user.author?
-        #can :manage, User
-        can :read, User
         can :read, Node
-        can :manage, Page
-        #can :create, Page
-        #can [:update, :destroy], Page, :author => user.name
+        can [:read, :create], Page
+        can [:destroy, :update], Page, :user_id => user.id
     else
         can :read, [Node, Page]
     end

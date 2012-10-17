@@ -2,7 +2,7 @@
 
 <p id="notice"><%= notice %></p>
 
-<% @node.page.sort{ |a, b| a.order <=> b.order }.each do |page| %>
+<% @node.pages.sort{ |a, b| a.order <=> b.order }.each do |page| %>
 	<div>
 		<p>
 		  <b>Title:</b>
@@ -11,7 +11,7 @@
 
 		<p>
 		  <b>Author:</b>
-		  <%= page.author %>
+		  <%= page.user.name %>
 		</p>
 
 		<p>
@@ -22,7 +22,7 @@
 		  <% end %>
 		</p>
 
-		<%= link_to "read more", '/pages/'+page.node.path+'/'+page.path %>
+		<%= link_to "read more", '/pages/'+page.node.path+'/'+page.path.to_s %>
 	</div>
 
 	<br/>

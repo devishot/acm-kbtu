@@ -4,5 +4,5 @@ class Node
   field :path, type: String
   field :order, type: Integer
 
-  has_many :page
+  has_many :pages
 end
