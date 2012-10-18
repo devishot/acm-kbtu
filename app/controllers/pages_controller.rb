@@ -58,7 +58,9 @@ class PagesController < ApplicationController
     @page = node.pages.find_by(path: params[:page])
     @page.old_node = @page.node.path
 
-    can? :update, @page 
+    if cannot? :update, @page
+      redirect_to '/nodes/'+node.path, alert: 'You have not permissions to edit this Page.'
+    end
   end
 
   # POST /pages
@@ -130,14 +132,17 @@ class PagesController < ApplicationController
     node = Node.find_by(path: params[:node])
     @page = node.pages.find_by(path: params[:page])
 
-    can? :destroy, @page
+    if can? :destroy, @page
+      node.pages.delete(@page)
+      (@page.user).pages.delete(@page)
 
-    node.pages.delete(@page)
-    (@page.user).pages.delete(@page)
-
-    respond_to do |format|
-      format.html { redirect_to '/nodes/'+node.path }
-      format.json { head :no_content }
+      respond_to do |format|
+        format.html { redirect_to '/nodes/'+node.path, notice: 'Page was successfully destroyed.' }
+        format.json { head :no_content }
+      end
+    else
+      redirect_to '/nodes/'+node.path, alert: 'You have not permissions to destroy this Page.'
     end
+
   end
 end

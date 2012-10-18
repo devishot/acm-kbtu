@@ -1,7 +1,5 @@
 <%= render 'layouts/header' %>
 
-<p id="notice"><%= notice %></p>
-
 <% @node.pages.sort{ |a, b| a.order <=> b.order }.each do |page| %>
 	<div>
 		<p>

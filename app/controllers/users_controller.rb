@@ -2,13 +2,15 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
 
-  #before_filter :authenticate_user!
+  before_filter :authenticate_user!
   load_and_authorize_resource :except => :my_account
 
   def my_account
     @pages = current_user.pages
+    authorize! :read, Page
   end
 
+  
 
   # GET /users/1
   # GET /users/1.json
