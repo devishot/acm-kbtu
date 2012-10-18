@@ -1,18 +1,26 @@
-<p>
-  <b>Title:</b>
-  <%= @page.text_title %>
-</p>
+<%= render 'layouts/header' %>
 
-<p>
-  <b>Author:</b>
-  <%= User.find(@page.author).name %>
-</p>
+<div id="articles">
+  <article>
 
-<p>
-  <b>Body:</b>
-  <%= @page.text_body %>
-</p>
+    <header>
+      <h3>
+        <%= @page.text_title %>
+      </h3>
 
-<%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/destroy' %> |
-<%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/edit' %> |
-<%= link_to 'Back', :back %>
+      <div class="article-author">
+        Submitted by <%= @page.user.name %> on "#{DATE}"
+      </div>
+
+      <hr />
+    </header>
+
+    <p>
+      <%= @page.text_body %>
+    </p>
+
+    <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/destroy' %> |
+    <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/edit' %> |
+    <%= link_to 'Back', :back %>
+  </article>
+</div>

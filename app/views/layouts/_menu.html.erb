@@ -1,17 +1,34 @@
-<header>
-	<h1>ACM-KBTU</h1>
-</header>
+<div class="navbar">
+  <div class="navbar-inner">
+    <a class="brand" href="/">ACM-KBTU</a>
 
-<nav>
-	<%= link_to 'Main', root_path %>
-	<%= link_to 'Edit..', list_path %>
-  |
-  <% if user_signed_in? %>
-    <%= link_to 'my account', my_account_path %>
-    <%= link_to 'sign out', destroy_user_session_path, :method => :delete %>
-    <h2> <%= current_user.name %> </h2>
-  <% else %>
-    <%= link_to 'sign in', new_user_session_path %>
-    <%= link_to 'registrate', new_user_registration_path %>
-  <% end %>
-</nav>
+    <ul class="nav">
+      <li>
+        <%= link_to 'Edit..', list_path %>
+      </li>
+    </ul>
+
+    <ul class="nav pull-right">
+      <% if user_signed_in? %>
+
+        <li>
+          <%= link_to 'my account', my_account_path %>
+        </li>
+        <li>
+          <%= link_to 'sign out', destroy_user_session_path, :method => :delete %>
+        </li>
+        <!-- <h2> <%= current_user.name %> </h2> -->
+      <% else %>
+
+        <li>
+          <%= link_to 'sign in', new_user_session_path %>
+        </li>
+        <li>
+          <%= link_to 'sign up', new_user_registration_path %>
+        </li>
+
+      <% end %>
+    </ul>
+
+  </div>
+</div>

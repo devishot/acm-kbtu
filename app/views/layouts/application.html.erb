@@ -6,16 +6,30 @@
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
-<body>
+<body id="body-bgcolor">
 
-	<%= render 'layouts/menu' %>
+  <div class="container menu">
 
-  <p class="notice"><%= notice %></p>
-  <p class="alert"><%= alert %></p>
+    <%= render 'layouts/menu' %>
 
-  <hr />
+    <script>
+      $(".alert").alert()
+    </script>
 
-	<%= yield %>
+    <p class="notice"><%= notice %></p>
+    <div class="alert alert-error well">
+      <%= alert %>
+      <a class="close" data-dismiss="alert" href="#">×</a>
+    </div>
+
+  </div>
+
+  <br/>
+  <div class="container">
+
+    <%= yield %>
+    
+  </div>
 
 </body>
 </html>

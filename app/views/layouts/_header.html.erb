@@ -1,3 +1,11 @@
-<% @nodes.each do |node| %>
-	<%= link_to "#{node.name}", '/nodes/'+node.path %>
-<% end %>
+<ul class="nav nav-tabs">
+
+  <% @nodes.each do |node| %>
+
+    <li <%if !@node.nil? && @node.path == node.path%> class="active" <%end%> >
+      <%= link_to "#{node.name}", '/nodes/'+node.path %>
+    </li>
+
+  <% end %>
+
+</ul>

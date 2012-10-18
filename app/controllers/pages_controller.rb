@@ -8,6 +8,7 @@ class PagesController < ApplicationController
   # GET /pages.json
   def main
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
+    @node = Node.find_by(order: 1)
     #@home_pages = Node.find_by(name: "Home").pages
   end
 
@@ -28,6 +29,7 @@ class PagesController < ApplicationController
   # GET /pages/1
   # GET /pages/1.json
   def show
+    @nodes = Node.all.sort { |a, b| a.order <=> b.order }
     node = Node.find_by(path: params[:node])
     @page = node.pages.find_by(path: params[:page])
 

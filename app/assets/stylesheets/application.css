@@ -11,3 +11,42 @@
  *= require_self
  *= require_tree .
  */
+#body-bgcolor {
+  background-color: #EFEDEA;
+}
+.container {
+  background-color: white;
+}
+.menu {
+  background-color: #EFEDEA; 
+}
+.nav-tabs {
+  background-color: #EFEDEA;
+}
+
+
+#articles {
+  padding: 0px 20px 0px 20px;
+}
+a.article-title:hover,
+a.article-title:active,
+a.article-title:focus,
+a.article-title {
+  color: black;
+  font-weight:  lighter;
+  text-decoration: none;
+}
+.article-author {
+  margin-top: -15px;
+  color: #666;
+  font-size: 0.923em;
+}
+article > header > hr {
+  margin-top: 2px;
+}
+article > p {
+  margin-top: -10px;
+}
+article {
+  margin-bottom: 20px;
+}

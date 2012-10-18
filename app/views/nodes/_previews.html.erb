@@ -1,0 +1,27 @@
+<div id="articles">
+  <% @node.pages.sort{ |a, b| a.order <=> b.order }.each do |page| %>
+    <article>
+      <header>
+        <h3>
+          <%= link_to page.text_title, '/pages/'+page.node.path+'/'+page.path.to_s, :class => "article-title" %>
+        </h3>
+        <div class="article-author">
+          Submitted by <%= page.user.name %> on "#{DATE}"
+        </div>
+        <hr />      
+      </header>
+
+      <p>
+        <%= page.text_body[0..500] %>
+        <% if page.text_body.length>500 %>
+          ...
+        <% end %>
+      </p>
+
+      <%= link_to "read more", '/pages/'+page.node.path+'/'+page.path.to_s %>
+    </article>
+
+    <br/>
+  <% end %>
+
+</div>
