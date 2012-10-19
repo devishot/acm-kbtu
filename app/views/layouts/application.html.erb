@@ -8,28 +8,33 @@
 </head>
 <body id="body-bgcolor">
 
-  <div class="container menu">
 
+  <div class="container">
     <%= render 'layouts/menu' %>
 
-    <script>
-      $(".alert").alert()
-    </script>
+    <% if !notice.nil? %>
+      <div class="alert alert-success well">
+        <%= notice %>
+        <a class="close" data-dismiss="alert" href="#">×</a>
+      </div>
+    <% end %>
 
-    <p class="notice"><%= notice %></p>
-    <div class="alert alert-error well">
-      <%= alert %>
-      <a class="close" data-dismiss="alert" href="#">×</a>
-    </div>
-
+    <% if !alert.nil? %>
+      <div class="alert alert-error well">
+        <%= alert %>
+        <a class="close" data-dismiss="alert" href="#">×</a>
+      </div>
+    <% end %>
   </div>
+
 
   <br/>
+  <br/>
+  <br/>
   <div class="container">
-
-    <%= yield %>
-    
+      <%= yield %>
   </div>
+
 
 </body>
 </html>

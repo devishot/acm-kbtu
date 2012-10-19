@@ -14,21 +14,21 @@
     <div class="control-group">
       <%= f.label :email, :class => "control-label" %>
       <div class="controls">
-        <%= f.email_field :email%>
+        <%= f.email_field :email, :autocomplete => "off"%>
       </div>
     </div>
 
     <div class="control-group">
       <%= f.label :password, :class => "control-label" %>
       <div class="controls">
-        <%= f.password_field :password%>
+        <%= f.password_field :password, :autocomplete => "off"%>
       </div>
     </div>
 
     <div class="control-group">
       <%= f.label :password_confirmation, :class => "control-label" %>
       <div class="controls">
-        <%= f.password_field :password_confirmation%>
+        <%= f.password_field :password_confirmation, :autocomplete => "off"%>
       </div>
     </div>
 

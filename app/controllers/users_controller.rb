@@ -50,6 +50,11 @@ class UsersController < ApplicationController
   # DELETE /users/1.json
   def destroy
     @user = User.find(params[:id])
+    @user.pages.each do |page|
+      (page.node).pages.delete(page)
+      @user.pages.delete(page)
+      page.destroy
+    end
     @user.destroy
 
     respond_to do |format|

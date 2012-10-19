@@ -1,15 +1,13 @@
 class Page
-  @@pages_count = 2537
+  include Mongoid::Document
+  include Mongoid::Timestamps
 
-  def self.how
-    @@pages_count
-  end
+  @@count_all_pages = 2537
 
   def self.count
-    @@pages_count += 1
+    @@count_all_pages += 1
   end
 
-  include Mongoid::Document
   field :text_title, type: String
   field :text_body, type: String
   field :author, type: String

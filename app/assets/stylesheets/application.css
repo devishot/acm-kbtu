@@ -14,19 +14,11 @@
 #body-bgcolor {
   background-color: #EFEDEA;
 }
-.container {
-  background-color: white;
-}
-.menu {
-  background-color: #EFEDEA; 
-}
-.nav-tabs {
-  background-color: #EFEDEA;
-}
 
 
 #articles {
   padding: 0px 20px 0px 20px;
+  background-color: white;
 }
 a.article-title:hover,
 a.article-title:active,

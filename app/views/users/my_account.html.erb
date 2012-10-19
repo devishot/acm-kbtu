@@ -1,40 +1,12 @@
-<%= link_to 'edit registration', edit_user_registration_path %>
+<%= link_to 'edit registration', edit_user_registration_path, :class => "btn btn-primary" %>
 
 <br />
 <br />
-<%= link_to 'New Page', new_page_path %>
+<%= link_to 'New Page', new_page_path, :class => "btn btn-primary" %>
 
 <br />
 <h2>Your pages</h2>
 
 
-
-<% if current_user.pages.empty? %>
-    <h3>There is no pages</h3>
-<% else %>
-    <table style="padding-left:30px;">
-        <tr>
-            <th>Title</th>
-            <th>Body</th>
-            <th>Author</th>
-            <th>Path</th>
-            <th>Order</th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-
-        <% current_user.pages.each do |page| %>
-          <tr>
-            <td><%= page.text_title %></td>
-            <td><%= page.text_body[0..100] %></td>
-            <td><%= page.user.name %></td>
-            <td><%= page.path %></td>
-            <td><%= page.order %></td>
-            <td><%= link_to 'Show', '/pages/'+page.node.path+'/'+page.path.to_s %></td>
-            <td><%= link_to 'Edit', '/pages/'+page.node.path+'/'+page.path.to_s+'/edit' %></td>
-            <td><%= link_to 'Destroy', '/pages/'+page.node.path+'/'+page.path.to_s+'/destroy', data: { confirm: 'Are you sure?' } %></td>
-          </tr>
-        <% end %>
-    </table>
-<% end %>
+<% @pages = current_user.pages %>
+<%= render 'pages/pages' %>

@@ -1,4 +1,4 @@
-<%= form_for(@page) do |f| %>
+<%= form_for(@page,:html => { :class=>"form-horizontal"}) do |f| %>
   <% if @page.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@page.errors.count, "error") %> prohibited this page from being saved:</h2>
@@ -11,33 +11,42 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :text_title %><br />
-    <%= f.text_field :text_title %>
-  </div>
-  <div class="field">
-    <%= f.label :text_body %><br />
-    <%= f.text_area :text_body %>
-  </div>
-  <div class="field" style="display: none;">
-    <%= f.label :author %><br />
-    <%= f.text_field :author %>
-  </div>
-  <div class="field">
-    <%= f.label :parent %><br />
-    <%= f.collection_select(:parent, @nodes, :path, :name) %>
-  </div> 
-  <div class="field">
-    <%= f.label :order %><br />
-    <%= f.number_field :order %>
+  <div class="control-group">
+    <%= f.label :parent, :class=>"control-label" %>
+    <div class="controls">
+      <%= f.collection_select(:parent, @nodes, :path, :name) %>
+    </div>
   </div>
 
+
+  <div class="control-group">
+    <%= f.label :text_title, :class=>"control-label" %>
+    <div class="controls">
+      <%= f.text_field :text_title, :class=>"span9" %>
+    </div>
+  </div>
+
+
+  <div class="control-group">
+    <%= f.label :text_body, :class=>"control-label" %>
+    <div class="controls">
+      <%= f.text_area :text_body, :rows => 15, :class=>"span9" %>
+    </div>
+  </div>
+
+
+  <div class="control-group">
+    <div class="controls">
+      <%= f.submit %>
+    </div>
+  </div>
+
+
   <div class="field" style="display: none;">
+    <%= f.number_field :order %>
+    <%= f.text_field :author %>    
     <%= f.text_field :old_node %>
     <%= f.text_field :path %>
   </div>
 
-  <div class="actions">
-    <%= f.submit %>
-  </div>
 <% end %>

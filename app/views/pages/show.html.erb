@@ -1,26 +1,29 @@
-<%= render 'layouts/header' %>
+<div style="background-color: white;">
+  <%= render 'layouts/header' %>
 
-<div id="articles">
-  <article>
+  <div id="articles">
+    <article>
 
-    <header>
-      <h3>
-        <%= @page.text_title %>
-      </h3>
+      <header>
+        <h3>
+          <%= @page.text_title %>
+        </h3>
 
-      <div class="article-author">
-        Submitted by <%= @page.user.name %> on "#{DATE}"
-      </div>
+        <div class="article-author">
+          Submitted by <%= @page.user.name %> on <%= @page.created_at if !@page.created_at.nil? %>
+        </div>
 
-      <hr />
-    </header>
+        <hr />
+      </header>
 
-    <p>
-      <%= @page.text_body %>
-    </p>
+      <p>
+        <%= @page.text_body %>
+      </p>
 
-    <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/destroy' %> |
-    <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/edit' %> |
-    <%= link_to 'Back', :back %>
-  </article>
+      <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/destroy' %> |
+      <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/edit' %> |
+      <%= link_to 'Back', :back %>
+    </article>
+    <br />
+  </div>
 </div>

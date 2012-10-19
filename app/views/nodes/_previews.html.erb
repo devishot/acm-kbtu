@@ -1,12 +1,12 @@
 <div id="articles">
-  <% @node.pages.sort{ |a, b| a.order <=> b.order }.each do |page| %>
+  <% @node.pages.sort{ |a, b| b.order <=> a.order }.each do |page| %>
     <article>
       <header>
         <h3>
           <%= link_to page.text_title, '/pages/'+page.node.path+'/'+page.path.to_s, :class => "article-title" %>
         </h3>
         <div class="article-author">
-          Submitted by <%= page.user.name %> on "#{DATE}"
+          Submitted by <%= page.user.name %> on <%= page.created_at if !page.created_at.nil? %>
         </div>
         <hr />      
       </header>

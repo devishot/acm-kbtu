@@ -1,0 +1,30 @@
+<div class="well">
+  <table class="table">
+
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Node</th>
+        <th>Date</th>
+        <th style="width: 36px;"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @pages.each do |page| %>
+        <tr>
+          <td> <%= page.text_title %> </td>
+          <td> <%= page.user.name %> </td>
+          <td> <%= page.node.name %> </td>
+          <td> <%= page.created_at if !page.created_at.nil? %> </td>
+          <td>
+              <%= link_to "", '/pages/'+page.node.path+'/'+page.path.to_s+'/edit', :class=>"icon-pencil" %>
+              <%= link_to "", '/pages/'+page.node.path+'/'+page.path.to_s+'/destroy', data: { confirm: 'Are you sure?' }, :class => "icon-trash" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+
+  </table>
+</div>
