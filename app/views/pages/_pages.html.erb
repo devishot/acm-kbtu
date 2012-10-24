@@ -1,6 +1,24 @@
 <div class="well">
-  <table class="table">
 
+  <% @node = @pages[0].node %>
+  <% @sortable = "sortable" + @node.path %>
+
+  <% if can? :manage, Node %>
+    <script>
+      $(function() {
+          $( "." + "<%= @sortable %>").sortable();
+          $( "." + "<%= @sortable %>").disableSelection();
+          $( "." + "<%= @sortable %>" + 'button').click(function(){
+            var list = $("." + "<%= @sortable %>").sortable("toArray");
+            alert( list );
+          });
+      });
+    </script>
+
+    <button class="<%= @sortable %>button">Save</button>
+  <% end %>
+
+  <table class="table">
     <thead>
       <tr>
         <th>Title</th>
@@ -11,9 +29,9 @@
       </tr>
     </thead>
 
-    <tbody>
+    <tbody class="<%= @sortable %>">
       <% @pages.each do |page| %>
-        <tr>
+        <tr id="<%= page.path %>">
           <td> <%= page.text_title %> </td>
           <td> <%= page.user.name %> </td>
           <td> <%= page.node.name %> </td>

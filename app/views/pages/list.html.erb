@@ -1,21 +1,31 @@
 <h1>Edit</h1>
 
 
-<% if can? :manage, User %>
-  <br/>
-  <%= render '/users/index' %>
-<% end %>
 
+<div class="tabbable tabs-left">
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#tab1" data-toggle="tab">Users</a></li>
+    <li><a href="#tab2" data-toggle="tab">Nodes</a></li>
+    <li><a href="#tab3" data-toggle="tab">Pages</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="tab1">
+      <% if can? :manage, User %>
+        <%= render '/users/index' %>
+      <% end %>
+    </div>
 
-<% if can? :manage, Node %>
-  <br/>
-  <br/>
-  <%= render '/nodes/index' %>
-<% end %>
+    <div class="tab-pane" id="tab2">
+      <% if can? :manage, Node %>
+        <%= render '/nodes/index' %>
+      <% end %>
+    </div>
 
+    <div class="tab-pane" id="tab3">
+      <% if can? :manage, Page %>
+        <%= render '/pages/index' %>
+      <% end %> 
+    </div>
 
-<% if can? :manage, Page %>
-  <br/>
-  <br/>
-  <%= render '/pages/index' %>
-<% end %>	
+  </div>
+</div>

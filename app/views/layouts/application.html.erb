@@ -4,11 +4,14 @@
   <title>AcmKbtu</title>
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js"></script>
+  <script src="//github.com/douglascrockford/JSON-js/blob/master/json2.js"></script>
+
+
   <%= csrf_meta_tags %>
 </head>
 <body id="body-bgcolor">
-
-
   <div class="container">
     <%= render 'layouts/menu' %>
 
@@ -27,14 +30,12 @@
     <% end %>
   </div>
 
-
   <br/>
   <br/>
   <br/>
   <div class="container">
       <%= yield %>
   </div>
-
 
 </body>
 </html>
