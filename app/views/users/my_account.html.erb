@@ -9,4 +9,8 @@
 
 
 <% @pages = current_user.pages %>
-<%= render 'pages/pages' %>
+<% if !@pages.empty? %>
+  <%= render 'pages/pages' %>
+<% else %>
+  <p>You don't have pages</p>
+<% end %>

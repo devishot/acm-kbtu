@@ -19,12 +19,9 @@
     <%= f.label :path %><br />
     <%= f.text_field :path %>
   </div>
-  <div class="field">
-    <%= f.label :order %><br />
-    <%= f.number_field :order %>
-  </div>
   <div class="field" style="display: none;">
     <%= f.number_field :count_pages_in_node %>
+    <%= f.number_field :order %>
   </div>  
   <div class="actions">
     <%= f.submit %>

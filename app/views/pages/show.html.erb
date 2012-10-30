@@ -10,7 +10,7 @@
         </h3>
 
         <div class="article-author">
-          Submitted by <%= @page.user.name %> on <%= @page.created_at if !@page.created_at.nil? %>
+          Submitted by <%= @page.user.name %> on <%= @page.created_at.to_s(:long) if !@page.created_at.nil? %>
         </div>
 
         <hr />

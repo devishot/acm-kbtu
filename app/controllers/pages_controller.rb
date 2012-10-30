@@ -8,11 +8,12 @@ class PagesController < ApplicationController
   # GET /pages.json
   def main
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
-    @node = Node.find_by(order: 1)
+    @node = Node.find_by(order: 0)
     #@home_pages = Node.find_by(name: "Home").pages
   end
 
   def list
+    #raise "#{Page.count()} #{Page.count()}"
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
     @users = User.all
   end
@@ -75,6 +76,7 @@ class PagesController < ApplicationController
 
     parent = Node.find_by(path: "#{params[:page][:parent]}")
     parent.inc(:count_pages_in_node, 1)
+    parent.save
     @page.order = parent.count_pages_in_node
 
     respond_to do |format|

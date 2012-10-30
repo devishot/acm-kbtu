@@ -7,7 +7,14 @@
     <% if !node.pages.nil? %>
         <h5> <%= node.name %> </h5>
         <% @pages = node.pages.sort { |a, b| b.order <=> a.order } %>
-        <%= render 'pages/pages' %>
+
+        <% if !@pages.empty? %>
+          <%= render 'pages/pages' if !@pages.empty? %>
+        <% else %>
+          <p>There are no pages</p>
+        <% end %>
+
         <br />
+        
     <% end %>
 <% end %>

@@ -1,27 +1,68 @@
 <h2>Listing nodes</h2>
-<%= link_to 'New Node', new_node_path %>
+<%= link_to 'New Node', new_node_path, :class => "btn btn-primary" %>
 
 <br />
 <br />
 
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Path</th>
-    <th>Order</th>
-<!--    <th></th> -->
-    <th></th>
-    <th></th>
-  </tr>
+<div class="well">
 
-<% @nodes.each do |node| %>
-  <tr>
-    <td><%= node.name %></td>
-    <td><%= node.path %></td>
-    <td><%= node.order %></td>
-<!--    <td><%= link_to 'Show', node %></td> -->
-    <td><%= link_to 'Edit', edit_node_path(node) %></td>
-    <td><%= link_to 'Destroy', node, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
-</table>
+  <% @node = @pages[0].node %>
+  
+  <% if can? :manage, Node %>
+    <script>
+      var fixHelper = function(e, ui) {
+        ui.children().each(function() {
+          $(this).width($(this).width());
+        });
+        return ui;
+      };
+
+      $(function() {
+          $( "#sortable").sortable({
+            //containment: "parent",
+            helper: fixHelper
+          }).disableSelection();
+          $( "#sortable").disableSelection();
+          $( "#sortable_button").click(function(){
+            var order = $("#sortable").sortable("toArray");
+            $.post("<%= upd_nodes_order_path %>", {
+                "order": order
+              }, 
+              function(response) {
+                //location.reload();
+                alert('Order was saved')
+              }
+            )
+          });
+      });
+    </script>
+
+    <button id="sortable_button">Save</button>
+  <% end %>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="width: 40%;">Name</th>
+        <th style="width: 30%;">Path</th>
+        <th style="width: 20%;">Pages</th>
+        <th style="width: 36px;"></th>
+      </tr>
+    </thead>
+
+    <tbody id="sortable">
+      <% @nodes.each do |node| %>
+        <tr id="<%= node.path %>">
+          <td> <%= node.name %> </td>
+          <td> <%= node.path %> </td>
+          <td> <%= node.pages.count %> </td>
+          <td>
+              <%= link_to "", edit_node_path(node), :class=>"icon-pencil" %>
+              <%= link_to "", node, method: :delete, data: { confirm: 'Are you sure?' }, :class => "icon-trash" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+
+  </table>
+</div>

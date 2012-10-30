@@ -18,6 +18,9 @@ AcmKbtu::Application.routes.draw do
   match '/pages/:node/:page/edit' => 'pages#edit'
   match '/pages/:node/:page/destroy' => 'pages#destroy'
 
+  post '/upd_pages_order' => 'nodes#upd_pages_order'
+  post '/upd_nodes_order' => 'nodes#upd_nodes_order'
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

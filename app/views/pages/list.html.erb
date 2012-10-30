@@ -1,13 +1,13 @@
 <h1>Edit</h1>
 
-
-
 <div class="tabbable tabs-left">
+
   <ul class="nav nav-tabs">
     <li class="active"><a href="#tab1" data-toggle="tab">Users</a></li>
     <li><a href="#tab2" data-toggle="tab">Nodes</a></li>
     <li><a href="#tab3" data-toggle="tab">Pages</a></li>
   </ul>
+
   <div class="tab-content">
     <div class="tab-pane active" id="tab1">
       <% if can? :manage, User %>
@@ -26,6 +26,6 @@
         <%= render '/pages/index' %>
       <% end %> 
     </div>
-
   </div>
+  
 </div>

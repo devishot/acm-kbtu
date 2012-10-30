@@ -6,7 +6,9 @@ class Page
 
   def self.count
     @@count_all_pages += 1
+    @@count_all_pages
   end
+
 
   field :text_title, type: String
   field :text_body, type: String

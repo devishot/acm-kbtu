@@ -5,12 +5,32 @@
 
   <% if can? :manage, Node %>
     <script>
+      var fixHelper = function(e, ui) {
+        ui.children().each(function() {
+          $(this).width($(this).width());
+        });
+        return ui;
+      };
+
       $(function() {
-          $( "." + "<%= @sortable %>").sortable();
+          $( "." + "<%= @sortable %>").sortable({
+            //containment: "parent",
+            helper: fixHelper
+          }).disableSelection();
           $( "." + "<%= @sortable %>").disableSelection();
           $( "." + "<%= @sortable %>" + 'button').click(function(){
-            var list = $("." + "<%= @sortable %>").sortable("toArray");
-            alert( list );
+            var order = $("." + "<%= @sortable %>").sortable("toArray");
+            $.post("<%= upd_pages_order_path %>", {
+                "json": {
+                  "node": "<%= @node.path %>",
+                  "order": order
+                }
+              }, 
+              function(response) {
+                //location.reload();
+                alert('Order was saved')
+              }
+            )
           });
       });
     </script>
@@ -21,10 +41,9 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Node</th>
-        <th>Date</th>
+        <th style="width: 40%;">Title</th>
+        <th style="width: 30%;">Author</th>
+        <th style="width: 20%;">Date</th>
         <th style="width: 36px;"></th>
       </tr>
     </thead>
@@ -34,8 +53,7 @@
         <tr id="<%= page.path %>">
           <td> <%= page.text_title %> </td>
           <td> <%= page.user.name %> </td>
-          <td> <%= page.node.name %> </td>
-          <td> <%= page.created_at if !page.created_at.nil? %> </td>
+          <td> <%= page.created_at.to_s(:short) if !page.created_at.nil? %> </td>
           <td>
               <%= link_to "", '/pages/'+page.node.path+'/'+page.path.to_s+'/edit', :class=>"icon-pencil" %>
               <%= link_to "", '/pages/'+page.node.path+'/'+page.path.to_s+'/destroy', data: { confirm: 'Are you sure?' }, :class => "icon-trash" %>

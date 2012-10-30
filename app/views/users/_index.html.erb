@@ -1,23 +1,30 @@
 <h2>Listing users</h2>
 <br />
 
-<table style="padding-left:30px;">
-  <tr>
-    <th>Name</th>
-    <th>Role</th>
-    <th>email</th>
-    <th></th>
-    <th></th>
-  </tr>
-
-    <% @users.each do |user| %>
+<div class="well">
+  <table class="table">
+    <thead>
       <tr>
-        <td><%= user.name %></td>
-        <td><%= user.role %></td>
-        <td><%= user.email %></td>
-        <td><%= link_to 'Edit', edit_user_path(user) %></td>
-        <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <th style="width: 40%;">Name</th>
+        <th style="width: 30%;">email</th>
+        <th style="width: 20%;">Role</th>
+        <th style="width: 36px;"></th>
       </tr>
-    <% end %>
+    </thead>
 
-</table>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td>  <%= user.name %>  </td>
+          <td>  <%= user.email %> </td>          
+          <td>  <%= user.role %>  </td>
+          <td>
+              <%= link_to "", edit_user_path(user), :class=>"icon-pencil" %>
+              <%= link_to "", user, method: :delete, data: { confirm: 'Are you sure?' }, :class => "icon-trash" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+
+  </table>
+</div>
