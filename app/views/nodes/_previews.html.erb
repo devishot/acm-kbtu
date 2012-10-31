@@ -12,7 +12,7 @@
       </header>
 
       <p>
-        <%= page.text_body[0..500] %>
+        <%= page.text_body[0..500].html_safe %>
         <% if page.text_body.length>500 %>
           ...
         <% end %>
