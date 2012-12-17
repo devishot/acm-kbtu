@@ -1,5 +1,7 @@
 <h1>New contest</h1>
 
+<% @submit_path = contests_path %>
+<% @submit_method = :post %>
 <%= render 'form' %>
 
 <%= link_to 'Back', contests_path %>

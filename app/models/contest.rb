@@ -10,6 +10,7 @@ class Contest
   field :time_finish, type: DateTime
 
   before_save :set_path
+  
 
   def set_path
     return if self.path != nil

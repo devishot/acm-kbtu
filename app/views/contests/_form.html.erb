@@ -1,4 +1,4 @@
-<%= form_for(@contest, :multipart => true) do |f| %>
+<%= form_for(@contest, :url => @submit_path, :method => @submit_method) do |f| %>
   <% if @contest.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@contest.errors.count, "error") %> prohibited this contest from being saved:</h2>
@@ -11,18 +11,27 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
+  <div class="control-group">
+    <%= f.label :name, :class=>"control-label" %>
+    <div class="controls">
+      <%= f.text_field :name %>
+    </div>
   </div>
+
   <div class="field">
-    <%= f.label :description %><br />
-    <%= f.text_area :description, :rows => 5 %>
+    <%= f.label :description, :class=>"control-label" %>
+    <div class="controls">
+      <%= f.text_area :description, :rows => 5 %>
+    </div>
   </div>
+
   <%= f.datetime_select :time_start %>
-  </br>
+
+  <br />
+
   <%= f.datetime_select :time_finish, :default => 5.hours.from_now %>
+
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit :class => "btn" %>
   </div>
 <% end %>

@@ -7,7 +7,7 @@ class ContestsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @contests }
+      #format.json { render json: @contests }
     end
   end
 
@@ -18,7 +18,7 @@ class ContestsController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @contest }
+      #format.json { render json: @contest }
     end
   end
 
@@ -35,7 +35,7 @@ class ContestsController < ApplicationController
 
   # GET /contests/1/edit
   def edit
-    @contest = Contest.find(params[:id])
+    @contest = Contest.find_by(path: params[:id])
   end
 
   # POST /contests
@@ -57,15 +57,15 @@ class ContestsController < ApplicationController
   # PUT /contests/1
   # PUT /contests/1.json
   def update
-    @contest = Contest.find(params[:id])
+    @contest = Contest.find_by(path: params[:id])
 
     respond_to do |format|
       if @contest.update_attributes(params[:contest])
         format.html { redirect_to contests_path+'/'+@contest.path, notice: 'Contest was successfully updated.' }
-        format.json { head :no_content }
+        #format.json { head :no_content }
       else
         format.html { render action: "edit" }
-        format.json { render json: @contest.errors, status: :unprocessable_entity }
+        #format.json { render json: @contest.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -73,12 +73,12 @@ class ContestsController < ApplicationController
   # DELETE /contests/1
   # DELETE /contests/1.json
   def destroy
-    @contest = Contest.find(params[:id])
+    @contest = Contest.find_by(path: params[:id])
     @contest.destroy
 
     respond_to do |format|
       format.html { redirect_to contests_url }
-      format.json { head :no_content }
+      #format.json { head :no_content }
     end
   end
 
@@ -120,7 +120,7 @@ class ContestsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to contests_path+'/'+@contest.path }
-      format.json { head :no_content }
+      #format.json { head :no_content }
     end    
   end
 

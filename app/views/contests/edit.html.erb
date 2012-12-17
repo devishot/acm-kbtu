@@ -1,5 +1,7 @@
 <h1>Editing contest</h1>
 
+<% @submit_path = "/contests/#{@contest.path}" %>
+<% @submit_method = :put %>
 <%= render 'form' %>
 
 <%= link_to 'Show', @contest.path %> |
