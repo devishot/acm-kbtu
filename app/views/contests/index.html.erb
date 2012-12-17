@@ -1,0 +1,38 @@
+<h1>Listing contests</h1>
+
+<%= link_to 'New Contest', new_contest_path, :class => "btn btn-primary" %>
+
+<br />
+<br />
+
+<div class="well">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Start time</th>
+        <th>Finish time</th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+
+  <% @contests.each do |contest| %>
+    <tbody>
+      <tr>
+        <td><%= contest.name %></td>
+        <td><%= contest.description %></td>
+        <td><%= contest.time_start.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= contest.time_finish.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= link_to 'Show', contests_path+'/'+contest.path %></td>
+        <td><%= link_to 'Edit', contests_path+'/'+contest.id+'/edit' %></td>
+        <td><%= link_to 'Destroy', contest, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    </tbody>
+  <% end %>
+  </table>
+
+  <br />
+</div>

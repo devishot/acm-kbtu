@@ -26,6 +26,8 @@ end
 gem 'jquery-rails'
 gem 'tinymce-rails'
 
+gem 'rubyzip'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

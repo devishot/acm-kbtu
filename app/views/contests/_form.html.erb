@@ -1,0 +1,28 @@
+<%= form_for(@contest, :multipart => true) do |f| %>
+  <% if @contest.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@contest.errors.count, "error") %> prohibited this contest from being saved:</h2>
+
+      <ul>
+      <% @contest.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_area :description, :rows => 5 %>
+  </div>
+  <%= f.datetime_select :time_start %>
+  </br>
+  <%= f.datetime_select :time_finish, :default => 5.hours.from_now %>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

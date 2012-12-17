@@ -41,7 +41,7 @@ class NodesController < ApplicationController
   def upd_nodes_order
     order_list = params[:order]
     nodes = Node.all
-    t = 0
+    t = 1
     order_list.each do |node_path|
       node = nodes.find_by(path: node_path)
       node.order = t
@@ -87,7 +87,6 @@ class NodesController < ApplicationController
   # POST /nodes.json
   def create
     @node = Node.new(params[:node])
-    @node.order = Node.count()
 
     respond_to do |format|
       if @node.save

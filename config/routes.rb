@@ -1,5 +1,9 @@
 AcmKbtu::Application.routes.draw do
 
+  resources :contests
+  match '/contests/:id/upload' => 'contests#problems_uploader'
+  post 'problems_unzip' => 'contests#problems_unzip'
+
   devise_for :users
 
   resources :users

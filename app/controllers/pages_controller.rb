@@ -8,17 +8,14 @@ class PagesController < ApplicationController
   # GET /pages.json
   def main
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
-    @node = Node.find_by(order: 0)
+    @node = Node.find_by(order: 1)
     #@home_pages = Node.find_by(name: "Home").pages
   end
 
   def list
-    #raise "#{Page.count()} #{Page.count()}"
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
     @users = User.all
   end
-
-
 
   def index
     respond_to do |format|
@@ -69,10 +66,7 @@ class PagesController < ApplicationController
   # POST /pages
   # POST /pages.json
   def create
-    
     @page = Page.new(params[:page])
-    @page.path = Page.count()
-    @page.author = current_user.name
 
     parent = Node.find_by(path: "#{params[:page][:parent]}")
     parent.inc(:count_pages_in_node, 1)
