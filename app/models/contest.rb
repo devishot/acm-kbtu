@@ -8,6 +8,7 @@ class Contest
   field :path, type: String
   field :time_start, type: DateTime
   field :time_finish, type: DateTime
+  field :problems_count, type: Integer
 
   before_save :set_path
   

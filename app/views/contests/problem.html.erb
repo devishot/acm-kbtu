@@ -1,7 +1,7 @@
-<h1>Upload Problems for <%= @contest.name %> </h1>
+<h3>Submit solutions</h3>
 <br />
 
-<%= form_tag({:action => :problems_unzip, :method => "post"}, :multipart => true) do %>
+<%= form_tag({:action => :solution, :method => "post"}) do %>
   <%= hidden_field_tag :contest_id, @contest.path %>
 
   <div class="control-group">

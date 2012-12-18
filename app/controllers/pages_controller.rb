@@ -20,7 +20,7 @@ class PagesController < ApplicationController
   def index
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @pages }
+      #format.json { render json: @pages }
     end
   end
 
@@ -28,12 +28,13 @@ class PagesController < ApplicationController
   # GET /pages/1.json
   def show
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
+
     node = Node.find_by(path: params[:node])
     @page = node.pages.find_by(path: params[:page])
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @page }
+      #format.json { render json: @page }
     end
   end
 
@@ -46,7 +47,7 @@ class PagesController < ApplicationController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.json { render json: @page }
+      #format.json { render json: @page }
     end
   end
 
@@ -56,7 +57,7 @@ class PagesController < ApplicationController
 
     node = Node.find_by(path: params[:node])
     @page = node.pages.find_by(path: params[:page])
-    @page.old_node = @page.node.path
+    @page.old_node = @page.node.id
 
     if cannot? :update, @page
       redirect_to '/nodes/'+node.path, alert: 'You have not permissions to edit this Page.'
@@ -68,20 +69,15 @@ class PagesController < ApplicationController
   def create
     @page = Page.new(params[:page])
 
-    parent = Node.find_by(path: "#{params[:page][:parent]}")
-    parent.inc(:count_pages_in_node, 1)
-    parent.save
-    @page.order = parent.count_pages_in_node
-
     respond_to do |format|
       if @page.save
-        parent.pages << @page
-        current_user.pages << @page
-        format.html { redirect_to '/nodes/'+parent.path, notice: 'Page was successfully created.' }
-        format.json { render json: '/nodes/'+parent.path, status: :created, location: list_path }
+        after_save_page(@page)
+
+        format.html { redirect_to '/nodes/'+(@page.node).path, notice: 'Page was successfully created.' }
+        #format.json { render json: '/nodes/'+(@page.node).path, status: :created, location: list_path }
       else
         format.html { render action: "new" }
-        format.json { render json: @page.errors, status: :unprocessable_entity }
+        #format.json { render json: @page.errors, status: :unprocessable_entity }
       end
     end
 
@@ -90,65 +86,56 @@ class PagesController < ApplicationController
   # PUT /pages/1
   # PUT /pages/1.json
   def update
+    @new_page = Page.new(params[:page])
+    @old_page = ( Node.find_by(id: params[:page][:old_node]) ).pages.find_by(path: params[:page][:path])
 
-    if params[:page][:parent] != params[:page][:old_node]
-      old_node = Node.find_by(path: params[:page][:old_node])
-      old_page = old_node.pages.find_by(path: params[:page][:path])
+    respond_to do |format|
+      if @new_page.save
+        delete_page(@old_page)
+        after_save_page(@new_page)
 
-      new_node = Node.find_by(path: "#{params[:page][:parent]}")
-      new_page = Page.new(params[:page])
-
-      respond_to do |format|
-        if new_page.save
-          new_node.pages << new_page
-          (old_page.user).pages << new_page
-          (old_page.user).pages.delete(old_page)
-          old_node.pages.delete(old_page)
-          old_page.destroy
-
-          format.html { redirect_to '/nodes/'+new_node.path, notice: 'Page was successfully updated.' }
-          format.json { head :no_content }
-        else
-          format.html { render action: "edit" }
-          format.json { render json: @page.errors, status: :unprocessable_entity }          
-        end
-      end
-    else
-      node = Node.find_by(path: params[:page][:parent])
-      @page = node.pages.find_by(path: params[:page][:path])
-
-      respond_to do |format|
-        if @page.update_attributes(params[:page])
-          format.html { redirect_to '/nodes/'+node.path, notice: 'Page was successfully updated.' }
-          format.json { head :no_content }
-        else
-          format.html { render action: "edit" }
-          format.json { render json: @page.errors, status: :unprocessable_entity }
-        end
+        format.html { redirect_to '/nodes/'+@new_page.node.path, notice: 'Page was successfully updated.' }
+        #format.json { head :no_content }        
+      else
+        format.html { render "/pages/#{@new_page.node.path}/#{@new_page.path}/edit" }
+        #format.json { render json: @page.errors, status: :unprocessable_entity }                  
       end
     end
-
   end
 
   # DELETE /pages/1
   # DELETE /pages/1.json
   def destroy
-
     node = Node.find_by(path: params[:node])
     @page = node.pages.find_by(path: params[:page])
 
     if can? :destroy, @page
-      node.pages.delete(@page)
-      (@page.user).pages.delete(@page)
-      @page.destroy
+      delete_page(@page)
 
       respond_to do |format|
         format.html { redirect_to '/nodes/'+node.path, notice: 'Page was successfully destroyed.' }
-        format.json { head :no_content }
+        #format.json { head :no_content }
       end
     else
       redirect_to '/nodes/'+node.path, alert: 'You have not permissions to destroy this Page.'
     end
+  end
 
+private 
+  def delete_page(page)
+    (page.node).inc(:count_pages_in_node, -1)
+    (page.node).save
+    (page.node).pages.delete(page)    
+    (page.user).pages.delete(page)
+    page.destroy
+  end
+
+  def after_save_page(page)
+    (page.node).inc(:count_pages_in_node, 1)
+    (page.node).save
+    page.order = (page.node).count_pages_in_node
+    page.save
+    (page.node).pages << @page
+    current_user.pages << @page
   end
 end

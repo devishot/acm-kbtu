@@ -4,9 +4,9 @@ class Page
 
   field :text_title, type: String
   field :text_body, type: String
-  field :path, type: Integer, default: 1000 + Page.count
+  field :path, type: String, default: (Page.exists? ? (Page.last.path.to_i() + 1).to_s() : '1000')
   field :order, type: Integer
-  field :old_node, type: String
+  field :old_node
 
   belongs_to :node
   belongs_to :user

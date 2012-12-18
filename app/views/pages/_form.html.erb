@@ -12,9 +12,9 @@
   <% end %>
 
   <div class="control-group">
-    <%= f.label :parent, :class=>"control-label" %>
+    <%= f.label :node, :class=>"control-label" %>
     <div class="controls">
-      <%= f.collection_select(:parent, @nodes, :path, :name) %>
+      <%= f.collection_select(:node, @nodes, :id, :name) %>
     </div>
   </div>
 
@@ -35,19 +35,14 @@
     </div>
   </div>
 
+  <%= f.hidden_field :user, :value => current_user.id %>
+  <%= f.hidden_field :old_node %>
+  <%= f.hidden_field :path %>
+  <%= f.hidden_field :order %>
 
   <div class="control-group">
     <div class="controls">
       <%= f.submit %>
     </div>
   </div>
-
-
-  <div class="field" style="display: none;">
-    <%= f.number_field :order %>
-    <%= f.text_field :author %>    
-    <%= f.text_field :old_node %>
-    <%= f.text_field :path %>
-  </div>
-
 <% end %>

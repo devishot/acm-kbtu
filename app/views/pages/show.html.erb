@@ -20,8 +20,8 @@
         <%= @page.text_body.html_safe %>
       </p>
 
-      <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/destroy' %> |
-      <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path.to_s+'/edit' %> |
+      <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path+'/destroy' %> |
+      <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %> |
       <%= link_to 'Back', :back %>
     </article>
     <br />

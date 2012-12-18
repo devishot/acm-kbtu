@@ -45,7 +45,9 @@ class ContestsController < ApplicationController
     
     respond_to do |format|
       if @contest.save
-        format.html { redirect_to contests_path+'/'+@contest.path+'/upload', notice: 'Contest was successfully created.' }
+        format.html { redirect_to contests_path+'/'+@contest.path+'/upload', 
+          notice: 'Contest was successfully created.' 
+        }
         #format.json { render json: @contest, status: :created, location: @contest }
       else
         format.html { render action: "new" }
@@ -61,7 +63,9 @@ class ContestsController < ApplicationController
 
     respond_to do |format|
       if @contest.update_attributes(params[:contest])
-        format.html { redirect_to contests_path+'/'+@contest.path, notice: 'Contest was successfully updated.' }
+        format.html { redirect_to contests_path+'/'+@contest.path+'/upload', 
+          notice: 'Contest was successfully updated.' 
+        }
         #format.json { head :no_content }
       else
         format.html { render action: "edit" }
@@ -74,6 +78,7 @@ class ContestsController < ApplicationController
   # DELETE /contests/1.json
   def destroy
     @contest = Contest.find_by(path: params[:id])
+    problems_delete(@contest.path)
     @contest.destroy
 
     respond_to do |format|
@@ -82,10 +87,17 @@ class ContestsController < ApplicationController
     end
   end
 
+  def problem
+
+  end
+
+  def solution
+    
+  end
+
   def problems_uploader
     @contest = Contest.find_by(path: params[:id])
   end
-
 
   def problems_unzip
     #initialize
@@ -122,6 +134,15 @@ class ContestsController < ApplicationController
       format.html { redirect_to contests_path+'/'+@contest.path }
       #format.json { head :no_content }
     end    
+  end
+
+private
+  def problems_delete(contest_id)
+    contest_dir = "#{Rails.root}/public/contests/#{contest_id}"
+
+    if File.directory? contest_dir
+      FileUtils.remove_dir contest_dir
+    end
   end
 
 end
