@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Solution file:</b>
+  <%= @submit.solution_file %>
+</p>
+
+<p>
+  <b>Status:</b>
+  <%= @submit.status %>
+</p>
+
+<p>
+  <b>Status full:</b>
+  <%= @submit.status_full %>
+</p>
+
+
+<%= link_to 'Edit', edit_submit_path(@submit) %> |
+<%= link_to 'Back', submits_path %>

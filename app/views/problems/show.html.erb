@@ -1,0 +1,63 @@
+<% @contest = @submit.problem.contest %>
+<%= render "contests/contest" %>
+
+<div style="background-color: white;">
+  <ul class="nav nav-tabs" id="body-bgcolor">
+    <% for i in 1..@contest.problems_count %>
+      <li 
+        <% if !@submit.nil? && @submit.problem.order == i  %>
+          class = "active"
+        <% end %>
+      >
+        <%= link_to "#{i}", "/contests/#{@contest.path}/#{i}" %>
+      </li>
+    <% end %>
+  </ul>
+
+
+  <div id="articles">
+    <p>
+      <b>Global path:</b>
+      <%= @submit.problem.global_path %>
+    </p>
+
+    <p>
+      <b>Order:</b>
+      <%= @submit.problem.order %>
+    </p>
+
+    <p>
+      <b>Tests path:</b>
+      <%= @submit.problem.tests_path %>
+    </p>
+
+    <%= form_for(@submit, :url => {:controller => 'submits', :action => 'create'}, :method => "POST") do |f| %>
+      <% if @submit.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@submit.errors.count, "error") %> prohibited this submit from being saved:</h2>
+
+          <ul>
+          <% @submit.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= f.hidden_field :status %>
+      <%= f.hidden_field :status_full %>
+      <%= f.hidden_field :problem , :value => @submit.problem_id %>
+      <%= f.hidden_field :user, :value => @submit.user_id %>
+
+      <div class="field">
+        <%= f.label :solution_file, 'File' %><br />
+        <%= f.file_field :solution_file %>
+      </div>
+
+      <div class="actions">
+        <%= f.submit "Submit" %>
+      </div>
+      <br />
+    <% end %>
+  </div>
+</div>

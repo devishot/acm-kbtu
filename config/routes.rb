@@ -1,12 +1,19 @@
 AcmKbtu::Application.routes.draw do
 
+  resources :submits
+
+  resources :problems
+
   resources :contests
-  match '/contests/:id/upload' => 'contests#problems_uploader'
-  post 'problems_unzip' => 'contests#problems_unzip'
+  match '/contests/:id/upload' => 'contests#archive_uploader'
+  post 'archive_unzip' => 'contests#archive_unzip'
+
+  match '/contests/:id/problems'=> 'problems#index'
   match '/contests/:id/standings'=> 'contests#standings'
   match '/contests/:id/messages' => 'contests#messages'
-  match '/contests/:id/:problem' => 'contests#problem'
-  post 'solution' => 'contests#solution'
+  match '/contests/:id/summary' => 'contests#summary'
+
+  match '/contests/:id/:problem' => 'problems#show'
 
   devise_for :users
 

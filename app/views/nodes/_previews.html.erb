@@ -18,10 +18,13 @@
         <% end %>
       </p>
 
-      <%= link_to "read more", '/pages/'+page.node.path+'/'+page.path.to_s %>
+      <ul class="pager">
+        <li class="previous">
+          <%= link_to "read more", '/pages/'+page.node.path+'/'+page.path.to_s %>
+        </li>
+      </ul>
     </article>
-
-    <br/>
+    <br />
   <% end %>
 
 </div>

@@ -1,0 +1,42 @@
+<p id="notice"><%= notice %></p>
+
+<div id="body-bgcolor">
+  <p>
+    <b>Name:</b>
+    <%= @contest.name %>
+  </p>
+
+  <p>
+    <b>Description:</b>
+    <%= @contest.description %>
+  </p>
+
+  <p>
+    <b>Start:</b>
+    <%= @contest.time_start.strftime("%Y-%m-%d %H:%M") %>
+  </p>
+
+  <p>
+    <b>Finish:</b>
+    <%= @contest.time_finish.strftime("%Y-%m-%d %H:%M") %>
+  </p>
+
+  <ul class="nav nav-pills">
+    <li <%= "class=active" if @navpill==1 %> > 
+      <%= link_to "Problems", "/contests/#{@contest.path}/problems" %>
+    </li>
+
+    <li <%= "class=active" if @navpill==2 %> > 
+      <%= link_to "Standings", "/contests/#{@contest.path}/standings" %>
+    </li>
+
+    <li <%= "class=active" if @navpill==3 %>> 
+      <%= link_to "Messages", "/contests/#{@contest.path}/messages" %>
+    </li>
+
+    <li <%= "class=active" if @navpill==4 %>> 
+      <%= link_to "Summary", "/contests/#{@contest.path}/summary" %>
+    </li>
+  </ul>
+
+</div>

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  global_path: MyString
+  order: 1
+  tests_path: MyString
+
+two:
+  global_path: MyString
+  order: 1
+  tests_path: MyString

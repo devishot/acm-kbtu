@@ -1,26 +1,5 @@
-<p id="notice"><%= notice %></p>
+<%= render "contest" %>
 
-<p>
-  <b>Name:</b>
-  <%= @contest.name %>
-</p>
-
-<p>
-  <b>Description:</b>
-  <%= @contest.description %>
-</p>
-
-<p>
-  <b>Start:</b>
-  <%= @contest.time_start.strftime("%Y-%m-%d %H:%M") %>
-</p>
-
-<p>
-  <b>Finish:</b>
-  <%= @contest.time_finish.strftime("%Y-%m-%d %H:%M") %>
-</p>
-
-<%= @contest.path %>
 
 <%= link_to "Edit", edit_contest_path(@contest.path) %> |
 <%= link_to "Back", contests_path %>

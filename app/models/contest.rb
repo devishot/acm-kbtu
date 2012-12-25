@@ -10,9 +10,11 @@ class Contest
   field :time_finish, type: DateTime
   field :problems_count, type: Integer
 
+  has_many :problems
+
+
   before_save :set_path
   
-
   def set_path
     return if self.path != nil
 

@@ -5,21 +5,28 @@ class ContestsController < ApplicationController
   def index
     @contests = Contest.all
 
-    respond_to do |format|
-      format.html # index.html.erb
-      #format.json { render json: @contests }
-    end
   end
 
   # GET /contests/1
   # GET /contests/1.json
   def show
     @contest = Contest.find_by(path: params[:id])
+    @navpill 
+  end
 
-    respond_to do |format|
-      format.html # show.html.erb
-      #format.json { render json: @contest }
-    end
+  def summary
+    @contest = Contest.find_by(path: params[:id])
+    @navpill = 4
+  end
+
+  def messages
+    @contest = Contest.find_by(path: params[:id])
+    @navpill = 3
+  end
+
+  def standings
+    @contest = Contest.find_by(path: params[:id])
+    @navpill = 2
   end
 
   # GET /contests/new
@@ -27,10 +34,6 @@ class ContestsController < ApplicationController
   def new
     @contest = Contest.new
 
-    respond_to do |format|
-      format.html # new.html.erb
-      #format.json { render json: @contest }
-    end
   end
 
   # GET /contests/1/edit
@@ -78,7 +81,7 @@ class ContestsController < ApplicationController
   # DELETE /contests/1.json
   def destroy
     @contest = Contest.find_by(path: params[:id])
-    problems_delete(@contest.path)
+    archive_delete(@contest.path)
     @contest.destroy
 
     respond_to do |format|
@@ -87,27 +90,21 @@ class ContestsController < ApplicationController
     end
   end
 
-  def problem
-
-  end
-
-  def solution
-    
-  end
-
-  def problems_uploader
+  def archive_uploader
     @contest = Contest.find_by(path: params[:id])
   end
 
-  def problems_unzip
+  def archive_unzip
     #initialize
     unless File.directory? "#{Rails.root}/public/contests"
       FileUtils.mkdir "#{Rails.root}/public/contests"
     end
 
-    @contest = Contest.find_by(path: params[:contest_id])
+    contest = Contest.find_by(path: params[:contest_id])
+    contest.problems_count = params[:problems_count]
+    contest.save
     uploaded_zip = params[:archive]    
-    contest_dir = "#{Rails.root}/public/contests/#{@contest.path}"
+    contest_dir = "#{Rails.root}/public/contests/#{contest.path}"
 
     unless File.directory? contest_dir
       FileUtils.mkdir contest_dir
@@ -130,18 +127,32 @@ class ContestsController < ApplicationController
     #remove(delete) file(.zip)
     FileUtils.remove_file(contest_dir+"/#{uploaded_zip.original_filename}")
 
+    problems_create(contest, contest_dir)
+
     respond_to do |format|
-      format.html { redirect_to contests_path+'/'+@contest.path }
+      format.html { redirect_to contests_path+'/'+contest.path }
       #format.json { head :no_content }
     end    
   end
 
 private
-  def problems_delete(contest_id)
+  def archive_delete(contest_id)
     contest_dir = "#{Rails.root}/public/contests/#{contest_id}"
 
     if File.directory? contest_dir
       FileUtils.remove_dir contest_dir
+    end
+  end
+
+  def problems_create(contest, contest_dir)
+    for i in 1..contest.problems_count
+      problem = Problem.new();
+      problem.contest = contest
+      problem.order = i
+      problem.tests_path = #contest_dir + '/problems/' + ('A'.ord + i - 1).chr
+      problem.save
+      contest.problems << problem
+      contest.save
     end
   end
 
