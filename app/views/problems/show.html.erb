@@ -4,11 +4,7 @@
 <div style="background-color: white;">
   <ul class="nav nav-tabs" id="body-bgcolor">
     <% for i in 1..@contest.problems_count %>
-      <li 
-        <% if !@submit.nil? && @submit.problem.order == i  %>
-          class = "active"
-        <% end %>
-      >
+      <li <%= "class=active" if !@submit.nil? && @submit.problem.order == i %> >
         <%= link_to "#{i}", "/contests/#{@contest.path}/#{i}" %>
       </li>
     <% end %>
@@ -31,6 +27,32 @@
       <%= @submit.problem.tests_path %>
     </p>
 
+    <table class="table table-condensed well">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Submitted</th>
+          <th>Tested</th>
+          <th>status</th>
+          <th>full</th>
+          <th>source</th>          
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @submissions.each do |i| %>
+          <tr>
+            <td>  <%= i.id %>  </td>
+            <td>  <%= i.created_at.to_s(:time_s) %>  </td>
+            <td>  <%= i.updated_at.to_s(:time_s) %>  </td>
+            <td>  <%= i.status %>  </td>
+            <td>  <%= i.status_full %>  </td>
+            <td>  <%= i.solution_file %>  </td>
+          </tr>            
+        <% end %>
+      </tbody>
+    </table>
+
     <%= form_for(@submit, :url => {:controller => 'submits', :action => 'create'}, :method => "POST") do |f| %>
       <% if @submit.errors.any? %>
         <div id="error_explanation">
@@ -49,9 +71,11 @@
       <%= f.hidden_field :problem , :value => @submit.problem_id %>
       <%= f.hidden_field :user, :value => @submit.user_id %>
 
-      <div class="field">
-        <%= f.label :solution_file, 'File' %><br />
-        <%= f.file_field :solution_file %>
+      <div class="control-group">
+        <%= f.label :solution_file, 'File', :class=>"control-label" %>
+        <div class="controls">
+          <%= f.file_field :solution_file %>
+        </div>
       </div>
 
       <div class="actions">

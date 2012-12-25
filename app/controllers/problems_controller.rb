@@ -18,8 +18,10 @@ class ProblemsController < ApplicationController
 
     @submit = Submit.new()
     @submit.problem = problem
-    problem.submit << @submit
+    #problem.submits << @submit
     @submit.user = current_user
+
+    @submissions = problem.submits.where(user: current_user)
 
     @navpill = 1
     respond_to do |format|

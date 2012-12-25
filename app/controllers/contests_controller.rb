@@ -4,7 +4,6 @@ class ContestsController < ApplicationController
   # GET /contests.json
   def index
     @contests = Contest.all
-
   end
 
   # GET /contests/1
@@ -82,6 +81,7 @@ class ContestsController < ApplicationController
   def destroy
     @contest = Contest.find_by(path: params[:id])
     archive_delete(@contest.path)
+    problems_destroy(@sontest)
     @contest.destroy
 
     respond_to do |format|
@@ -149,10 +149,17 @@ private
       problem = Problem.new();
       problem.contest = contest
       problem.order = i
-      problem.tests_path = #contest_dir + '/problems/' + ('A'.ord + i - 1).chr
+      problem.tests_path = contest_dir + '/problems/' + ('A'.ord + i - 1).chr
       problem.save
       contest.problems << problem
       contest.save
+    end
+  end
+
+  def problems_destroy(contest)
+    contest.problems.each do |problem|
+      problem.submits.destroy_all
+      problem.destroy
     end
   end
 

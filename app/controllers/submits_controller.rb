@@ -8,6 +8,8 @@ class SubmitsController < ApplicationController
     respond_to do |format|
       problem_path = "/contests/#{@submit.problem.contest.path}/#{@submit.problem.order}"
       if @submit.save
+        (@submit.problem).submits << @submit
+        (@submit.problem).save
         format.html { redirect_to problem_path, notice: 'Submit was successfully created.' }
         #format.json { render json: @submit, status: :created, location: @submit }
       else

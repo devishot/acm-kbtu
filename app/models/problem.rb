@@ -1,11 +1,12 @@
 class Problem
   include Mongoid::Document
+  include Mongoid::Timestamps
   field :global_path, type: String
   field :order, type: Integer
   field :tests_path, type: String
 
   belongs_to :contest
-  has_many :submit
+  has_many :submits
 
   before_save :set_global_path
   
