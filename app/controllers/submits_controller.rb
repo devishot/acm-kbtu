@@ -3,13 +3,21 @@ class SubmitsController < ApplicationController
   # POST /submits
   # POST /submits.json
   def create
-    @submit = Submit.new(params[:submit])
+    @submit = Submit.new(params[:submit])    
+    @contest = @submit.problem.contest
+
+    if current_user.participants.where(contest: @contest).count == 0 then
+      redirect_to contest_path(@contest.path), notice: 'Please, register to participate.'
+      return
+    end
 
     respond_to do |format|
-      problem_path = "/contests/#{@submit.problem.contest.path}/#{@submit.problem.order}"
+      problem_path = contest_path(@contest.path)+"/#{@submit.problem.order}"
       if @submit.save
         (@submit.problem).submits << @submit
         (@submit.problem).save
+        (@submit.participant).submits << @submit
+        (@submit.participant).save
         format.html { redirect_to problem_path, notice: 'Submit was successfully created.' }
         #format.json { render json: @submit, status: :created, location: @submit }
       else

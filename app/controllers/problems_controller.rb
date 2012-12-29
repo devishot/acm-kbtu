@@ -14,14 +14,14 @@ class ProblemsController < ApplicationController
   # GET /problems/1.json
   def show
     contest = Contest.find_by(path: params[:id])
+    participant = current_user.participants.find_by(contest: contest)
     problem = contest.problems.find_by(order: params[:problem])
 
     @submit = Submit.new()
     @submit.problem = problem
-    #problem.submits << @submit
-    @submit.user = current_user
+    @submit.participant = participant
 
-    @submissions = problem.submits.where(user: current_user)
+    @submissions = participant.submits.where(problem: problem)
 
     @navpill = 1
     respond_to do |format|
@@ -88,5 +88,5 @@ class ProblemsController < ApplicationController
       format.html { redirect_to problems_url }
       format.json { head :no_content }
     end
-  end
+  end  
 end

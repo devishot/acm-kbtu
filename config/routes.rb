@@ -7,6 +7,7 @@ AcmKbtu::Application.routes.draw do
   resources :contests
   match '/contests/:id/upload' => 'contests#archive_uploader'
   post 'archive_unzip' => 'contests#archive_unzip'
+  match '/contests/:id/participate' => 'contests#participate'
 
   match '/contests/:id/problems'=> 'problems#index'
   match '/contests/:id/standings'=> 'contests#standings'

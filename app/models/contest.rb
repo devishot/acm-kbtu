@@ -11,6 +11,7 @@ class Contest
   field :problems_count, type: Integer
 
   has_many :problems
+  has_many :participants
 
 
   before_save :set_path

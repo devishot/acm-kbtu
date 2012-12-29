@@ -10,7 +10,10 @@ class ContestsController < ApplicationController
   # GET /contests/1.json
   def show
     @contest = Contest.find_by(path: params[:id])
-    @navpill 
+    @navpill
+    #destroy participate
+    #@contest.participants.delete(@contest.participants.last)
+    #current_user.participants.delete(current_user.participants.last)    
   end
 
   def summary
@@ -28,11 +31,26 @@ class ContestsController < ApplicationController
     @navpill = 2
   end
 
+  def participate
+    @contest = Contest.find_by(path: params[:id])
+    if current_user.participants.where(contest: @contest).count != 0 then
+      redirect_to contest_path(@contest.path), notice: 'You are already participate.'
+      return
+    end
+
+    participant = Participant.new();
+    @contest.participants << participant
+    current_user.participants << participant
+    participant.save
+    #@contest.participants.delete(@contest.participants.last)
+    #current_user.participants.delete(current_user.participants.last)
+    redirect_to contest_path(@contest.path)
+  end
+
   # GET /contests/new
   # GET /contests/new.json
   def new
     @contest = Contest.new
-
   end
 
   # GET /contests/1/edit
@@ -47,7 +65,7 @@ class ContestsController < ApplicationController
     
     respond_to do |format|
       if @contest.save
-        format.html { redirect_to contests_path+'/'+@contest.path+'/upload', 
+        format.html { redirect_to contest_path(@contest.path)+'/upload', 
           notice: 'Contest was successfully created.' 
         }
         #format.json { render json: @contest, status: :created, location: @contest }
@@ -65,7 +83,7 @@ class ContestsController < ApplicationController
 
     respond_to do |format|
       if @contest.update_attributes(params[:contest])
-        format.html { redirect_to contests_path+'/'+@contest.path+'/upload', 
+        format.html { redirect_to contest_path(@contest.path)+'/upload', 
           notice: 'Contest was successfully updated.' 
         }
         #format.json { head :no_content }
@@ -130,7 +148,7 @@ class ContestsController < ApplicationController
     problems_create(contest, contest_dir)
 
     respond_to do |format|
-      format.html { redirect_to contests_path+'/'+contest.path }
+      format.html { redirect_to contest_path(contest.path) }
       #format.json { head :no_content }
     end    
   end
@@ -162,5 +180,4 @@ private
       problem.destroy
     end
   end
-
 end

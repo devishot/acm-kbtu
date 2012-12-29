@@ -2,7 +2,7 @@ class User
   include Mongoid::Document
 
   has_many :pages
-  has_many :submits
+  has_many :participants
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
