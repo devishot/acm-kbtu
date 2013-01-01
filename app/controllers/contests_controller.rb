@@ -13,7 +13,7 @@ class ContestsController < ApplicationController
     @navpill
     #destroy participate
     #@contest.participants.delete(@contest.participants.last)
-    #current_user.participants.delete(current_user.participants.last)    
+    #current_user.participants.delete(current_user.participants.last)
   end
 
   def summary
@@ -29,6 +29,7 @@ class ContestsController < ApplicationController
   def standings
     @contest = Contest.find_by(path: params[:id])
     @navpill = 2
+    @participants = @contest.participants
   end
 
   def participate
@@ -42,10 +43,17 @@ class ContestsController < ApplicationController
     @contest.participants << participant
     current_user.participants << participant
     participant.save
-    #@contest.participants.delete(@contest.participants.last)
-    #current_user.participants.delete(current_user.participants.last)
     redirect_to contest_path(@contest.path)
   end
+
+  def kill_participate
+    contest = Contest.find(params[:contest])
+    participant = contest.participants.find(params[:participant])
+
+    contest.participants.delete(participant)
+    (participant.user).participants.delete(participant)
+    redirect_to contest_path(contest.path)
+  end  
 
   # GET /contests/new
   # GET /contests/new.json

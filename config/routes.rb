@@ -8,6 +8,7 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/upload' => 'contests#archive_uploader'
   post 'archive_unzip' => 'contests#archive_unzip'
   match '/contests/:id/participate' => 'contests#participate'
+  post 'kill_participate' => 'contests#kill_participate'
 
   match '/contests/:id/problems'=> 'problems#index'
   match '/contests/:id/standings'=> 'contests#standings'
@@ -15,6 +16,8 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/summary' => 'contests#summary'
 
   match '/contests/:id/:problem' => 'problems#show'
+
+  match '/submits/:contest/:participant' => 'submits#index'
 
   devise_for :users
 

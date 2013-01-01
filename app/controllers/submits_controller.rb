@@ -31,14 +31,18 @@ class SubmitsController < ApplicationController
 
   # GET /submits
   # GET /submits.json
-  # def index
-  #   @submits = Submit.all
+  def index
+    @contest = Contest.find_by(path: params[:contest])
+    @participant = @contest.participants.find_by(path: params[:participant])
+    @submits = @participant.submits
 
-  #   respond_to do |format|
-  #     format.html # index.html.erb
-  #     format.json { render json: @submits }
-  #   end
-  # end
+    @navpill
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @submits }
+    end
+  end
 
   # # GET /submits/1
   # # GET /submits/1.json
