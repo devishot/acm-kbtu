@@ -9,6 +9,7 @@ session.use :acm_kbtu_development
 
 submits = session[:submits].find
 puts "There are #{submits.count} records. Here they are:"
-submits.find.each { |submit| 
-  puts submit.inspect
+submits.find.each { |submit|
+  file_source = submit
+  puts file_source.class#submit.inspect
 }
