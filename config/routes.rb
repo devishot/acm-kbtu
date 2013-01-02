@@ -18,6 +18,7 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/:problem' => 'problems#show'
 
   match '/submits/:contest/:participant' => 'submits#index'
+  post 'send_submit' => 'submits#create'
 
   devise_for :users
 

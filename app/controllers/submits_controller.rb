@@ -3,7 +3,12 @@ class SubmitsController < ApplicationController
   # POST /submits
   # POST /submits.json
   def create
-    @submit = Submit.new(params[:submit])    
+    @submit = Submit.new({ 
+      :status => params[:status],
+      :status_full => params[:status_full],
+      :problem => params[:problem],
+      :participant => params[:participant]
+    })
     @contest = @submit.problem.contest
 
     if current_user.participants.where(contest: @contest).count == 0 then
@@ -11,14 +16,27 @@ class SubmitsController < ApplicationController
       return
     end
 
+
+    name = "1.cpp"
+    directory = 
+      "#{Rails.root}/public/contests/#{@contest.path}/participants/#{@submit.participant.path}/"
+    path = File.join(directory, name)
+    tmpfile = params[:file].tempfile
+    @submit.file_sourcecode_path = path
+    
     respond_to do |format|
       problem_path = contest_path(@contest.path)+"/#{@submit.problem.order}"
       if @submit.save
+        #save sourcecode
+        unless File.directory? directory
+          FileUtils.mkdir directory
+        end
+        File.open(path, "wb") { |f| f.write(tmpfile.read) }
+
         (@submit.problem).submits << @submit
-        (@submit.problem).save
         (@submit.participant).submits << @submit
-        (@submit.participant).save
-        format.html { redirect_to problem_path, notice: 'Submit was successfully created.' }
+
+        format.html { redirect_to problem_path, notice: 'Successfully submited.' }
         #format.json { render json: @submit, status: :created, location: @submit }
       else
         format.html { redirect_to problem_path, notice: 'ERROR! Check and try again.' }

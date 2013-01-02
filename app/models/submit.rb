@@ -1,7 +1,7 @@
 class Submit
 	include Mongoid::Document
 	include Mongoid::Timestamps
-	field :solution_file, type: String
+	field :file_sourcecode_path, type: String
 	field :status, type: String
 	field :status_full, type: String
 

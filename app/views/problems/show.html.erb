@@ -11,6 +11,18 @@
   </ul>
 
 
+  <% if @submit.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@submit.errors.count, "error") %> prohibited this submit from being saved:</h2>
+      <ul>
+      <% @submit.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
   <div id="articles">
     <p>
       <b>Global path:</b>
@@ -35,7 +47,7 @@
           <th>Tested</th>
           <th>status</th>
           <th>full</th>
-          <th>source</th>          
+          <th>source</th>
         </tr>
       </thead>
 
@@ -47,39 +59,21 @@
             <td>  <%= i.updated_at.to_s(:time_s) %>  </td>
             <td>  <%= i.status %>  </td>
             <td>  <%= i.status_full %>  </td>
-            <td>  <%= i.solution_file %>  </td>
-          </tr>            
+            <td>  <%= i.file_sourcecode_path %>  </td>
+          </tr>
         <% end %>
       </tbody>
     </table>
 
-    <%= form_for(@submit, :url => {:controller => 'submits', :action => 'create'}, :method => "POST") do |f| %>
-      <% if @submit.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@submit.errors.count, "error") %> prohibited this submit from being saved:</h2>
-
-          <ul>
-          <% @submit.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-          <% end %>
-          </ul>
-        </div>
-      <% end %>
-
-      <%= f.hidden_field :status %>
-      <%= f.hidden_field :status_full %>
-      <%= f.hidden_field :problem , :value => @submit.problem_id %>
-      <%= f.hidden_field :participant, :value => @submit.participant_id %>
-
-      <div class="control-group">
-        <%= f.label :solution_file, 'File', :class=>"control-label" %>
-        <div class="controls">
-          <%= f.file_field :solution_file %>
-        </div>
-      </div>
+    <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
+      <%= hidden_field_tag :status %>
+      <%= hidden_field_tag :status_full %>
+      <%= hidden_field_tag :problem , @submit.problem_id %>
+      <%= hidden_field_tag :participant, @submit.participant_id %>
+      <%= file_field_tag :file %>
 
       <div class="actions">
-        <%= f.submit "Submit" %>
+        <%= submit_tag "Submit" %>
       </div>
       <br />
     <% end %>

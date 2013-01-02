@@ -107,7 +107,7 @@ class ContestsController < ApplicationController
   def destroy
     @contest = Contest.find_by(path: params[:id])
     archive_delete(@contest.path)
-    problems_destroy(@sontest)
+    problems_destroy(@contest)
     @contest.destroy
 
     respond_to do |format|
@@ -134,6 +134,7 @@ class ContestsController < ApplicationController
 
     unless File.directory? contest_dir
       FileUtils.mkdir contest_dir
+      FileUtils.mkdir contest_dir+'/participants'
     end
 
     #write file(.zip) in contest_dir
