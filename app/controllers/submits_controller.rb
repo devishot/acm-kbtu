@@ -10,16 +10,10 @@ class SubmitsController < ApplicationController
       :participant => params[:participant]
     })
     @contest = @submit.problem.contest
-
-    if current_user.participants.where(contest: @contest).count == 0 then
-      redirect_to contest_path(@contest.path), notice: 'Please, register to participate.'
-      return
-    end
-
-
     name = "1.cpp"
     directory = 
-      "#{Rails.root}/public/contests/#{@contest.path}/participants/#{@submit.participant.path}/"
+      "#{Rails.root}/public/contests/#{@contest.path}/participants/"+
+      "#{@submit.participant.path}/#{@submit.problem.order}/"
     path = File.join(directory, name)
     tmpfile = params[:file].tempfile
     @submit.file_sourcecode_path = path
@@ -28,9 +22,7 @@ class SubmitsController < ApplicationController
       problem_path = contest_path(@contest.path)+"/#{@submit.problem.order}"
       if @submit.save
         #save sourcecode
-        unless File.directory? directory
-          FileUtils.mkdir directory
-        end
+        FileUtils.mkdir_p directory unless File.directory? directory
         File.open(path, "wb") { |f| f.write(tmpfile.read) }
 
         (@submit.problem).submits << @submit

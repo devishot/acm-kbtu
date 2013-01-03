@@ -10,6 +10,7 @@ session.use :acm_kbtu_development
 submits = session[:submits].find
 puts "There are #{submits.count} records. Here they are:"
 submits.find.each { |submit|
-  file_source = submit
-  puts file_source.class#submit.inspect
+  path = submit.to_a[5][1]  #.to_a() <- convert hash to matrix [][0..1];
+  puts path
+  #puts submit.inspect
 }

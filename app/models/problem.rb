@@ -8,6 +8,7 @@ class Problem
   belongs_to :contest
   has_many :submits
 
+
   before_save :set_global_path
   
   def set_global_path

@@ -14,7 +14,12 @@ class ProblemsController < ApplicationController
   # GET /problems/1.json
   def show
     contest = Contest.find_by(path: params[:id])
-    participant = current_user.participants.find_by(contest: contest)
+    if current_user.participants.where(contest: contest).count == 0 then
+      redirect_to contest_path(contest.path), notice: 'Please, register to participate.'
+      return
+    else
+      participant = current_user.participants.find_by(contest: contest)
+    end
     problem = contest.problems.find_by(order: params[:problem])
 
     @submit = Submit.new()

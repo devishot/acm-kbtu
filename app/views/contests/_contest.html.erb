@@ -1,5 +1,3 @@
-<p id="notice"><%= notice %></p>
-
 <div id="body-bgcolor">
   <p>
     <b>Name:</b>
@@ -36,11 +34,11 @@
       <%= link_to "Standings", "/contests/#{@contest.path}/standings" %>
     </li>
 
-    <li <%= "class=active" if @navpill==3 %>> 
+    <li <%= "class=active" if @navpill==3 %> > 
       <%= link_to "Messages", "/contests/#{@contest.path}/messages" %>
     </li>
 
-    <li <%= "class=active" if @navpill==4 %>> 
+    <li <%= "class=active" if @navpill==4 %> > 
       <%= link_to "Summary", "/contests/#{@contest.path}/summary" %>
     </li>
   </ul>

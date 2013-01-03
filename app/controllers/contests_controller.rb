@@ -29,7 +29,6 @@ class ContestsController < ApplicationController
   def standings
     @contest = Contest.find_by(path: params[:id])
     @navpill = 2
-    @participants = @contest.participants
   end
 
   def participate
@@ -40,8 +39,8 @@ class ContestsController < ApplicationController
     end
 
     participant = Participant.new();
-    @contest.participants << participant
-    current_user.participants << participant
+    @contest.participants << participant      # participant.contest will be automatically created
+    current_user.participants << participant  # participant.user will be automatically created
     participant.save
     redirect_to contest_path(@contest.path)
   end
@@ -52,7 +51,9 @@ class ContestsController < ApplicationController
 
     contest.participants.delete(participant)
     (participant.user).participants.delete(participant)
-    redirect_to contest_path(contest.path)
+    participant.submits.destroy_all
+    participant.destroy
+    redirect_to contest_path(contest.path)+"/standings"
   end  
 
   # GET /contests/new
@@ -91,9 +92,7 @@ class ContestsController < ApplicationController
 
     respond_to do |format|
       if @contest.update_attributes(params[:contest])
-        format.html { redirect_to contest_path(@contest.path)+'/upload', 
-          notice: 'Contest was successfully updated.' 
-        }
+        format.html { redirect_to contest_path(@contest.path)+'/upload' }
         #format.json { head :no_content }
       else
         format.html { render action: "edit" }
@@ -106,8 +105,10 @@ class ContestsController < ApplicationController
   # DELETE /contests/1.json
   def destroy
     @contest = Contest.find_by(path: params[:id])
-    archive_delete(@contest.path)
-    problems_destroy(@contest)
+
+    destroy_directory(@contest.path)
+    destroy_problems(@contest)#with submits
+    destroy_participants(@contest)
     @contest.destroy
 
     respond_to do |format|
@@ -121,21 +122,13 @@ class ContestsController < ApplicationController
   end
 
   def archive_unzip
-    #initialize
-    unless File.directory? "#{Rails.root}/public/contests"
-      FileUtils.mkdir "#{Rails.root}/public/contests"
-    end
-
     contest = Contest.find_by(path: params[:contest_id])
     contest.problems_count = params[:problems_count]
     contest.save
     uploaded_zip = params[:archive]    
     contest_dir = "#{Rails.root}/public/contests/#{contest.path}"
 
-    unless File.directory? contest_dir
-      FileUtils.mkdir contest_dir
-      FileUtils.mkdir contest_dir+'/participants'
-    end
+    FileUtils.mkdir_p contest_dir unless File.directory? contest_dir
 
     #write file(.zip) in contest_dir
     File.open(Rails.root.join(contest_dir, uploaded_zip.original_filename), 'w') do |file|
@@ -163,30 +156,40 @@ class ContestsController < ApplicationController
   end
 
 private
-  def archive_delete(contest_id)
-    contest_dir = "#{Rails.root}/public/contests/#{contest_id}"
+  def problems_create(contest, contest_dir)
+    for i in 1..contest.problems_count
+      problem = Problem.new({
+        :contest => contest,
+        :order => i,
+        :tests_path => contest_dir + '/problems/' + ('A'.ord + i - 1).chr
+      });
+      #problem.contest = contest
+      #problem.order = i
+      #problem.tests_path = contest_dir + '/problems/' + ('A'.ord + i - 1).chr
+      problem.save
+      contest.problems << problem
+    end
+  end
+
+  def destroy_problems(contest)
+    contest.problems.each do |problem|
+      problem.submits.destroy_all
+      problem.destroy
+    end
+  end
+
+  def destroy_directory(contest_path)
+    contest_dir = "#{Rails.root}/public/contests/#{contest_path}"
 
     if File.directory? contest_dir
       FileUtils.remove_dir contest_dir
     end
   end
 
-  def problems_create(contest, contest_dir)
-    for i in 1..contest.problems_count
-      problem = Problem.new();
-      problem.contest = contest
-      problem.order = i
-      problem.tests_path = contest_dir + '/problems/' + ('A'.ord + i - 1).chr
-      problem.save
-      contest.problems << problem
-      contest.save
-    end
-  end
-
-  def problems_destroy(contest)
-    contest.problems.each do |problem|
-      problem.submits.destroy_all
-      problem.destroy
+  def destroy_participants(contest)
+    contest.participants.each do |participant|
+      (participant.user).participants.delete(participant)
+      participant.destroy
     end
   end
 end
