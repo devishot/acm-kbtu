@@ -52,6 +52,12 @@ class ContestsController < ApplicationController
     contest.participants.delete(participant)
     (participant.user).participants.delete(participant)
     participant.submits.destroy_all
+
+    participant_folder = 
+      "#{Rails.root}/public/contests/#{contest.path}/participants/#{participant.path}"
+    if File.directory? participant_folder
+      FileUtils.remove_dir participant_folder
+    end    
     participant.destroy
     redirect_to contest_path(contest.path)+"/standings"
   end  

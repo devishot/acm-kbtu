@@ -10,7 +10,7 @@ class SubmitsController < ApplicationController
       :participant => params[:participant]
     })
     @contest = @submit.problem.contest
-    name = "1.cpp"
+    name = @submit.id.to_s()+params[:file].original_filename
     directory = 
       "#{Rails.root}/public/contests/#{@contest.path}/participants/"+
       "#{@submit.participant.path}/#{@submit.problem.order}/"

@@ -15,7 +15,7 @@
 
 <% @submits.each do |submit| %>
   <tr>
-    <td><%= submit.solution_file %></td>
+    <td><%= submit.file_sourcecode_path %></td>
     <td><%= submit.status %></td>
     <td><%= submit.status_full %></td>
     <td><%= link_to 'Show', submit %></td>
@@ -24,7 +24,3 @@
   </tr>
 <% end %>
 </table>
-
-<br />
-
-<%= link_to 'New Submit', new_submit_path %>
