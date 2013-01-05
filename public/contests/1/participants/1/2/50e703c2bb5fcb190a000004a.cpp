@@ -2,7 +2,7 @@
 #include<cstdio>
 
 
-using namespace
+using namespace std;
 
 
 int main(){

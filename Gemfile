@@ -28,7 +28,7 @@ gem 'tinymce-rails'
 
 gem 'rubyzip'
 
-gem "moped", "~> 1.1.1"
+gem "moped"#, "~> 1.1.1"
 
 gem "open4"
 
