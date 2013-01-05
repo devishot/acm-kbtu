@@ -18,19 +18,13 @@ session.with(safe: true) do |_session|
     pid, stdin, stdout, stderr = Open4::popen4 "g++ 1.cpp -o 1.o"
     compile_err = stderr.gets #we need to save, it will changed
     if compile_err.nil?
-      #puts "compiled"
       submit.update("status" => "OK")
     else
       submit.update("status" => "CE")
       submit.update("status_full" => compile_err)
-      #puts "CE\n#{compile_err}"
-      #abort()
     end
 
-    #//change
-    #submit.update("status" => "OK!")
-
-    #//save
+    #//save changes
     submit_id = Moped::BSON::ObjectId.from_string(submit.to_a[0][1])
     _session[:submits].find(_id: submit_id).update(submit)
   end

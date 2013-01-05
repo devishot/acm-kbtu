@@ -42,19 +42,20 @@
     <table class="table table-condensed well">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Submitted</th>
           <th>Tested</th>
-          <th>status</th>
-          <th>full</th>
-          <th>source</th>
+          <th>Status</th>
+          <th>Status full</th>
+          <th>Source</th>
         </tr>
       </thead>
 
       <tbody>
-        <% @submissions.each do |i| %>
+        <% order = @submissions.count+1 %>
+        <% @submissions.reverse_each do |i| %>
           <tr>
-            <td>  <%= i.id %>  </td>
+            <td>  <%= order -= 1 %>  </td>
             <td>  <%= i.created_at.to_s(:time_s) %>  </td>
             <td>  <%= i.updated_at.to_s(:time_s) %>  </td>
             <td>  <%= i.status %>  </td>
