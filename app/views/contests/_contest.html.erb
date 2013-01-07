@@ -1,3 +1,4 @@
+<h2>Hello World!!!</h2>
 <div id="body-bgcolor">
   <p>
     <b>Name:</b>
@@ -22,7 +23,6 @@
   <% if (current_user.participants.where(contest: @contest).count == 0) then %>
     <%= link_to "Participate", contest_path(@contest.path) + "/participate" %>
   <% end %>
-
 
   <ul class="nav nav-pills">
     <li <%= "class=active" if @navpill==1 %> > 
