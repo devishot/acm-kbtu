@@ -19,7 +19,6 @@
     <%= @contest.time_finish.strftime("%Y-%m-%d %H:%M") %>
   </p>
 
-
   <% if (current_user.participants.where(contest: @contest).count == 0) then %>
     <%= link_to "Participate", contest_path(@contest.path) + "/participate" %>
   <% end %>
