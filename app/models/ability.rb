@@ -8,12 +8,10 @@ class Ability
         can :manage, :all
     elsif user.moderator?
         can :manage, [Node, Page]
-    elsif user.student? || user.teacher?
-        can :read, Node
-        can [:read, :create], Page
-        can [:destroy, :update], Page, :user_id => user.id
+    elsif user.teacher?
+        can :manage, [Page, Contest]
     else
-        can :read, [Node, Page]
+        can :read, [Node, Page, Contest]
     end
 
     #

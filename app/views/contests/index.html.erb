@@ -1,8 +1,6 @@
 <h1>Listing contests</h1>
 
-<% if current_user.role == 'admin' || current_user .role == 'author'%>
-  <%= link_to 'New Contest', new_contest_path, :class => "btn btn-primary" %>
-<% end %>
+<%= link_to 'New Contest', new_contest_path, :class => "btn btn-primary" %>
 
 <br />
 <br />
