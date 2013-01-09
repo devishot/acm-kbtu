@@ -3,7 +3,7 @@ class ContestsController < ApplicationController
   # GET /contests
   # GET /contests.json
   def index
-    @contests = Contest.all
+    @contests = Contest.all.sort { |a, b| a.time_start <=> b.time_start }.reverse
   end
 
   # GET /contests/1

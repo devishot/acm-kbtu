@@ -1,7 +1,7 @@
 <% @contest = @submit.problem.contest %>
 <%= render "contests/contest" %>
 
-<div style="background-color: white;">
+<div style="background-color: white;margin-bottom: 30px">
   <ul class="nav nav-tabs" id="body-bgcolor">
     <% for i in 1..@contest.problems_count %>
       <li <%= "class=active" if !@submit.nil? && @submit.problem.order == i %> >
@@ -24,20 +24,22 @@
 
 
   <div id="articles">
-    <p>
-      <b>Global path:</b>
-      <%= @submit.problem.global_path %>
-    </p>
+<!-- 
+  problem sample input output forms
+ -->
 
-    <p>
-      <b>Order:</b>
-      <%= @submit.problem.order %>
-    </p>
+    <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
+      <%= hidden_field_tag :status %>
+      <%= hidden_field_tag :status_full %>
+      <%= hidden_field_tag :problem , @submit.problem_id %>
+      <%= hidden_field_tag :participant, @submit.participant_id %>
+      <%= file_field_tag :file %>
 
-    <p>
-      <b>Tests path:</b>
-      <%= @submit.problem.tests_path %>
-    </p>
+      <div class="actions">
+        <%= submit_tag "Submit" %>
+      </div>
+      <br />
+    <% end %>
 
     <table class="table table-condensed well">
       <thead>
@@ -66,17 +68,5 @@
       </tbody>
     </table>
 
-    <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
-      <%= hidden_field_tag :status %>
-      <%= hidden_field_tag :status_full %>
-      <%= hidden_field_tag :problem , @submit.problem_id %>
-      <%= hidden_field_tag :participant, @submit.participant_id %>
-      <%= file_field_tag :file %>
-
-      <div class="actions">
-        <%= submit_tag "Submit" %>
-      </div>
-      <br />
-    <% end %>
   </div>
 </div>

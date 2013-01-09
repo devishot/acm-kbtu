@@ -6,6 +6,7 @@
     <li class="active"><a href="#tab1" data-toggle="tab">Pages</a></li>
     <li><a href="#tab2" data-toggle="tab">Nodes</a></li>
     <li><a href="#tab3" data-toggle="tab">Users</a></li>
+    <li><%= link_to "Contests", contests_path %></li>
   </ul>
 
   <div class="tab-content">
@@ -26,6 +27,13 @@
         <%= render '/users/index' %>
       <% end %>
     </div>
+
+    <div class="tab-pane" id="tab4">
+      <% if can? :manage, User %>
+        <%= render '/users/index' %>
+      <% end %>
+    </div>
+
   </div>
   
 </div>

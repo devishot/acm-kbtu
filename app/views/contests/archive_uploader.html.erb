@@ -10,6 +10,12 @@
       <%= number_field_tag :problems_count, 0, :in => 0..200 %>
     </div>
   </div>
+  <div class="control-group">
+    <%= label_tag :problems_type, nil, :class => 'control-label' %>
+    <div class="controls">
+      <%= number_field_tag :problems_type, 0, :in => 0..1 %>
+    </div>
+  </div>
 
   <%= file_field_tag 'archive' %>
 

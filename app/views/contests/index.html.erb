@@ -1,6 +1,8 @@
 <h1>Listing contests</h1>
 
-<%= link_to 'New Contest', new_contest_path, :class => "btn btn-primary" %>
+<% if current_user.role == 'admin' || current_user .role == 'author'%>
+  <%= link_to 'New Contest', new_contest_path, :class => "btn btn-primary" %>
+<% end %>
 
 <br />
 <br />
@@ -21,7 +23,11 @@
 
   <% @contests.each do |contest| %>
     <tbody>
-      <tr>
+      <% tr_class = "info" if contest.isover? == 1
+        tr_class = "success" if contest.isover? == 2
+        tr_class = "warning" if contest.isover? == 3
+      %>
+      <tr class=<%= tr_class %> >
         <td><%= contest.name %></td>
         <td><%= contest.description %></td>
         <td><%= contest.time_start.strftime("%Y-%m-%d %H:%M") %></td>

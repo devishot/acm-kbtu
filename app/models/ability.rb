@@ -8,7 +8,7 @@ class Ability
         can :manage, :all
     elsif user.moderator?
         can :manage, [Node, Page]
-    elsif user.author?
+    elsif user.student? || user.teacher?
         can :read, Node
         can [:read, :create], Page
         can [:destroy, :update], Page, :user_id => user.id

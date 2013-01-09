@@ -3,6 +3,7 @@ class User
 
   has_many :pages
   has_many :participants
+  has_many :contests
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -15,13 +16,14 @@ class User
   field :encrypted_password, :type => String, :default => ""
 
 
-  ROLES = %w[admin moderator author]
+  ROLES = %w[admin moderator student teacher]
   
-  field :role, :type => String, :default => "author"
+  field :role, :type => String, :default => "student"
 
   def admin?; role == 'admin'; end
   def moderator?; role == 'moderator'; end
-  def author?; role == 'author'; end
+  def student?; role == 'student'; end
+  def teacher?; role == 'teacher'; end
 
 
   validates_presence_of :email
