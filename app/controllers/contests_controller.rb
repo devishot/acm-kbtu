@@ -11,9 +11,6 @@ class ContestsController < ApplicationController
   def show
     @contest = Contest.find_by(path: params[:id])
     @navpill
-    #destroy participate
-    #@contest.participants.delete(@contest.participants.last)
-    #current_user.participants.delete(current_user.participants.last)
   end
 
   def summary
@@ -80,9 +77,16 @@ class ContestsController < ApplicationController
     
     respond_to do |format|
       if @contest.save
-        format.html { redirect_to contest_path(@contest.path)+'/upload', 
-          notice: 'Contest was successfully created.' 
-        }
+        if @contest.problems_type == 0 #one_archive
+          format.html { redirect_to contest_path(@contest.path)+'/upload', 
+            notice: 'Contest was successfully created.' 
+          }
+        else
+          problems_create(@contest)
+          format.html { redirect_to contest_path(@contest.path),
+            notice: 'Contest was successfully created.' 
+          }          
+        end
         #format.json { render json: @contest, status: :created, location: @contest }
       else
         format.html { render action: "new" }
@@ -129,8 +133,6 @@ class ContestsController < ApplicationController
 
   def archive_unzip
     contest = Contest.find_by(path: params[:contest_id])
-    contest.problems_count = params[:problems_count]
-    contest.save
     uploaded_zip = params[:archive]    
     contest_dir = "#{Rails.root}/public/contests/#{contest.path}"
 
@@ -162,16 +164,13 @@ class ContestsController < ApplicationController
   end
 
 private
-  def problems_create(contest, contest_dir)
+  def problems_create(contest, contest_dir = nil)
     for i in 1..contest.problems_count
       problem = Problem.new({
         :contest => contest,
         :order => i,
-        :tests_path => contest_dir + '/problems/' + ('A'.ord + i - 1).chr
+        :tests_path => (contest_dir.nil? ? nil : contest_dir+'/problems/'+('A'.ord + i - 1).chr)
       });
-      #problem.contest = contest
-      #problem.order = i
-      #problem.tests_path = contest_dir + '/problems/' + ('A'.ord + i - 1).chr
       problem.save
       contest.problems << problem
     end

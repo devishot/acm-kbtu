@@ -8,9 +8,9 @@ class Contest
   field :path, type: String
   field :time_start, type: DateTime
   field :time_finish, type: DateTime
-  field :type, type: String
-  field :problems_count, type: Integer
-  field :problems_type, type: String
+  field :type, type: Integer #"ACM", "IOI"
+  field :problems_count, type: Integer, :default => 0
+  field :problems_type, type: Integer #"one_archive", "every_problem"
 
   has_many :problems
   has_many :participants

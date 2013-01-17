@@ -12,13 +12,7 @@ class Problem
   before_save :set_global_path
   
   def set_global_path
-    return if self.global_path != nil
-
-    if Problem.exists?
-      path = ( Problem.last.global_path.to_i() + 1 ).to_s()
-    else
-      path = '1'
-    end    
-    self.global_path = path
+    return if self.global_path != nil || self.contest.problems_type == 0
+    self.global_path = (Problem.exists? ? (Problem.last.global_path.to_i + 1).to_s : '1')
   end
 end

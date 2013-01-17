@@ -10,6 +10,16 @@
   </p>
 
   <p>
+    <b>Type:</b>
+    <%= @contest.type %>
+  </p>
+
+  <p>
+    <b>problems_type:</b>
+    <%= @contest.problems_type %>
+  </p>
+
+  <p>
     <b>Start:</b>
     <%= @contest.time_start.strftime("%Y-%m-%d %H:%M") %>
   </p>
@@ -21,7 +31,7 @@
 
 
   <% if (current_user.participants.where(contest: @contest).count == 0) then %>
-    <%= link_to "Participate", contest_path(@contest.path) + "/participate" %>
+    <%= link_to "Participate", contest_path(@contest.path) + "/participate", :class => "btn"%>
   <% end %>
 
 
