@@ -8,7 +8,9 @@ class Contest
   field :path, type: String
   field :time_start, type: DateTime
   field :time_finish, type: DateTime
+  field :type, type: String
   field :problems_count, type: Integer
+  field :problems_type, type: String
 
   has_many :problems
   has_many :participants
@@ -20,10 +22,11 @@ class Contest
     return if self.path != nil
 
     if Contest.exists?
-      path = ( Contest.last.path.to_i() + 1 ).to_s()
+      path = ( Contest.last.path.to_i + 1 ).to_s
     else
       path = '1'
     end    
+
     self.path = path
   end
 

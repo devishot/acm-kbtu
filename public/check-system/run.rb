@@ -11,6 +11,8 @@ session.with(safe: true) do |_session|
   src_path = "/home/devishot/Documents/Programming/Rails Projects/acm-kbtu/public/check-system/1.cpp"
 
   submits.each do |submit|
+    ##puts _session[:problems].find(_id: submit.to_a[3][1]).find.first
+    ##puts "\n"
     #//copy submit's sourcecode in file src_path
     FileUtils.cp submit.to_a[5][1], src_path #.to_a() <- convert hash to matrix [][0..1];
 

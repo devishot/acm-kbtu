@@ -25,11 +25,24 @@
     </div>
   </div>
 
-  <%= f.datetime_select :time_start %>
+  <br />
+  
+  <div class="field">
+    <%= f.label :time_start, "Start time", :class=>"control-label" %>
+    <div class="controls">
+      <%= f.datetime_select :time_start %>
+    </div>
+  </div>
 
   <br />
 
-  <%= f.datetime_select :time_finish, :default => 5.hours.from_now %>
+  <div class="field">
+    <%= f.label :time_finish, "Finish time", :class=>"control-label" %>
+    <div class="controls">
+      <%= f.datetime_select :time_finish, :default => 5.hours.from_now %>
+    </div>
+  </div>
+
 
   <div class="actions">
     <%= f.submit :class => "btn" %>
