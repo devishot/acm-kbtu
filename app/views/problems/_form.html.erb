@@ -1,29 +1,28 @@
-<%= form_for(@problem) do |f| %>
-  <% if @problem.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@problem.errors.count, "error") %> prohibited this problem from being saved:</h2>
-
-      <ul>
-      <% @problem.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+<%= form_tag("/contests/#{@problem.contest.path}/#{@problem.order}", :method => :put, :multipart => true) do %>
+  <%= hidden_field_tag :contest_path, @problem.contest.path %>
+  <%= hidden_field_tag :problem_order, @problem.order %>
 
   <div class="field">
-    <%= f.label :global_path %><br />
-    <%= f.text_field :global_path %>
+    <%= text_area_tag :text, nil, :rows => 15, :class => 'field span9 tinymce', 
+      :placeholder=>"Problem Statement here.." %>
+    <%= tinymce %>
   </div>
-  <div class="field">
-    <%= f.label :order %><br />
-    <%= f.number_field :order %>
-  </div>
-  <div class="field">
-    <%= f.label :tests_path %><br />
-    <%= f.text_field :tests_path %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+
+  <% 3.times do |i| %> 
+    <form class="form-inline">
+      <%= text_area_tag "input"+(i+1).to_s, nil, :rows => 5, :placeholder=>"Input ##{i+1}" %>
+      <%= text_area_tag "output"+(i+1).to_s, nil, :rows => 5, :placeholder=>"Output ##{i+1}" %>
+    </form>
+  <% end %> 
+
+  <%= file_field_tag 'archive' %>
+  <br />
+  <br />
+
+  <%= submit_tag("Upload", :class => "btn") %>
+  <br />
+  <br />
+  <br />
+
 <% end %>
+

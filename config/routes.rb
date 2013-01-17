@@ -17,6 +17,7 @@ AcmKbtu::Application.routes.draw do
 
   match '/contests/:id/:problem' => 'problems#show'
   match '/contests/:id/:problem/edit' => 'problems#edit'
+  put '/contests/:id/:problem' => 'problems#update'
 
   match '/submits/:contest/:participant' => 'submits#index'
   post 'send_submit' => 'submits#create'

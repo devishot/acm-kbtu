@@ -35,21 +35,22 @@ class ProblemsController < ApplicationController
 
   # GET /contests/:id/:problem/edit
   def edit
-    @problem = Problem.find(params[:id])
+    contest = Contest.find_by(path: params[:id])
+    @problem = contest.problems.find_by(order: params[:problem])
   end
 
-  # PUT /problems/1
-  # PUT /problems/1.json
+  # PUT '/contests/:id/:problem
   def update
+    raise "#{params[:problem_order]}"
     @problem = Problem.find(params[:id])
 
     respond_to do |format|
       if @problem.update_attributes(params[:problem])
         format.html { redirect_to @problem, notice: 'Problem was successfully updated.' }
-        format.json { head :no_content }
+        #format.json { head :no_content }
       else
         format.html { render action: "edit" }
-        format.json { render json: @problem.errors, status: :unprocessable_entity }
+        #format.json { render json: @problem.errors, status: :unprocessable_entity }
       end
     end
   end
