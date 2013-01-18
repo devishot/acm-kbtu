@@ -4,6 +4,7 @@ class Problem
   field :global_path, type: String
   field :order, type: Integer
   field :tests_path, type: String
+  field :statement, type: Hash #{:text => params[:text], :inputs => [], :outputs => []}
 
   belongs_to :contest
   has_many :submits

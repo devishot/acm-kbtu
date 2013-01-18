@@ -39,6 +39,29 @@
       <%= @submit.problem.tests_path %>
     </p>
 
+    <p>
+      <b>Statement:</b>
+      <% if @contest.problems_type == 0#one_archive %>
+        there is link to .pdf
+      <% else %>
+        <%= @submit.problem.statement['text'].html_safe if !@submit.problem.statement.nil? %>
+      <% end %>
+    </p>
+    <br />
+
+    <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
+      <%= hidden_field_tag :status %>
+      <%= hidden_field_tag :status_full %>
+      <%= hidden_field_tag :problem , @submit.problem_id %>
+      <%= hidden_field_tag :participant, @submit.participant_id %>
+      <%= file_field_tag :file %>
+      <div class="actions">
+        <%= submit_tag "Submit" %>
+      </div>
+      <br />
+    <% end %>
+
+
     <table class="table table-condensed well">
       <thead>
         <tr>
@@ -65,18 +88,8 @@
         <% end %>
       </tbody>
     </table>
+    <br />
 
-    <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
-      <%= hidden_field_tag :status %>
-      <%= hidden_field_tag :status_full %>
-      <%= hidden_field_tag :problem , @submit.problem_id %>
-      <%= hidden_field_tag :participant, @submit.participant_id %>
-      <%= file_field_tag :file %>
-
-      <div class="actions">
-        <%= submit_tag "Submit" %>
-      </div>
-      <br />
-    <% end %>
   </div>
 </div>
+<br />

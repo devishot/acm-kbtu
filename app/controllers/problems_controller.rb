@@ -41,12 +41,23 @@ class ProblemsController < ApplicationController
 
   # PUT '/contests/:id/:problem
   def update
-    raise "#{params[:problem_order]}"
-    @problem = Problem.find(params[:id])
+    contest = Contest.find_by(path: params[:contest_path])
+    @problem = contest.problems.find_by(order: params[:problem_order])
+
+    inputs = []
+    outputs = []
+    3.times do |i|
+      inputs << params["inputs"+(i+1).to_s]
+      outputs << params["outputs"+(i+1).to_s]
+    end
+    @problem.statement = {:text => params[:text], :inputs => inputs, :outputs => outputs}
+    @problem.tests_path = archive_unzip(@problem)+'/tests'
 
     respond_to do |format|
-      if @problem.update_attributes(params[:problem])
-        format.html { redirect_to @problem, notice: 'Problem was successfully updated.' }
+      if @problem.save
+        format.html { 
+          redirect_to contest_path(contest.path)+"/#{@problem.order}", 
+          notice: 'Problem was successfully updated.' }
         #format.json { head :no_content }
       else
         format.html { render action: "edit" }
@@ -93,4 +104,31 @@ class ProblemsController < ApplicationController
   #     format.json { head :no_content }
   #   end
   # end
+private
+  def archive_unzip(problem) 
+    uploaded_zip = params[:archive]    
+    problem_dir = "#{Rails.root}/public/problems/#{problem.global_path}"
+
+    FileUtils.mkdir_p problem_dir unless File.directory? problem_dir
+
+    #write file(.zip) in problem_dir
+    File.open(Rails.root.join(problem_dir, uploaded_zip.original_filename), 'w') do |file|
+      file.write(uploaded_zip.read.force_encoding('utf-8'))
+    end
+
+    #exctract files from file(.zip)
+    Zip::ZipFile.open(problem_dir+"/#{uploaded_zip.original_filename}"){ |zip_file|
+      zip_file.each { |f|
+        f_path=File.join(problem_dir, f.name)
+        FileUtils.mkdir_p(File.dirname(f_path))
+        zip_file.extract(f, f_path) unless File.exist?(f_path)
+      }
+    }
+
+    #remove(delete) file(.zip)
+    FileUtils.remove_file(problem_dir+"/#{uploaded_zip.original_filename}")
+
+    return problem_dir
+  end
+
 end
