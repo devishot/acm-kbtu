@@ -39,8 +39,7 @@ class SubmitsController < ApplicationController
 
 
 
-  # GET /submits
-  # GET /submits.json
+  # GET /submits/:contest/:participant
   def index
     @contest = Contest.find_by(path: params[:contest])
     @participant = @contest.participants.find_by(path: params[:participant])
@@ -50,9 +49,24 @@ class SubmitsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @submits }
+      #format.json { render json: @submits }
     end
   end
+
+  # GET /submits/:contest/:participant/:submit
+  def src_code
+    @contest = Contest.find_by(path: params[:contest])
+    @participant = @contest.participants.find_by(path: params[:participant])
+    @submit = @participant.submits[params[:submit].to_i - 1]
+
+    @navpill
+
+    respond_to do |format|
+      format.html # index.html.erb
+      #format.json { render json: @submits }
+    end
+  end
+
 
   # # GET /submits/1
   # # GET /submits/1.json

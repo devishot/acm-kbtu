@@ -26,7 +26,9 @@
         <td>  <%= i.updated_at.to_s(:time_s) %>  </td>
         <td>  <%= i.status %>  </td>
         <td>  <%= i.status_full %>  </td>
-        <td>  <%= i.file_sourcecode_path %>  </td>
+        <td>  <%= link_to "view code", 
+              submit_path(i.participant.contest.path)+"/#{i.problem.order}/#{order}", 
+              :target => '_blank' %> </td>
       </tr>
     <% end %>
   </tbody>

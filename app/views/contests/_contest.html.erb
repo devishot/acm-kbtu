@@ -16,7 +16,7 @@
 
   <p>
     <b>problems_type:</b>
-    <%= @contest.problems_type %>
+    <%= (@contest.problems_type==0) ? "one_archive" : "every_problem" %>
   </p>
 
   <p>
@@ -31,7 +31,7 @@
 
 
   <% if (current_user.participants.where(contest: @contest).count == 0) then %>
-    <%= link_to "Participate", contest_path(@contest.path) + "/participate", :class => "btn"%>
+    <%= link_to "Participate", contest_path(@contest.path) + "/participate"%>
   <% end %>
 
 
