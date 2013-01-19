@@ -61,34 +61,7 @@
       <br />
     <% end %>
 
-
-    <table class="table table-condensed well">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Submitted</th>
-          <th>Tested</th>
-          <th>Status</th>
-          <th>Status full</th>
-          <th>Source</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% order = @submissions.count+1 %>
-        <% @submissions.reverse_each do |i| %>
-          <tr>
-            <td>  <%= order -= 1 %>  </td>
-            <td>  <%= i.created_at.to_s(:time_s) %>  </td>
-            <td>  <%= i.updated_at.to_s(:time_s) %>  </td>
-            <td>  <%= i.status %>  </td>
-            <td>  <%= i.status_full %>  </td>
-            <td>  <%= i.file_sourcecode_path %>  </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <br />
+    <%= render "submits/submits" %>
 
   </div>
 </div>

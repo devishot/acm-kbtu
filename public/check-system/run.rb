@@ -8,19 +8,21 @@ session.use :acm_kbtu_development
 
 session.with(safe: true) do |_session|
   submits = _session[:submits].find
-  src_path = "/home/devishot/Documents/Programming/Rails Projects/acm-kbtu/public/check-system/1.cpp"
+  src_path = '/home/devishot/Documents/Programming/Rails Projects/acm-kbtu/public/check-system/1.cpp'
 
   submits.each do |submit|
+    #next if submit.to_a[1][1]!=""
     ##puts _session[:problems].find(_id: submit.to_a[3][1]).find.first
     ##puts "\n"
     #//copy submit's sourcecode in file src_path
     FileUtils.cp submit.to_a[5][1], src_path #.to_a() <- convert hash to matrix [][0..1];
 
     #//compile file src_path and put CEerror
-    pid, stdin, stdout, stderr = Open4::popen4 "g++ 1.cpp -o 1.o"
+    pid, stdin, stdout, stderr = Open4::popen4 "g++ public/check-system/1.cpp -o public/check-system/1.o"
     compile_err = stderr.gets #we need to save, it will changed
     if compile_err.nil?
       submit.update("status" => "OK")
+      submit.update("status_full" => "")
     else
       submit.update("status" => "CE")
       submit.update("status_full" => compile_err)

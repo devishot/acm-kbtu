@@ -11,7 +11,7 @@
 
   <p>
     <b>Type:</b>
-    <%= @contest.type %>
+    <%= (@contest.type==0) ? "ACM" : "IOI" %>
   </p>
 
   <p>

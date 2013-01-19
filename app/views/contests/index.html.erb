@@ -6,10 +6,11 @@
 <br />
 
 <div class="well">
-  <table class="table">
+  <table class="table table-hover">
     <thead>
       <tr>
         <th>Name</th>
+        <th>Type</th>
         <th>Description</th>
         <th>Start time</th>
         <th>Finish time</th>
@@ -23,6 +24,7 @@
     <tbody>
       <tr>
         <td><%= contest.name %></td>
+        <td><%= (contest.type==0) ? "ACM" : "IOI" %></td>
         <td><%= contest.description %></td>
         <td><%= contest.time_start.strftime("%Y-%m-%d %H:%M") %></td>
         <td><%= contest.time_finish.strftime("%Y-%m-%d %H:%M") %></td>
