@@ -33,14 +33,15 @@ class ContestsController < ApplicationController
 
   def participate
     @contest = Contest.find_by(path: params[:id])
-    if current_user.participants.where(contest: @contest).count != 0 then
-      redirect_to contest_path(@contest.path), notice: 'You are already participate.'
-      return
-    end
+    # if current_user.participants.where(contest: @contest).count != 0 then
+    #   redirect_to contest_path(@contest.path), notice: 'You are already participate.'
+    #   return
+    # end
 
     participant = Participant.new();
     @contest.participants << participant      # participant.contest will be automatically created
     current_user.participants << participant  # participant.user will be automatically created
+    
     participant.save
     redirect_to contest_path(@contest.path)
   end
