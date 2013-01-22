@@ -5,26 +5,30 @@
     <tr>
       <th>ID</th>
       <th>Name</th>
-      <th>Submits</th>
-      <th>Destroy participate</th>
+      <% for i in 1..@contest.problems_count %>
+        <th><%= i%></th>
+      <% end %>
+      <th>All</th>
+      <th>Штрафы</th>
     </tr>
   </thead>
 
   <tbody>
-    <% @contest.participants.each do |participant| %>
+    <% @contest.participants.each do |participant| participant.summarize %>
       <tr>
         <td> <%= participant.path %> </td>
         <td> <%= participant.user.name %> </td>
-        <td> 
-          <%= link_to "Submits", "/submits/#{participant.contest.path}/#{participant.path}"%> 
-        </td>
-        <td> 
-          <%= link_to "Kill", 
-            kill_participate_path(:contest => participant.contest.id, :participant => participant.id),
-            :method => :post,
-            :confirm => 'Are you sure?'
-          %> 
-        </td>
+        <% for i in 1..@contest.problems_count %>
+        <td><%= 
+          if participant.a[i] > 0
+            "+"+participant.a[i].to_s 
+          elsif participant.a[i] < 0
+            participant.a[i].to_s
+          end
+        %></td>
+        <% end %>
+        <td><%= participant.point %></td>
+        <td><%= participant.penalty %></td>
       </tr>
     <% end %>
   </tbody>

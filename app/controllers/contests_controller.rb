@@ -41,6 +41,7 @@ class ContestsController < ApplicationController
     participant = Participant.new();
     @contest.participants << participant      # participant.contest will be automatically created
     current_user.participants << participant  # participant.user will be automatically created
+    
     participant.save
     redirect_to contest_path(@contest.path)
   end
