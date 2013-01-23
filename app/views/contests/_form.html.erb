@@ -32,23 +32,6 @@
     </div>
   </div>
 
-  <br />
-  <div class="field">
-    <%= f.label :time_start, "Start time", :class=>"control-label" %>
-    <div class="controls">
-      <%= f.datetime_select :time_start %>
-    </div>
-  </div>
-  <br />
-
-  <div class="field">
-    <%= f.label :time_finish, "Finish time", :class=>"control-label" %>
-    <div class="controls">
-      <%= f.datetime_select :time_finish, :default => 5.hours.from_now %>
-    </div>
-  </div>
-  <br />
-
   <div class="control-group">
     <%= f.label :problems_type, "Type of add of problems", :class => 'control-label' %>
     <div class="controls">

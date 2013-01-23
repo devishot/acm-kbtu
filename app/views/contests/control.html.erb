@@ -1,0 +1,39 @@
+<%= link_to '<i class="icon-arrow-left"></i> Back'.html_safe, contest_path(@contest.path) %>
+<br />
+
+<%= form_for(@contest, 
+  :url => contest_path(@contest.path)+'/control/update', 
+  :method => 'post') do |f| %>
+
+<table class="table table-bordered" style="width: 55%">
+  <tr>
+    <td style="text-align: center;">
+      <%= label_tag :minutes, "Duration of contest", :class => 'control-label' %>
+      <%= number_field_tag :minutes, nil, :in => 60..480, :step => 60, :placeholder => "in minutes" %>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="width: 50%">
+        <%= f.label :time_start, "Start time", :class=>"control-label" %>
+        <%= f.datetime_select :time_start %>
+        <%= f.submit 'Update', :class => "btn" %>
+    </td>
+
+    <td style="text-align: center;">
+        <%= f.submit 'Start', :class => "btn" %>
+    </td>
+  </tr>
+
+</table>
+
+<% end %>
+
+
+<%= link_to "Edit", edit_contest_path(@contest.path), class: "btn btn-warning" %>
+||||
+<%= link_to 'Destroy', contests_path(@contest.path), 
+  method: :delete, 
+  data: { confirm: 'Are you sure?' },
+  class: "btn btn-danger"
+%>

@@ -10,6 +10,10 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/participate' => 'contests#participate'
   post 'kill_participate' => 'contests#kill_participate'
 
+  match '/contests/:id/control' => 'contests#control'
+  post  '/contests/:id/control/update' => 'contests#control_update'
+
+
   match '/contests/:id/problems'=> 'problems#index'
   match '/contests/:id/standings'=> 'contests#standings'
   match '/contests/:id/messages' => 'contests#messages'

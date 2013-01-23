@@ -15,7 +15,7 @@
     <% @submissions.sort_by { |obj| obj.created_at }.reverse_each do |i| %>
       <tr <%= case i.status
               when "";"class=warning"
-              when "OK";"class=success"
+              when "AC";"class=success"
               when "PE";"class=info"
               else "class=error"
             end
