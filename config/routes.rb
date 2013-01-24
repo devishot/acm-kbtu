@@ -5,10 +5,10 @@ AcmKbtu::Application.routes.draw do
   resources :problems
 
   resources :contests
-  match '/contests/:id/upload' => 'contests#archive_uploader'
-  post 'archive_unzip' => 'contests#archive_unzip'
-  match '/contests/:id/participate' => 'contests#participate'
-  post 'kill_participate' => 'contests#kill_participate'
+  match '/contests/:id/upload' => 'contests#upload'
+  post  '/contests/:id/unpack' => 'contests#unpack'
+  post  '/contests/:id/participate' => 'contests#participate'
+  delete 'kill_participant' => 'contests#kill_participant'
 
   match '/contests/:id/control' => 'contests#control'
   post  '/contests/:id/control/update' => 'contests#control_update'

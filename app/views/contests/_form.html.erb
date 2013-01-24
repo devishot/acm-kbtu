@@ -19,9 +19,9 @@
   </div>
 
   <div class="control-group">
-    <%= f.label :name, :class=>"control-label" %>
+    <%= f.label :title, :class=>"control-label" %>
     <div class="controls">
-      <%= f.text_field :name %>
+      <%= f.text_field :title %>
     </div>
   </div>
 
@@ -33,9 +33,9 @@
   </div>
 
   <div class="control-group">
-    <%= f.label :problems_type, "Type of add of problems", :class => 'control-label' %>
+    <%= f.label :problems_upload, "Type of adding", :class => 'control-label' %>
     <div class="controls">
-      <%= f.select(:problems_type, options_for_select([['One archive',0], ['Every problem',1]], 0)) %>
+      <%= f.select(:problems_upload, options_for_select([['One archive',0], ['Every problem',1]], 0)) %>
     </div>
   </div>
 

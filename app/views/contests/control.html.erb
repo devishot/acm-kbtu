@@ -1,27 +1,38 @@
 <%= link_to '<i class="icon-arrow-left"></i> Back'.html_safe, contest_path(@contest.path) %>
 <br />
+<br />
 
 <%= form_for(@contest, 
   :url => contest_path(@contest.path)+'/control/update', 
   :method => 'post') do |f| %>
 
-<table class="table table-bordered" style="width: 55%">
+<table class="table table-bordered" style="width: 500px">
   <tr>
-    <td style="text-align: center;">
-      <%= label_tag :minutes, "Duration of contest", :class => 'control-label' %>
-      <%= number_field_tag :minutes, nil, :in => 60..480, :step => 60, :placeholder => "in minutes" %>
+    <td>
+      <div style="position: relative; left: 150px;">
+        <%= label_tag :duration, "Duration of contest"%>
+        <%= f.number_field :duration, :in => 60..480, :step => 60 %>
+      </div>
+      <br />
     </td>
   </tr>
 
-  <tr>
-    <td style="width: 50%">
-        <%= f.label :time_start, "Start time", :class=>"control-label" %>
-        <%= f.datetime_select :time_start %>
-        <%= f.submit 'Update', :class => "btn" %>
+  <tr style="text-align: center;">
+    <td style="width: 250px">
+      <p>Select Start time</p>
+      <%= f.datetime_select :time_start %>
+      <%= f.submit 'Update', :class => "btn" %>
     </td>
-
-    <td style="text-align: center;">
-        <%= f.submit 'Start', :class => "btn" %>
+    <td>
+      <br />
+      <br />
+      <center>OR<center>
+    </td>
+    <td  style="width: 200px">
+      <br />
+      <br />
+      <p>Just Start Contest</p>
+      <%= f.submit 'Start', :class => "btn" %>
     </td>
   </tr>
 
@@ -30,10 +41,18 @@
 <% end %>
 
 
+<br />
+<br />
+<br />
 <%= link_to "Edit", edit_contest_path(@contest.path), class: "btn btn-warning" %>
 ||||
-<%= link_to 'Destroy', contests_path(@contest.path), 
+<%= link_to 'Destroy', contest_path(@contest.path), 
   method: :delete, 
   data: { confirm: 'Are you sure?' },
   class: "btn btn-danger"
 %>
+<br />
+<br />
+<br />
+
+<%= render "participants" %>

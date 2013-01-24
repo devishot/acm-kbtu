@@ -1,8 +1,9 @@
+<%= link_to '<i class="icon-arrow-left"></i> Back'.html_safe, contest_path(@contest.path)+'/control' %>
+<br />
+
+
 <h1>Editing contest</h1>
 
 <% @submit_path = "/contests/#{@contest.path}" %>
 <% @submit_method = :put %>
 <%= render 'form' %>
-
-<%= link_to 'Show', @contest.path %> |
-<%= link_to 'Back', contests_path %>

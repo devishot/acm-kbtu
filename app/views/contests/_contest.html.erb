@@ -1,12 +1,15 @@
-<%= link_to '<i class="icon-wrench icon-white"></i> Control panel'.html_safe, contest_path(@contest.path)+'/control', class: "btn btn-inverse" %>
+<%= link_to '<i class="icon-arrow-left"></i> Back'.html_safe, contests_path %>
+<br />
+<br />
 
+<%= link_to '<i class="icon-wrench icon-white"></i> Control panel'.html_safe, contest_path(@contest.path)+'/control', class: "btn btn-inverse" %>
 <br />
 <br />
 
 <div id="body-bgcolor">
   <p>
-    <b>Name:</b>
-    <%= @contest.name %>
+    <b>Title:</b>
+    <%= @contest.title %>
   </p>
 
   <p>
@@ -21,22 +24,22 @@
 
   <p>
     <b>problems_type:</b>
-    <%= (@contest.problems_type==0) ? "one_archive" : "every_problem" %>
+    <%= (@contest.problems_upload==0) ? "one_archive" : "every_problem" %>
   </p>
 
   <p>
     <b>Start:</b>
-    <%= @contest.time_start.strftime("%Y-%m-%d %H:%M") %>
+    <%= (@contest.time_start.nil?) ? 'Not started' :  @contest.time_start.strftime("%Y-%m-%d %H:%M") %>
   </p>
 
   <p>
-    <b>Finish:</b>
-    <%= @contest.time_finish.strftime("%Y-%m-%d %H:%M") %>
+    <b>Duration:</b>
+    <%= @contest.duration %>
   </p>
 
 
   <% if (current_user.participants.where(contest: @contest).count == 0) then %>
-    <%= link_to "Participate", contest_path(@contest.path) + "/participate"%>
+    <%= link_to "Participate", contest_path(@contest.path) + "/participate", :method => :post, :class => "btn btn-primary"%>
   <% end %>
 
 
