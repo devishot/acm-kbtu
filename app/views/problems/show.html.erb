@@ -1,4 +1,3 @@
-<% @contest = @submit.problem.contest %>
 <%= render "contests/contest" %>
 
 <div style="background-color: white;">
@@ -24,6 +23,12 @@
 
 
   <div id="articles">
+
+
+    <%= link_to '<i class="icon-pencil icon-white"></i> Edit'.html_safe, 
+        contest_path(@contest.path)+"/#{@submit.problem.order}/edit", :class => 'btn btn-info' %>
+
+
     <p>
       <b>Global path:</b>
       <%= @submit.problem.global_path %>
@@ -45,7 +50,7 @@
         <%= link_to '<i class="icon-download-alt"></i> Download'.html_safe, 
             contest_path(@contest.path)+'/statement', :class => 'btn' %>
       <% else %>
-        <%= @submit.problem.statement['text'].html_safe if !@submit.problem.statement.nil? %>
+        <%= render 'statement' %>
       <% end %>
     </p>
     <br />

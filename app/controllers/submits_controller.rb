@@ -12,7 +12,7 @@ class SubmitsController < ApplicationController
     @contest = @submit.problem.contest
     name = @submit.id.to_s()+params[:file].original_filename
     directory = 
-      "#{Rails.root}/public/contests/#{@contest.path}/participants/"+
+      "#{Rails.root}/judge-files/contests/#{@contest.path}/participants/"+
       "#{@submit.participant.path}/#{@submit.problem.order}/"
     path = File.join(directory, name)
     tmpfile = params[:file].tempfile

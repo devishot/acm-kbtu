@@ -1,0 +1,28 @@
+<%= @submit.problem.statement['text'].html_safe if !@submit.problem.statement.nil? %>
+
+
+<table class="table table-bordered table-hover" style="width: 500px">
+  <thead>
+    <tr>
+      <th>Input</th>
+      <th>Output</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% 3.times do |i| %>
+  <% next if @submit.problem.statement['inputs'][i].nil? %>
+    <tr>
+      <td style="width: 50%">
+        <%= @submit.problem.statement['inputs'][i] %>
+      </td>
+
+      <td> 
+        <%= @submit.problem.statement['outputs'][i] %>     
+      </td>
+
+    </tr>
+  <% end %>
+  <tbody>
+
+</table>

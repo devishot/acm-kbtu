@@ -8,14 +8,14 @@ class ProblemsController < ApplicationController
 
   # GET /contests/:id/:problem
   def show
-    contest = Contest.find_by(path: params[:id])
-    if current_user.participants.where(contest: contest).count == 0 then
-      redirect_to contest_path(contest.path), notice: 'Please, register to participate.'
+    @contest = Contest.find_by(path: params[:id])
+    if current_user.participants.where(contest: @contest).count == 0 then
+      redirect_to contest_path(@contest.path), notice: 'Please, register to participate.'
       return
     else
-      participant = current_user.participants.find_by(contest: contest)
+      participant = current_user.participants.find_by(contest: @contest)
     end
-    problem = contest.problems.find_by(order: params[:problem])
+    problem = @contest.problems.find_by(order: params[:problem])
 
     @submit = Submit.new()
     @submit.problem = problem
@@ -32,8 +32,8 @@ class ProblemsController < ApplicationController
 
   # GET /contests/:id/:problem/edit
   def edit
-    contest = Contest.find_by(path: params[:id])
-    @problem = contest.problems.find_by(order: params[:problem])
+    @contest = Contest.find_by(path: params[:id])
+    @problem = @contest.problems.find_by(order: params[:problem])
   end
 
   # PUT '/contests/:id/:problem
@@ -44,8 +44,8 @@ class ProblemsController < ApplicationController
     inputs = []
     outputs = []
     3.times do |i|
-      inputs << params["inputs"+(i+1).to_s]
-      outputs << params["outputs"+(i+1).to_s]
+      inputs << params["input"+(i+1).to_s]
+      outputs << params["output"+(i+1).to_s]
     end
     @problem.statement = {:text => params[:text], :inputs => inputs, :outputs => outputs}
     @problem.unzip(params[:archive]) #and set tests_path

@@ -22,6 +22,9 @@ class Problem
 
   def unzip(archive) 
     problem_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}"
+    #clear
+    FileUtils.rm_rf problem_dir
+    #create new
     FileUtils.mkdir_p problem_dir
     #write archive_file(.zip) in problem_dir
     File.open(Rails.root.join(problem_dir, archive.original_filename), 'w') do |file|

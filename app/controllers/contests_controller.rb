@@ -112,16 +112,9 @@ class ContestsController < ApplicationController
     
     respond_to do |format|
       if @contest.save
-        if @contest.problems_upload == 0 #one_archive
-          format.html { redirect_to contest_path(@contest.path)+'/upload', 
-            notice: 'Contest was successfully created.' 
-          }
-        else
-          @contest.problems_create()
-          format.html { redirect_to contest_path(@contest.path),
-            notice: 'Contest was successfully created.' 
-          }          
-        end
+        format.html { redirect_to contest_path(@contest.path)+'/control', 
+          notice: 'Contest was successfully created.' 
+        }
       else
         format.html { render action: "new" }
       end
@@ -134,12 +127,35 @@ class ContestsController < ApplicationController
 
     respond_to do |format|
       if @contest.update_attributes(params[:contest])
-        format.html { redirect_to contest_path(@contest.path)+'/upload' }
+        format.html { redirect_to contest_path(@contest.path)+'/control' }
       else
         format.html { render action: "edit" }
       end
     end
   end
+
+  # PUT /contests/1/update_mode
+  def update_mode
+    @contest = Contest.find_by(path: params[:id])
+    if params[:contest][:problems_upload] != @contest.problems_upload
+      @contest.clear
+    end
+
+
+    respond_to do |format|
+      if @contest.update_attributes(params[:contest])
+        #create new problem
+        @contest.problems_create
+
+        format.html { redirect_to contest_path(@contest.path)+'/control' }
+      else
+        format.html { redirect_to contest_path(@contest.path)+'/control',
+          notice: "ERROR: Was not updated"
+        }
+      end
+    end
+  end
+
 
   # DELETE /contests/1
   def destroy
@@ -163,7 +179,7 @@ end
     contest.problems_create(params[:statement])
 
     respond_to do |format|
-      format.html { redirect_to contest_path(contest.path) }
+      format.html { redirect_to contest_path(contest.path)+'/control' }
     end    
   end
 end

@@ -1,0 +1,5 @@
+<% @contest.problems_count.times do |i| %>
+  <%= link_to "<i class='icon-pencil icon-white'></i> Edit problem №#{i+1}".html_safe, contest_path(@contest.path)+"/#{i+1}/edit", :class=>'btn btn-info' %>
+  <br/>
+  <br/>
+<% end %>

@@ -5,6 +5,7 @@ AcmKbtu::Application.routes.draw do
   resources :problems
 
   resources :contests
+  put '/contests/:id/update_mode' => 'contests#update_mode'
   match '/contests/:id/upload' => 'contests#upload'
   post  '/contests/:id/unpack' => 'contests#unpack'
   post  '/contests/:id/participate' => 'contests#participate'

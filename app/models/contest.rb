@@ -12,26 +12,27 @@ class Contest
   field :duration, type: Integer, :default => 300
   field :type, type: Integer #"ACM", "IOI"
   field :problems_count, type: Integer, :default => 0
-  field :problems_upload, type: Integer #"one_archive", "every_problem"
+  field :problems_upload, type: Integer, :default => 0 #"one_archive", "every_problem"
 
   has_many :problems
   has_many :participants
 
   before_save :set_path
+  before_destroy :clear
   
   def set_path
     return if self.path != nil
     self.path = (Contest.exists?) ? ( Contest.last.path.to_i + 1 ).to_s : '1'
   end
 
-  before_destroy do |contest|
+  def clear
     #destroy all problems and submits
-    contest.problems.each do |problem|
+    self.problems.each do |problem|
       problem.submits.destroy_all
       problem.destroy
     end
     #destroy all participants
-    contest.participants.each { |participant| participant.destroy }
+    self.participants.destroy_all
     #delete contest folder
     FileUtils.rm_rf self.contest_dir
   end
@@ -64,7 +65,7 @@ class Contest
       problem = Problem.new({
         :contest => self,
         :order => i,
-        :tests_path => (self.problems_upload==0) ? nil : self.contest_dir+"/problems/#{i.to_s}/tests",
+        :tests_path => (self.problems_upload==1) ? nil : self.contest_dir+"/problems/#{i.to_s}/tests",
         :statement => (self.problems_upload==1) ? nil : {:link => self.put_statement(statement)}
       });
       problem.save
@@ -73,6 +74,7 @@ class Contest
   end
 
   def put_statement(ufile)
+    return if ufile.nil?
     statement_dir = self.contest_dir+'/statement'
     FileUtils.mkdir_p statement_dir
     File.open(Rails.root.join(statement_dir, ufile.original_filename), 'w') do |file|
