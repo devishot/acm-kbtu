@@ -1,5 +1,4 @@
 class ContestsController < ApplicationController
-  require 'zip/zipfilesystem'
   # GET /contests
   # GET /contests.json
   def index
@@ -12,6 +11,15 @@ class ContestsController < ApplicationController
         b.time_start <=> a.time_start
       end
     }
+  end
+
+  # GET /contests/:id/statement
+  def download_statement
+    contest = Contest.find_by(path: params[:id])
+    statement_link = contest.problems.first.statement["link"]
+    send_file(statement_link,
+              :filename => "statement.pdf",
+              :type => "application/pdf")
   end
 
   # GET /contests/1
@@ -70,13 +78,13 @@ class ContestsController < ApplicationController
     if params[:commit] == "Update"
       @contest.time_start = Contest.new(params[:contest]).time_start
       @contest.duration = Contest.new(params[:contest]).duration
-      ok = 'Start time successfully updated'
-      err = 'Error: Start time was not updated'
+        ok = 'Start time successfully updated'
+        err = 'Error: Start time was not updated'
     elsif params[:commit] == "Start"
       @contest.time_start = DateTime.now
       @contest.duration = Contest.new(params[:contest]).duration
-      ok = 'Contest started'
-      err = 'Error: Contest was not started'
+        ok = 'Contest started'
+        err = 'Error: Contest was not started'
     end
 
     respond_to do |format|
@@ -152,7 +160,7 @@ end
 
     contest.unpack(params[:archive])
     contest.problems.destroy_all #destroy perviouse problems!!!
-    contest.problems_create()
+    contest.problems_create(params[:statement])
 
     respond_to do |format|
       format.html { redirect_to contest_path(contest.path) }

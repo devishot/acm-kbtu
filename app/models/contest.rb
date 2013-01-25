@@ -1,3 +1,5 @@
+require 'zip/zipfilesystem'
+
 class Contest
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -31,42 +33,51 @@ class Contest
     #destroy all participants
     contest.participants.each { |participant| participant.destroy }
     #delete contest folder
-    contest_dir = "#{Rails.root}/judge-files/contests/#{contest.path}"
-    FileUtils.rm_rf contest_dir
+    FileUtils.rm_rf self.contest_dir
+  end
+
+  def contest_dir
+    return "#{Rails.root}/judge-files/contests/#{self.path}"
   end
 
   def unpack(archive)
-    contest_dir = "#{Rails.root}/judge-files/contests/#{self.path}"
     #create folder if not exist
-    FileUtils.mkdir_p contest_dir unless File.directory? contest_dir
+    FileUtils.mkdir_p self.contest_dir
     #write archive_file(.zip) in contest_dir
-    File.open(Rails.root.join(contest_dir, archive.original_filename), 'w') do |file|
+    File.open(Rails.root.join(self.contest_dir, archive.original_filename), 'w') do |file|
       file.write(archive.read.force_encoding('utf-8'))
     end
     #exctract files(folders) from archive_file(.zip)
-    Zip::ZipFile.open(contest_dir+"/#{archive.original_filename}"){ |zip_file|
+    Zip::ZipFile.open(self.contest_dir+"/#{archive.original_filename}"){ |zip_file|
       zip_file.each { |f|
-        f_path=File.join(contest_dir, f.name)
+        f_path=File.join(self.contest_dir, f.name)
         FileUtils.mkdir_p(File.dirname(f_path))
         zip_file.extract(f, f_path) unless File.exist?(f_path)
       }
     }
     #delete archive_file(.zip)
-    FileUtils.remove_file(contest_dir+"/#{archive.original_filename}")
+    FileUtils.remove_file(self.contest_dir+"/#{archive.original_filename}")
   end
 
-  def problems_create
-    #create contest_dir for 'one_archive' upload type
-    contest_dir = "#{Rails.root}/judge-files/contests/#{self.path}" if self.problems_upload == 0
+  def problems_create(statement=nil)
     for i in 1..self.problems_count
       problem = Problem.new({
         :contest => self,
         :order => i,
-        :tests_path => (contest_dir.nil? ? nil : contest_dir+'/problems/'+i.to_s+'/tests')
+        :tests_path => (self.problems_upload==0) ? nil : self.contest_dir+"/problems/#{i.to_s}/tests",
+        :statement => (self.problems_upload==1) ? nil : {:link => self.put_statement(statement)}
       });
       problem.save
       self.problems << problem
     end
   end
 
+  def put_statement(ufile)
+    statement_dir = self.contest_dir+'/statement'
+    FileUtils.mkdir_p statement_dir
+    File.open(Rails.root.join(statement_dir, ufile.original_filename), 'w') do |file|
+      file.write(ufile.read.force_encoding('utf-8'))
+    end
+    return statement_dir+"/#{ufile.original_filename}"
+  end
 end

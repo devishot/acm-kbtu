@@ -13,6 +13,7 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/control' => 'contests#control'
   post  '/contests/:id/control/update' => 'contests#control_update'
 
+  match '/contests/:id/statement' => 'contests#download_statement'
 
   match '/contests/:id/problems'=> 'problems#index'
   match '/contests/:id/standings'=> 'contests#standings'

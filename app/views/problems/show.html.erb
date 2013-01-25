@@ -42,7 +42,8 @@
     <p>
       <b>Statement:</b>
       <% if @contest.problems_upload == 0#one_archive %>
-        there is link to .pdf
+        <%= link_to '<i class="icon-download-alt"></i> Download'.html_safe, 
+            contest_path(@contest.path)+'/statement', :class => 'btn' %>
       <% else %>
         <%= @submit.problem.statement['text'].html_safe if !@submit.problem.statement.nil? %>
       <% end %>
