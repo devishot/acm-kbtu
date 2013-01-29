@@ -24,12 +24,16 @@ class ContestsController < ApplicationController
   def messages
     @contest = Contest.find_by(path: params[:id])
     @navpill = 3
+    @msgnav = 1
+
   end
 
   def standings
     @contest = Contest.find_by(path: params[:id])
 
-    @last_success = Submit.find_by(status: "ok");
+    @last_success = Submit.where(status: "ok")
+    @last_success = nil if @last_success.to_a == nil
+
     @navpill = 2
   end
 

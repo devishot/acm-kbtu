@@ -1,1 +1,5 @@
 <%= render "contest" %>
+<ul class="nav nav-pills">
+	<li <% "class=active" if @msgnav==1 %> ><a href="#">Send message</a></li>
+	<li <% "class=active" if @msgnav==2 %> ><a href="#">Messages</a></li>
+</ul>
