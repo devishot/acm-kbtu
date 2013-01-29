@@ -1,35 +1,15 @@
-<%= form_tag("/contests/#{@problem.contest.path}/#{@problem.order}", :method => :put, :multipart => true) do %>
-  <%= hidden_field_tag :contest_path, @problem.contest.path %>
-  <%= hidden_field_tag :problem_order, @problem.order %>
+<%= form_for(@problem, :url => "#{contest_path(@contest.path)}/#{@problem.order}", :method => :put) do |f| %>
 
-  <div class="field">
-    <%= text_area_tag :text, nil, 
-      #:value => @problem.statement['text'],
-      :class => 'field span9 tinymce', 
-      :placeholder=>"Problem Statement here.." %>
-    <%= tinymce %>
+  <%= f.label :time_limit, "Time limit" %>
+  <%= f.number_field :time_limit, :in => 1..5 %>
+
+  <%= f.label :memory_limit , "Memory limit" %>
+  <%= f.number_field :memory_limit, :in => 16..512, :step => 32  %>
+
+  <%= f.label :checker, "Checker" %>
+  <%= f.select :checker, ["cmp_file", "cmp_file_nospaces", "cmp_yesno"] %>
+
+  <div class="actions">
+    <%= f.submit "Update", :class => "btn" %>
   </div>
-
-  <% 3.times do |i| %>
-    <div class="form-inline">
-      <%= text_area_tag "input"+(i+1).to_s, nil, :rows => 5,
-          #:value => @problem.statement['inputs'][i],
-          :placeholder=>"Input #{i+1}" %>
-      <%= text_area_tag "output"+(i+1).to_s, nil, :rows => 5, 
-          #:value => @problem.statement['outputs'][i],
-          :placeholder=>"Output #{i+1}" %>
-    </div>
-    <br />
-  <% end %>
-
-  <%= file_field_tag 'archive' %>
-  <br />
-  <br />
-
-  <%= submit_tag("Upload", :class => "btn") %>
-  <br />
-  <br />
-  <br />
-
 <% end %>
-

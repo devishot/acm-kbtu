@@ -1,10 +1,11 @@
 <%= render "contests/contest" %>
 
 <% @contest.problems_count.times do |i| %>
-  <% problem = @contest.problems[i+1] %>
+  <% problem = @contest.problems[i] %>
   <% @submissions = @submits.where(problem: problem) %>
+
   <div class="well">
     <p>Problem <%= i+1 %></p>
-    <%= render "submits/submits" %>
+    <%= render "submits" %>
   </div>
 <% end %>

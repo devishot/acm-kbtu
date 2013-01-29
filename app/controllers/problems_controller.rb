@@ -36,7 +36,7 @@ class ProblemsController < ApplicationController
     @problem = @contest.problems.find_by(order: params[:problem])
   end
 
-  # PUT '/contests/:id/:problem
+  # PUT /contests/:id/:problem
   def update
     contest = Contest.find_by(path: params[:contest_path])
     @problem = contest.problems.find_by(order: params[:problem_order])
