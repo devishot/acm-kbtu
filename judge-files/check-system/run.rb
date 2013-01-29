@@ -1,71 +1,99 @@
-require 'moped'
-require "fileutils"
-require "open4"
+require 'fileutils'
+require 'open4'
 require 'date'
+require 'resque'
 
-session = Moped::Session.new(["127.0.0.1:27017"])
-session.use :acm_kbtu_development
+class Tester
+  @queue = :simple
 
-session.with(safe: true) do |_session|
-  submits = _session[:submits].find
-  system_path = '/home/devishot/Documents/Programming/Rails Projects/acm-kbtu/judge-files/check-system'
-  folder = "#{system_path}/work/"
+  def initialize(submit_id, system_path)
+    @submit = Submit.find(submit_id)
+    @work_dir = "#{system_path}/work/"
+    @tests_path = @submit.problem.tests_path
+  end
 
-  submits.each do |submit|
-    #next if submit.to_a[1][1]!=""
-    ##puts _session[:problems].find(_id: submit.to_a[3][1]).find.first
-    ##puts "\n"
+  def compile()
+    #delete and create new work directory
+    FileUtils.remove_dir @work_dir if File.exist? @work_dir
+    FileUtils.mkdir @work_dir
+    #copy sourcecode in 1.cpp
+    FileUtils.cp @submit.file_sourcecode_path, "#{@work_dir}1.cpp"
 
-    #//copy submit's sourcecode in file src_path
-    FileUtils.cp submit.to_a[5][1], "#{folder}1.cpp" #.to_a() <- convert hash to matrix [][0..1];
-
-    #//compile file src_path and put CEerror
-    pid, stdin, stdout, stderr = Open4::popen4 "g++ ./work/1.cpp -o ./work/1.exe"
+    pid, stdin, stdout, stderr = Open4::popen4 "g++ \'#{@work_dir}1.cpp\' -o \'#{@work_dir}1.exe\'"
     compile_err = stderr.gets #we need to save, it will changed
+
     if compile_err.nil?
-      submit.update("status" => "OK")
-      submit.update("status_full" => "")
+      @submit.status = "OK"
+      @submit.status_full = ""
+      return 1
     else
-      submit.update("status" => "CE")
-      submit.update("status_full" => compile_err)
+      @submit.status = "CE"
+      @submit.status_full = compile_err
+      return 0
     end
+  end
 
+  def check(tin, tout)
+    pid, stdin, stdout, stderr = Open4::popen4 "\'#{@work_dir}../checkers/cmp_file\' \'#{@tests_path}/#{tin}\' \'#{@work_dir}output.txt\' \'#{@tests_path}/#{tout}\'"
+    ignored, status = Process::waitpid2 pid
 
-    #//get tests
-    tests_path = _session[:problems].find(_id: submit.to_a[3][1]).find.first.to_a[6][1]
-    
-    Dir.entries(tests_path).sort.each_slice(2) do |t|
+    std_out = stdout.gets
+    std_err = stderr.gets
+
+    @submit.status = case status.exitstatus
+      when 0; "OK"
+      when 4, 2; "PE"
+      when 5, 1; "WA"
+      else "SE" 
+    end
+    @submit.status_full = ""
+
+    return (status.exitstatus==0) ? 1 : 0; #// @submit.status==0 <- "OK"
+  end
+
+  def run()
+    #//compile sourcecode
+    if self.compile == 0
+      @submit.save
+      return 0
+    end
+    #//get every test(pair of 'file' and 'file.smth')
+    Dir.entries(@tests_path).sort.each_slice(2) do |t|
       next if t[0] == '.'
-      FileUtils.cp tests_path+'/'+t[0], "work/input.txt" #copy current test's input to work/input.txt file
+      #copy current test's input to work/input.txt file      
+      FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}input.txt"
       #//RUN
-      pid, stdin, stdout, stderr = Open4::popen4 "./ejudge-execute --time-limit=2 --stdin=work/input.txt --stdout=work/output.txt work/1.exe"
+      pid, stdin, stdout, stderr = Open4::popen4 "\'#{@work_dir}../ejudge-execute\' --time-limit=2 --stdin=\'#{@work_dir}input.txt\' --stdout=\'#{@work_dir}output.txt\' \'#{@work_dir}1.exe\'"
 
-      verdict = stderr.gets
+      fullerr = stderr.gets
+      verdict = fullerr
       verdict = verdict[8,9].strip
 
-      if verdict == 'OK' #//puts "runs correctly"
+      if verdict == 'OK'
         #//CHECK(COMPARE)
-        pid, stdin, stdout, stderr = Open4::popen4 "checkers/cmp_file \'#{tests_path}/#{t[0]}\' work/output.txt \'#{tests_path}/#{t[1]}\'"
-        ignored, status = Process::waitpid2 pid
-
-        std_out = stdout.gets
-        std_err = stderr.gets
-
-        submit.update("status" => case status.exitstatus
-          when 0; "AC"
-          when 4; "PE"
-          when 5; "WA"
-          else "SE" end)
-        submit.update("status_full" => "")
+        if self.check(t[0], t[1]) == 0
+          @submit.save
+          return 0
+        end
       else
-        submit.update("status" => verdict)  #// TL or other errors
-        submit.update("status_full" => "")
-      end  
+        @submit.status = verdict  #// TL or other errors
+        @submit.status_full = ""
+        @submit.save
+        return 0
+      end
     end
 
-
-    #//save changes
-    submit_id = Moped::BSON::ObjectId.from_string(submit.to_a[0][1])
-    _session[:submits].find(_id: submit_id).update(submit)
+    @submit.status = "AC"
+    @submit.status_full = ""
+    @submit.save
+    return 1
   end
+
+  def self.perform(submit_id)
+    system_path = '/home/devishot/Documents/Programming/Rails Projects/acm-kbtu/judge-files/check-system'
+
+    a = Tester.new(submit_id, system_path)
+    a.run
+  end
+
 end

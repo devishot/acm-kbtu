@@ -32,6 +32,10 @@ gem "moped"#, "~> 1.1.1"
 
 gem "open4"
 
+gem 'redis-rails'
+gem 'resque'
+
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

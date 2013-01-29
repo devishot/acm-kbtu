@@ -12,7 +12,7 @@
 
   <tbody>
     <% order = @submissions.count+1 %>
-    <% @submissions.sort_by { |obj| obj.created_at }.reverse_each do |i| %>
+    <% @submissions.sort_by { |obj| obj.updated_at }.reverse_each do |i| %>
       <tr <%= case i.status
               when "";"class=warning"
               when "AC";"class=success"

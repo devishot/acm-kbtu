@@ -28,6 +28,8 @@ class SubmitsController < ApplicationController
         (@submit.problem).submits << @submit
         (@submit.participant).submits << @submit
 
+        Resque.enqueue(Tester, @submit.id)
+
         format.html { redirect_to problem_path, notice: 'Successfully submited.' }
         #format.json { render json: @submit, status: :created, location: @submit }
       else
