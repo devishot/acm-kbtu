@@ -14,6 +14,7 @@ class Contest
   field :problems_count, type: Integer, :default => 0
   field :problems_upload, type: Integer, :default => 0 #"one_archive", "every_problem"
 
+  belongs_to :user
   has_many :problems
   has_many :participants
 

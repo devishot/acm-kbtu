@@ -1,4 +1,9 @@
 class ContestsController < ApplicationController
+  #before_filter :authenticate_user!, :except => [:index]
+  before_filter :find_by_path, 
+                :except => [:index, :kill_participant, :new, :create]
+  load_and_authorize_resource
+
   # GET /contests
   # GET /contests.json
   def index
@@ -15,7 +20,7 @@ class ContestsController < ApplicationController
 
   # GET /contests/:id/statement
   def download_statement
-    contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
     statement_link = contest.problems.first.statement["link"]
     send_file(statement_link,
               :filename => "statement.pdf",
@@ -25,28 +30,28 @@ class ContestsController < ApplicationController
   # GET /contests/1
   # GET /contests/1.json
   def show
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
     @navpill
   end
 
   def summary
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
     @navpill = 4
   end
 
   def messages
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
     @navpill = 3
   end
 
   def standings
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
     @navpill = 2
   end
 
   # post /contests/:id/participate
-  def participate
-    @contest = Contest.find_by(path: params[:id])
+  def participate 
+    #@contest = Contest.find_by(path: params[:id])
     return if current_user.participants.where(contest: @contest).count != 0
 
     participant = Participant.new();
@@ -67,14 +72,13 @@ class ContestsController < ApplicationController
 
   # GET /contests/:id/control
   def control
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
     #raise "#{@contest.participants.first.user.participants}"
   end
 
   # POST /contests/:id/control/update
   def control_update
-    @contest = Contest.find_by(path: params[:id])
-
+    #@contest = Contest.find_by(path: params[:id])
     if params[:commit] == "Update"
       @contest.time_start = Contest.new(params[:contest]).time_start
       @contest.duration = Contest.new(params[:contest]).duration
@@ -103,7 +107,7 @@ class ContestsController < ApplicationController
 
   # GET /contests/:id/edit
   def edit
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
   end
 
   # POST /contests
@@ -123,9 +127,7 @@ class ContestsController < ApplicationController
 
   # PUT /contests/1
   def update
-    raise "params[]"
-    @contest = Contest.find_by(path: params[:id])
-
+    #@contest = Contest.find_by(path: params[:id])
     respond_to do |format|
       if @contest.update_attributes(params[:contest])
         format.html { redirect_to contest_path(@contest.path)+'/control' }
@@ -137,11 +139,10 @@ class ContestsController < ApplicationController
 
   # PUT /contests/1/update_mode
   def update_mode
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
     if params[:contest][:problems_upload] != @contest.problems_upload
       @contest.clear
     end
-
 
     respond_to do |format|
       if @contest.update_attributes(params[:contest])
@@ -160,27 +161,34 @@ class ContestsController < ApplicationController
 
   # DELETE /contests/1
   def destroy
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
     @contest.destroy
 
     redirect_to contests_url  
-end
+  end
 
   # GET /contests/:id/upload
   def upload
-    @contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
   end
 
   # POST /contests/:id/unpack
   def unpack
-    contest = Contest.find_by(path: params[:id])
+    #@contest = Contest.find_by(path: params[:id])
 
-    contest.unpack(params[:archive])
-    contest.problems.destroy_all #destroy perviouse problems!!!
-    contest.problems_create(params[:statement])
+    @contest.unpack(params[:archive])
+    @contest.problems.destroy_all #destroy perviouse problems!!!
+    @contest.problems_create(params[:statement])
 
     respond_to do |format|
       format.html { redirect_to contest_path(contest.path)+'/control' }
     end    
   end
+
+
+private
+  def find_by_path
+    @contest = Contest.find_by(path: params[:id])
+  end
+  
 end

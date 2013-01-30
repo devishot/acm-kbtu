@@ -12,6 +12,11 @@ class Ability
         can :read, Node
         can [:read, :create], Page
         can [:destroy, :update], Page, :user_id => user.id
+    elsif user.student?
+        can :read, Contest
+    elsif user.teacher?
+        can :create, Contest
+        can :manage, Contest, :user_id => user.id
     else
         can :read, [Node, Page]
     end
