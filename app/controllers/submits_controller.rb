@@ -56,10 +56,11 @@ class SubmitsController < ApplicationController
   end
 
   # GET /submits/:contest/:participant/:submit
-  def src_code
+  def show_sourcecode
     @contest = Contest.find_by(path: params[:contest])
     @participant = @contest.participants.find_by(path: params[:participant])
-    @submit = @participant.submits[params[:submit].to_i - 1]
+    @submit = @participant.submits[params[:submit].to_i-1]
+    @order = params[:submit].to_i
 
     @navpill
 
@@ -67,6 +68,16 @@ class SubmitsController < ApplicationController
       format.html # index.html.erb
       #format.json { render json: @submits }
     end
+  end
+
+  # GET /submits/:contest/:participant/:submit/download
+  def download_sourcecode
+    contest = Contest.find_by(path: params[:contest])
+    participant = contest.participants.find_by(path: params[:participant])
+    submit = participant.submits[params[:submit].to_i-1]
+    link = submit.file_sourcecode_path
+    send_file(link,
+              :filename => "mycode.cpp")
   end
 
 

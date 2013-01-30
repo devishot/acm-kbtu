@@ -3,13 +3,14 @@ require 'zip/zipfilesystem'
 class Problem
   include Mongoid::Document
   include Mongoid::Timestamps
-  field :global_path, type: String
   field :order, type: Integer
   field :tests_path, type: String
-  field :statement, type: Hash #{:text => params[:text], :inputs => [], :outputs => []} || {:link=>''}
   field :time_limit, type: Integer, :default => 2
   field :memory_limit, type: Integer, :default => 256
   field :checker, type: String, :default => 'cmp_file'
+  field :global_path, type: String
+  field :statement, type: Hash 
+        #{:title=>'', :text => params[:text], :inputs => [], :outputs => []} || {:link=>''}
 
   belongs_to :contest
   has_many :submits

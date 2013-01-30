@@ -34,7 +34,11 @@ class Tester
   end
 
   def check(tin, tout)
-    pid, stdin, stdout, stderr = Open4::popen4 "\'#{@work_dir}../checkers/cmp_file\' \'#{@tests_path}/#{tin}\' \'#{@work_dir}output.txt\' \'#{@tests_path}/#{tout}\'"
+    pid, stdin, stdout, stderr = 
+      Open4::popen4 "\'#{@work_dir}../checkers/#{@submit.problem.checker}\' " +
+                    "\'#{@tests_path}/#{tin}\' " +
+                    "\'#{@work_dir}output.txt\' " + 
+                    "\'#{@tests_path}/#{tout}\'"
     ignored, status = Process::waitpid2 pid
 
     std_out = stdout.gets
@@ -63,10 +67,13 @@ class Tester
       #copy current test's input to work/input.txt file      
       FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}input.txt"
       #//RUN
-      pid, stdin, stdout, stderr = Open4::popen4 "\'#{@work_dir}../ejudge-execute\' --time-limit=2 --stdin=\'#{@work_dir}input.txt\' --stdout=\'#{@work_dir}output.txt\' \'#{@work_dir}1.exe\'"
-
-      fullerr = stderr.gets
-      verdict = fullerr
+      pid, stdin, stdout, stderr = 
+        Open4::popen4 "\'#{@work_dir}../ejudge-execute\' " +
+                      "--time-limit=#{@submit.problem.time_limit} " +
+                      "--stdin=\'#{@work_dir}input.txt\' " +
+                      "--stdout=\'#{@work_dir}output.txt\' " +
+                      "\'#{@work_dir}1.exe\'"
+      verdict = stderr.gets
       verdict = verdict[8,9].strip
 
       if verdict == 'OK'

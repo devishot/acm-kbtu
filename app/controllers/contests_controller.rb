@@ -123,6 +123,7 @@ class ContestsController < ApplicationController
 
   # PUT /contests/1
   def update
+    raise "params[]"
     @contest = Contest.find_by(path: params[:id])
 
     respond_to do |format|

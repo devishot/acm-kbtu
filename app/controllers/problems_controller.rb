@@ -36,27 +36,52 @@ class ProblemsController < ApplicationController
     @problem = @contest.problems.find_by(order: params[:problem])
   end
 
+  # GET /contests/:id/:problem/edit_statement
+  def edit_statement
+    @contest = Contest.find_by(path: params[:id])
+    @problem = @contest.problems.find_by(order: params[:problem])
+  end
+
   # PUT /contests/:id/:problem
   def update
+    @contest = Contest.find(params[:contest_id])
+    @problem = @contest.problems.find_by(order: params[:problem][:order])
+    respond_to do |format|
+      if @problem.update_attributes(params[:problem])
+        format.html { redirect_to contest_path(@problem.contest.path)+"/#{@problem.order}/edit", 
+          notice: 'Problem was successfully updated.' }
+      else
+        format.html { redirect_to contest_path(@problem.contest.path)+"/#{@problem.order}/edit",
+          notice: 'ERROR: Problem was not updated.' }
+      end
+    end
+  end    
+
+  # PUT /contests/:id/:problem/update_statement
+  def update_statement
     contest = Contest.find_by(path: params[:contest_path])
     @problem = contest.problems.find_by(order: params[:problem_order])
 
     inputs = []
     outputs = []
     3.times do |i|
-      inputs << params["input"+(i+1).to_s]
-      outputs << params["output"+(i+1).to_s]
+      inputs << params["input#{i}"]
+      outputs << params["output#{i}"]
     end
-    @problem.statement = {:text => params[:text], :inputs => inputs, :outputs => outputs}
-    @problem.unzip(params[:archive]) #and set tests_path
-
+    @problem.statement = {:title => params[:title], 
+                          :text => params[:text], 
+                          :inputs => inputs, 
+                          :outputs => outputs}
+    #and set tests_path if uploaded
+    @problem.unzip(params[:archive]) if !params[:archive].nil?
+    
     respond_to do |format|
       if @problem.save
-        format.html { 
-          redirect_to contest_path(contest.path)+"/#{@problem.order}", 
-          notice: 'Problem was successfully updated.' }
+        format.html { redirect_to contest_path(contest.path)+"/#{@problem.order}", 
+          notice: 'Problem\'s statement was successfully updated.' }
       else
-        format.html { render action: "edit" }
+        format.html { redirect_to contest_path(contest.path)+"/#{@problem.order}", 
+          notice: 'ERROR: Problem\'s statement was not updated.' }
       end
     end
   end

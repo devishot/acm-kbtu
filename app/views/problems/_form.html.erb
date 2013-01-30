@@ -1,15 +1,29 @@
-<%= form_for(@problem, :url => "#{contest_path(@contest.path)}/#{@problem.order}", :method => :put) do |f| %>
+<%= form_for(@problem) do |f| %>
+  
+  <div class="control-group">  
+    <%= f.label :time_limit, "Time limit", :class => 'control-label' %>
+    <div class="controls">    
+      <%= f.number_field :time_limit, :in => 1..5 %>
+    </div>
+  </div>
 
-  <%= f.label :time_limit, "Time limit" %>
-  <%= f.number_field :time_limit, :in => 1..5 %>
+  <%= hidden_field_tag :contest_id, @problem.contest.id %>
+  <%= f.hidden_field :order %>
 
   <%= f.label :memory_limit , "Memory limit" %>
-  <%= f.number_field :memory_limit, :in => 16..512, :step => 32  %>
+  <%= f.number_field :memory_limit, :in => 16..512, :step => 16  %>
 
   <%= f.label :checker, "Checker" %>
-  <%= f.select :checker, ["cmp_file", "cmp_file_nospaces", "cmp_yesno"] %>
+  <%= f.select :checker, ["cmp_file", "cmp_file_nospace", "cmp_long_long", "cmp_long_long_seq",
+                          "cmp_long_double", "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
+
 
   <div class="actions">
     <%= f.submit "Update", :class => "btn" %>
   </div>
 <% end %>
+
+
+<%= link_to '<i class="icon-pencil icon-white"></i> Edit statement'.html_safe, 
+    contest_path(@contest.path)+"/#{@problem.order}/edit_statement", :class => 'btn btn-info' %>
+

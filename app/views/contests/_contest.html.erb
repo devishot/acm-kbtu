@@ -7,31 +7,35 @@
 <br />
 
 <div id="body-bgcolor">
-  <p>
-    <b>Title:</b>
-    <%= @contest.title %>
-  </p>
+  <center style = "Но это центр, 
+                  тут только правда
+                  И если я об этом пишу,
+                  Значит так надо.">
+    <h3>
+      <%= @contest.title %>
+    </h3>
 
-  <p>
-    <b>Description:</b>
-    <%= @contest.description %>
-  </p>
+    <p class="muted">
+      <%= @contest.description %>
+    </p>
 
-  <p>
-    <b>Type:</b>
-    <%= (@contest.type==0) ? "ACM" : "IOI" %>
-  </p>
+    <p>
+      Type:
+      <b>
+        <%= (@contest.type==0) ? "ACM" : "IOI" %>
+      </b>
 
-  <p>
-    <b>Start:</b>
-    <%= (@contest.time_start.nil?) ? 'Not started' :  @contest.time_start.strftime("%Y-%m-%d %H:%M") %>
-  </p>
-
-  <p>
-    <b>Duration:</b>
-    <%= @contest.duration %>
-  </p>
-
+      Start:
+      <b>
+        <%= (@contest.time_start.nil?) ? 'Not started' :  @contest.time_start.strftime("%Y-%m-%d %H:%M") %>
+      </b>
+      
+      Duration:
+      <b>
+        <%= @contest.duration %>
+      </b>
+    </p>
+  </center>
 
   <% if (current_user.participants.where(contest: @contest).count == 0) then %>
     <%= link_to "Participate", contest_path(@contest.path) + "/participate", 
