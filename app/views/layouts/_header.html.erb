@@ -5,7 +5,7 @@
     <li <%if !@node.nil? && @node.path == node.path%> class="active" <%end%> >
       <%= link_to "#{node.name}", '/nodes/'+node.path %>
     </li>
-
   <% end %>
+    <li><%= link_to "Contests", '/contests' %></li>
 
 </ul>

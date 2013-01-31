@@ -18,13 +18,36 @@ class ContestsController < ApplicationController
     @navpill = 4
   end
 
+# messages
   def messages
     @contest = Contest.find_by(path: params[:id])
     @navpill = 3
+    @messages = Message.all
   end
+
+  def new_message
+    @contest = Contest.find_by(path: params[:id])
+    @message = Message.new
+    @navpill = 3
+  end
+
+  def create_message
+    @message = Message.new(params[:message])
+    @message.participant = Participant.find_by(:user => current_user)
+    @contest = Contest.find(@message.participant.contest)
+
+    @message.save
+
+    redirect_to contest_messages_path(@contest.path)
+  end
+# end messages
 
   def standings
     @contest = Contest.find_by(path: params[:id])
+
+    @last_success = Submit.where(status: "ok")
+    @last_success = nil if @last_success.to_a == nil
+
     @navpill = 2
   end
 
@@ -38,6 +61,7 @@ class ContestsController < ApplicationController
     participant = Participant.new();
     @contest.participants << participant      # participant.contest will be automatically created
     current_user.participants << participant  # participant.user will be automatically created
+    
     participant.save
     redirect_to contest_path(@contest.path)
   end

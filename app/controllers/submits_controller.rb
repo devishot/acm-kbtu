@@ -18,6 +18,14 @@ class SubmitsController < ApplicationController
     tmpfile = params[:file].tempfile
     @submit.file_sourcecode_path = path
     
+    @participant = Participant.find(params[:participant]);
+
+    # raise Time.now.to_i.inspect
+    raise ((Time.now - @contest.time_start)/60).inspect
+
+    @participant.penalties[:problem] += t if @submit.status = "ok"
+
+
     respond_to do |format|
       problem_path = contest_path(@contest.path)+"/#{@submit.problem.order}"
       if @submit.save

@@ -4,7 +4,8 @@ AcmKbtu::Application.routes.draw do
 
   resources :problems
 
-  resources :contests
+  resources :contests 
+
   match '/contests/:id/upload' => 'contests#archive_uploader'
   post 'archive_unzip' => 'contests#archive_unzip'
   match '/contests/:id/participate' => 'contests#participate'
@@ -12,7 +13,11 @@ AcmKbtu::Application.routes.draw do
 
   match '/contests/:id/problems'=> 'problems#index'
   match '/contests/:id/standings'=> 'contests#standings'
-  match '/contests/:id/messages' => 'contests#messages'
+
+  match '/contests/:id/messages' => 'contests#messages', as: :contest_messages
+  match '/contests/:id/new_message' => 'contests#new_message', as: :contest_new_message
+  match '/contests/:id/create_message' => 'contests#create_message', as: :contest_create_message
+  
   match '/contests/:id/summary' => 'contests#summary'
 
   match '/contests/:id/:problem' => 'problems#show'
@@ -21,6 +26,9 @@ AcmKbtu::Application.routes.draw do
 
   match '/submits/:contest/:participant' => 'submits#index'
   post 'send_submit' => 'submits#create'
+
+  # match '/contests/:id/messages' => "messages#index"
+  # match '/contests/:id/messages/new' => "messages#new"
 
   devise_for :users
 
@@ -31,6 +39,8 @@ AcmKbtu::Application.routes.draw do
   resources :nodes
 
   resources :pages
+
+  resources :messages
 
   match '/list' => 'pages#list'
 

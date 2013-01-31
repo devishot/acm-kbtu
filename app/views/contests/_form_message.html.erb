@@ -1,0 +1,9 @@
+<%= form_for(@message, :url => contest_create_message_path ) do |f| %>
+  <div class="field">
+    <%= f.label :text %><br />
+    <%= f.text_area :text, :style => "width: 250px; height: 100px" %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
