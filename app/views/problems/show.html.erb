@@ -49,11 +49,16 @@
 
 
     <% if @contest.problems_upload == 0#one_archive %>
-      <%= link_to '<i class="icon-download-alt"></i> Contest\'s statement'.html_safe, 
-          contest_path(@contest.path)+'/statement', :class => 'btn' %>
+      <% if @problem.statement["link"].nil? %>
+        <p>Statement not uploaded yet</p>
+      <% else %>
+        <%= link_to '<i class="icon-download-alt"></i> Contest\'s statement'.html_safe, 
+            contest_path(@contest.path)+'/statement', :class => 'btn' %>
+      <% end %>
     <% else %>
       <%= render 'statement' %>
     <% end %>
+    <br />
     <br />
 
 

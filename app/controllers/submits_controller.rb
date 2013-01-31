@@ -1,4 +1,6 @@
 class SubmitsController < ApplicationController
+  before_filter :load_contest_participant, :except => [:create]
+  before_filter :load_submit, :only => [:show_sourcecode, :download_sourcecode]
 
   # POST /submits
   # POST /submits.json
@@ -40,11 +42,10 @@ class SubmitsController < ApplicationController
   end
 
 
-
   # GET /submits/:contest/:participant
   def index
-    @contest = Contest.find_by(path: params[:contest])
-    @participant = @contest.participants.find_by(path: params[:participant])
+    #@contest = Contest.find_by(path: params[:contest])
+    #@participant = @contest.participants.find_by(path: params[:participant])
     @submits = @participant.submits
 
     @navpill
@@ -57,9 +58,9 @@ class SubmitsController < ApplicationController
 
   # GET /submits/:contest/:participant/:submit
   def show_sourcecode
-    @contest = Contest.find_by(path: params[:contest])
-    @participant = @contest.participants.find_by(path: params[:participant])
-    @submit = @participant.submits[params[:submit].to_i-1]
+    #@contest = Contest.find_by(path: params[:contest])
+    #@participant = @contest.participants.find_by(path: params[:participant])
+    #@submit = @participant.submits[params[:submit].to_i-1]
     @order = params[:submit].to_i
 
     @navpill
@@ -72,14 +73,23 @@ class SubmitsController < ApplicationController
 
   # GET /submits/:contest/:participant/:submit/download
   def download_sourcecode
-    contest = Contest.find_by(path: params[:contest])
-    participant = contest.participants.find_by(path: params[:participant])
-    submit = participant.submits[params[:submit].to_i-1]
-    link = submit.file_sourcecode_path
+    #@contest = Contest.find_by(path: params[:contest])
+    #@participant = @contest.participants.find_by(path: params[:participant])
+    #@submit = @participant.submits[params[:submit].to_i-1]
+    link = @submit.file_sourcecode_path
     send_file(link,
               :filename => "mycode.cpp")
   end
 
+private
+  def load_contest_participant
+    @contest = Contest.find_by(path: params[:contest])
+    @participant = @contest.participants.find_by(path: params[:participant]) 
+  end
+
+  def load_submit
+    @submit = @participant.submits[params[:submit].to_i-1]
+  end
 
   # # GET /submits/1
   # # GET /submits/1.json

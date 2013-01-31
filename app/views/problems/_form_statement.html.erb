@@ -1,6 +1,7 @@
 <%= form_tag("/contests/#{@problem.contest.path}/#{@problem.order}/update_statement", :method => :put, :multipart => true) do %>
-  <%= hidden_field_tag :contest_path, @problem.contest.path %>
+  <%= hidden_field_tag :contest_id, @problem.contest.id %>
   <%= hidden_field_tag :problem_order, @problem.order %>
+  
 
   <%= text_field_tag :title, @problem.statement['title'], 
       :placeholder=>"Title here.." %>
