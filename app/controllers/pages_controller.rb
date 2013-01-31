@@ -1,8 +1,10 @@
 class PagesController < ApplicationController
-  #load_and_authorize_resource
-
-  #before_filter :authenticate_user!, :except => [:main, :show]
   load_and_authorize_resource :except => [:main, :show]
+
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to root_url, :alert => exception.message
+  end
+  
 
   # GET /pages
   # GET /pages.json
