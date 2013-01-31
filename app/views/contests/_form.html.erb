@@ -19,9 +19,9 @@
   </div>
 
   <div class="control-group">
-    <%= f.label :name, :class=>"control-label" %>
+    <%= f.label :title, :class=>"control-label" %>
     <div class="controls">
-      <%= f.text_field :name %>
+      <%= f.text_field :title %>
     </div>
   </div>
 
@@ -29,37 +29,6 @@
     <%= f.label :description, :class=>"control-label" %>
     <div class="controls">
       <%= f.text_area :description, :rows => 5 %>
-    </div>
-  </div>
-
-  <br />
-  <div class="field">
-    <%= f.label :time_start, "Start time", :class=>"control-label" %>
-    <div class="controls">
-      <%= f.datetime_select :time_start %>
-    </div>
-  </div>
-  <br />
-
-  <div class="field">
-    <%= f.label :time_finish, "Finish time", :class=>"control-label" %>
-    <div class="controls">
-      <%= f.datetime_select :time_finish, :default => 5.hours.from_now %>
-    </div>
-  </div>
-  <br />
-
-  <div class="control-group">
-    <%= f.label :problems_type, "Type of add of problems", :class => 'control-label' %>
-    <div class="controls">
-      <%= f.select(:problems_type, options_for_select([['One archive',0], ['Every problem',1]], 0)) %>
-    </div>
-  </div>
-
-  <div class="control-group">
-    <%= f.label :problems_count, "Number of problems", :class => 'control-label' %>
-    <div class="controls">
-      <%= f.number_field :problems_count, :in => 0..200 %>
     </div>
   </div>
 

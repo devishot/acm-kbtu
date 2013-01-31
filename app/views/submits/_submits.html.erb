@@ -1,0 +1,35 @@
+<table class="table table-condensed well">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Submitted</th>
+      <th>Tested</th>
+      <th>Status</th>
+      <th>Status full</th>
+      <th>Source</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% order = @submissions.count+1 %>
+    <% @submissions.sort_by { |obj| obj.updated_at }.reverse_each do |i| %>
+      <tr <%= case i.status
+              when "";"class=warning"
+              when "AC";"class=success"
+              when "PE";"class=info"
+              else "class=error"
+            end
+          %>
+      >
+        <td>  <%= order -= 1 %>  </td>
+        <td>  <%= i.created_at.to_s(:time_s) %>  </td>
+        <td>  <%= i.updated_at.to_s(:time_s) %>  </td>
+        <td>  <%= i.status %>  </td>
+        <td>  <%= i.status_full %>  </td>
+        <td>  <%= link_to "view code", 
+              submit_path(i.participant.contest.path)+"/#{i.problem.order}/#{order}", 
+              :target => '_blank' %> </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

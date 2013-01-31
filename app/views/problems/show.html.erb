@@ -1,4 +1,3 @@
-<% @contest = @submit.problem.contest %>
 <%= render "contests/contest" %>
 
 <div style="background-color: white;">
@@ -9,7 +8,6 @@
       </li>
     <% end %>
   </ul>
-
 
   <% if @submit.errors.any? %>
     <div id="error_explanation">
@@ -24,59 +22,64 @@
 
 
   <div id="articles">
-    <p>
-      <b>Global path:</b>
-      <%= @submit.problem.global_path %>
-    </p>
 
-    <p>
-      <b>Order:</b>
-      <%= @submit.problem.order %>
-    </p>
-
-    <p>
-      <b>Tests path:</b>
-      <%= @submit.problem.tests_path %>
-    </p>
-
-    <table class="table table-condensed well">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Submitted</th>
-          <th>Tested</th>
-          <th>Status</th>
-          <th>Status full</th>
-          <th>Source</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% order = @submissions.count+1 %>
-        <% @submissions.reverse_each do |i| %>
-          <tr>
-            <td>  <%= order -= 1 %>  </td>
-            <td>  <%= i.created_at.to_s(:time_s) %>  </td>
-            <td>  <%= i.updated_at.to_s(:time_s) %>  </td>
-            <td>  <%= i.status %>  </td>
-            <td>  <%= i.status_full %>  </td>
-            <td>  <%= i.file_sourcecode_path %>  </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-
-    <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
-      <%= hidden_field_tag :status %>
-      <%= hidden_field_tag :status_full %>
-      <%= hidden_field_tag :problem , @submit.problem_id %>
-      <%= hidden_field_tag :participant, @submit.participant_id %>
-      <%= file_field_tag :file %>
-
-      <div class="actions">
-        <%= submit_tag "Submit" %>
-      </div>
-      <br />
+    <% if can? :edit, @submit.problem %>
+      <%= link_to '<i class="icon-pencil icon-white"></i> Edit'.html_safe, 
+          contest_path(@contest.path)+"/#{@submit.problem.order}/edit", 
+          :class => 'btn btn-info' %>
     <% end %>
+
+    <center>
+      <% if @contest.problems_upload == 1#every_problem %>
+        <h3>
+          <%= @submit.problem.statement['title'] %>
+        </h3>
+      <% end %>
+
+      <p>
+        <b>Time limit:</b>
+        <%= @submit.problem.time_limit %> s
+      </p>
+
+      <p>
+        <b>Memory limit:</b>
+        <%= @submit.problem.memory_limit %> Mb
+      </p>
+    </center>
+
+
+    <% if @contest.problems_upload == 0#one_archive %>
+      <% if @problem.statement["link"].nil? %>
+        <p>Statement not uploaded yet</p>
+      <% else %>
+        <%= link_to '<i class="icon-download-alt"></i> Contest\'s statement'.html_safe, 
+            contest_path(@contest.path)+'/statement', :class => 'btn' %>
+      <% end %>
+    <% else %>
+      <%= render 'statement' %>
+    <% end %>
+    <br />
+    <br />
+
+
+    <!-- if NOT author and admin then he can send submit -->
+    <% if !(current_user == @contest.user || current_user.admin?) %>
+      <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
+        <%= hidden_field_tag :status %>
+        <%= hidden_field_tag :status_full %>
+        <%= hidden_field_tag :problem , @submit.problem_id %>
+        <%= hidden_field_tag :participant, @submit.participant_id %>
+        <%= file_field_tag :file %>
+        <div class="actions">
+          <%= submit_tag "Submit" %>
+        </div>
+        <br />
+      <% end %>
+
+      <%= render "submits/submits" %>
+    <% end %>
+    <br />
+
   </div>
 </div>
+<br />

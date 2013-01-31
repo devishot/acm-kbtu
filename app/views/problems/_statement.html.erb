@@ -1,0 +1,30 @@
+<% return if @submit.problem.statement.nil? %>
+
+<%= @submit.problem.statement['text'].html_safe %>
+<br />
+
+<table class="table table-bordered table-hover" style="width: 500px">
+  <thead>
+    <tr>
+      <th>Input</th>
+      <th>Output</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% 3.times do |i| %>
+  <% next if @submit.problem.statement['inputs'][i].empty? %>
+    <tr>
+      <td style="width: 50%">
+          <%= simple_format(@submit.problem.statement['inputs'][i]) %>
+      </td>
+      
+      <td> 
+        <%= simple_format(@submit.problem.statement['outputs'][i]) %>
+      </td>
+
+    </tr>
+  <% end %>
+  <tbody>
+
+</table>

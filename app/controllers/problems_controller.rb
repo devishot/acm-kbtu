@@ -1,58 +1,108 @@
 class ProblemsController < ApplicationController
+  before_filter :find_contest, :except => [:index, :update, :update_statement]
+  before_filter :find_problem, :only => [:show, :edit, :edit_statement]
+  before_filter :find_contest_problem, :only => [:update, :update_statement]
+  load_and_authorize_resource
+
   # GET /contests/:id/problems
   def index
     @navpill = 1
 
-    respond_to do |format|
-      format.html { redirect_to "/contests/#{params[:id]}/1" }
-      #format.json { render json: @problems }
-    end
+    redirect_to "/contests/#{params[:id]}/1"
   end
 
   # GET /contests/:id/:problem
   def show
-    contest = Contest.find_by(path: params[:id])
-    if current_user.participants.where(contest: contest).count == 0 then
-      redirect_to contest_path(contest.path), notice: 'Please, register to participate.'
+    #@contest = Contest.find_by(path: params[:id])
+    #@problem = @contest.problems.find_by(order: params[:problem])
+    @submit = Submit.new()
+    @submit.problem = @problem
+
+    if current_user == @contest.user || current_user.admin?
+      #nothing
+    elsif current_user.participants.where(contest: @contest).count==0  then
+      redirect_to contest_path(@contest.path), notice: 'Please, register to participate.'
       return
     else
-      participant = current_user.participants.find_by(contest: contest)
+      participant = current_user.participants.find_by(contest: @contest)
+      @submit.participant = participant
+      @submissions = participant.submits.where(problem: @problem)
     end
-    problem = contest.problems.find_by(order: params[:problem])
-
-    @submit = Submit.new()
-    @submit.problem = problem
-    @submit.participant = participant
-
-    @submissions = participant.submits.where(problem: problem)
 
     @navpill = 1
     respond_to do |format|
       format.html # show.html.erb
-      #format.json { render json: @problem }
     end
   end
 
   # GET /contests/:id/:problem/edit
   def edit
-    contest = Contest.find_by(path: params[:id])
-    @problem = contest.problems.find_by(order: params[:problem])
+    #@contest = Contest.find_by(path: params[:id])
+    #@problem = @contest.problems.find_by(order: params[:problem])
   end
 
-  # PUT '/contests/:id/:problem
-  def update
-    raise "#{params[:problem_order]}"
-    @problem = Problem.find(params[:id])
+  # GET /contests/:id/:problem/edit_statement
+  def edit_statement
+    #@contest = Contest.find_by(path: params[:id])
+    #@problem = @contest.problems.find_by(order: params[:problem])
+  end
 
+  # PUT /contests/:id/:problem
+  def update
+    #@contest = Contest.find(params[:contest_id])
+    #@problem = @contest.problems.find_by(order: params[:problem_order])
     respond_to do |format|
       if @problem.update_attributes(params[:problem])
-        format.html { redirect_to @problem, notice: 'Problem was successfully updated.' }
-        #format.json { head :no_content }
+        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit", 
+          notice: 'Problem was successfully updated.' }
       else
-        format.html { render action: "edit" }
-        #format.json { render json: @problem.errors, status: :unprocessable_entity }
+        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit",
+          notice: 'ERROR: Problem was not updated.' }
       end
     end
+  end    
+
+  # PUT /contests/:id/:problem/update_statement
+  def update_statement
+    #@contest = Contest.find(params[:contest_id])
+    #@problem = @contest.problems.find_by(order: params[:problem_order])
+    inputs = []
+    outputs = []
+    3.times do |i|
+      inputs << params["input#{i}"]
+      outputs << params["output#{i}"]
+    end
+    @problem.statement = {:title => params[:title], 
+                          :text => params[:text], 
+                          :inputs => inputs, 
+                          :outputs => outputs }
+    #and set tests_path if uploaded
+    @problem.unzip(params[:archive]) if !params[:archive].nil?
+    
+    respond_to do |format|
+      if @problem.save
+        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}", 
+          notice: 'Problem\'s statement was successfully updated.' }
+      else
+        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}", 
+          notice: 'ERROR: Problem\'s statement was not updated.' }
+      end
+    end
+  end
+
+
+private
+  def find_contest
+    @contest = Contest.find_by(path: params[:id])
+  end
+
+  def find_problem
+    @problem = @contest.problems.find_by(order: params[:problem])
+  end
+
+  def find_contest_problem
+    @contest = Contest.find(params[:contest_id])
+    @problem = @contest.problems.find_by(order: params[:problem_order]) 
   end
 
   # # GET /problems/new
@@ -93,4 +143,5 @@ class ProblemsController < ApplicationController
   #     format.json { head :no_content }
   #   end
   # end
+
 end

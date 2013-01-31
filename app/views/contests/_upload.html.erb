@@ -1,0 +1,32 @@
+<table class="table table-bordered" style="width: 500px">
+  <p>Upload Problems</p>
+  <tr>
+    <td style="width: 50%">
+      <%= form_for(@contest, :url => contest_path(@contest.path)+'/update_mode', :method => :put) do |f| %>
+        <div class="control-group">
+          <%= f.label :problems_upload, "Type of adding", :class => 'control-label' %>
+          <div class="controls">
+            <%= f.select(
+                :problems_upload, 
+                options_for_select([['One archive',0], ['Every problem',1]], @contest.problems_upload)
+              )%>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <%= f.label :problems_count, "Number of problems", :class => 'control-label' %>
+          <div class="controls">
+            <%= f.number_field :problems_count, :in => 0..200, :class => 'span1'%>
+          </div>
+        </div>
+
+        <div class="actions">
+          <%= f.submit 'Update', :class => "btn" %>
+        </div>
+      <% end %>
+    </td>
+    <td>
+      <%= render (@contest.problems_upload == 0) ? 'upload_onearchive' : 'edit_problems' %>
+    </td>
+  </tr>
+</table>

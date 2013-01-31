@@ -26,13 +26,18 @@ class Participant
 
   def set_path
     return if self.path != nil
+    participants = self.contest.participants
+    self.path = (participants.exists?) ? (participants.last.path.to_i()+1).to_s() : '1'
+  end
 
-    if ((self.contest).participants).exists?
-      path = ( ((self.contest).participants).last.path.to_i() + 1 ).to_s()
-    else
-      path = '1'
-    end    
-    self.path = path
+  before_destroy do |participant|
+    participant_folder = 
+      "#{Rails.root}/judge-files/contests/#{participant.contest.path}/participants/#{participant.path}"    
+    participant.user.participants.delete(participant)    
+    participant.contest.participants.delete(participant)
+    participant.submits.destroy_all
+
+    FileUtils.rm_rf participant_folder
   end
 
   def set_standings

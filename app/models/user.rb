@@ -2,6 +2,7 @@ class User
   include Mongoid::Document
 
   has_many :pages
+  has_many :contests
   has_many :participants
 
   # Include default devise modules. Others available are:
@@ -9,19 +10,21 @@ class User
   # :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
 
-  field :name,              :type => String, :default => ""
+  field :name,               :type => String, :default => ""
   ## Database authenticatable
   field :email,              :type => String, :default => ""
   field :encrypted_password, :type => String, :default => ""
 
 
-  ROLES = %w[admin moderator author]
+  ROLES = %w[admin moderator author student teacher]
   
   field :role, :type => String, :default => "author"
 
-  def admin?; role == 'admin'; end
+  def admin?;     role == 'admin'; end
   def moderator?; role == 'moderator'; end
-  def author?; role == 'author'; end
+  def author?;    role == 'author'; end
+  def student?;   role == 'student'; end
+  def teacher?;   role == 'teacher'; end
 
 
   validates_presence_of :email

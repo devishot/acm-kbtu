@@ -4,12 +4,17 @@ AcmKbtu::Application.routes.draw do
 
   resources :problems
 
-  resources :contests 
+  resources :contests
+  put   '/contests/:id/update_mode' => 'contests#update_mode'
+  match '/contests/:id/upload' => 'contests#upload'
+  post  '/contests/:id/unpack' => 'contests#unpack'
+  post  '/contests/:id/participate' => 'contests#participate'
+  delete 'kill_participant' => 'contests#kill_participant'
 
-  match '/contests/:id/upload' => 'contests#archive_uploader'
-  post 'archive_unzip' => 'contests#archive_unzip'
-  match '/contests/:id/participate' => 'contests#participate'
-  post 'kill_participate' => 'contests#kill_participate'
+  match '/contests/:id/control' => 'contests#control'
+  post  '/contests/:id/control/update' => 'contests#control_update'
+
+  match '/contests/:id/statement' => 'contests#download_statement'
 
   match '/contests/:id/problems'=> 'problems#index'
   match '/contests/:id/standings'=> 'contests#standings'
@@ -21,11 +26,16 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/summary' => 'contests#summary'
 
   match '/contests/:id/:problem' => 'problems#show'
+
   match '/contests/:id/:problem/edit' => 'problems#edit'
-  put '/contests/:id/:problem' => 'problems#update'
+  put   '/contests/:id/:problem' => 'problems#update'
+  match '/contests/:id/:problem/edit_statement' => 'problems#edit_statement'  
+  put   '/contests/:id/:problem/update_statement' => 'problems#update_statement'
 
   match '/submits/:contest/:participant' => 'submits#index'
-  post 'send_submit' => 'submits#create'
+  match '/submits/:contest/:participant/:submit' => 'submits#show_sourcecode'
+  match '/submits/:contest/:participant/:submit/download' => 'submits#download_sourcecode'  
+  post  'send_submit' => 'submits#create'
 
   # match '/contests/:id/messages' => "messages#index"
   # match '/contests/:id/messages/new' => "messages#new"

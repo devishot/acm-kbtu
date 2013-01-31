@@ -1,26 +1,11 @@
 <%= render "contests/contest" %>
 
+<% @contest.problems_count.times do |i| %>
+  <% problem = @contest.problems[i] %>
+  <% @submissions = @submits.where(problem: problem) %>
 
-<h1>Listing submits</h1>
-
-<table>
-  <tr>
-    <th>Solution file</th>
-    <th>Status</th>
-    <th>Status full</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @submits.each do |submit| %>
-  <tr>
-    <td><%= submit.file_sourcecode_path %></td>
-    <td><%= submit.status %></td>
-    <td><%= submit.status_full %></td>
-    <td><%= link_to 'Show', submit %></td>
-    <td><%= link_to 'Edit', edit_submit_path(submit) %></td>
-    <td><%= link_to 'Destroy', submit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
+  <div class="well">
+    <p>Problem <%= i+1 %></p>
+    <%= render "submits" %>
+  </div>
 <% end %>
-</table>

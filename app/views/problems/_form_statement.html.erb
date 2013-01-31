@@ -1,0 +1,40 @@
+<%= form_tag("/contests/#{@problem.contest.path}/#{@problem.order}/update_statement", :method => :put, :multipart => true) do %>
+  <%= hidden_field_tag :contest_id, @problem.contest.id %>
+  <%= hidden_field_tag :problem_order, @problem.order %>
+  
+
+  <%= text_field_tag :title, @problem.statement['title'], 
+      :placeholder=>"Title here.." %>
+
+  <div class="field">
+    <%= text_area_tag :text, @problem.statement['text'].html_safe, 
+      :class => 'field span9 tinymce', 
+      :placeholder=>"Statement text here..",
+      :style => "width:100%;" %>
+    <%= tinymce %>
+  </div>
+  <br />
+
+  <% 3.times do |i| %>
+    <div class="form-inline">
+      <%= text_area_tag "input#{i}", @problem.statement['inputs'][i].html_safe,
+          :rows => 5,
+          :placeholder=>"Input #{i+1}" %>
+
+      <%= text_area_tag "output#{i}", @problem.statement['outputs'][i].html_safe, 
+          :rows => 5,
+          :placeholder=>"Output #{i+1}" %>
+    </div>
+    <br />
+  <% end %>
+
+  <%= file_field_tag 'archive' %>
+  <br />
+  <br />
+
+  <%= submit_tag("Upload", :class => "btn") %>
+  <br />
+  <br />
+  <br />
+
+<% end %>

@@ -1,0 +1,18 @@
+<%= render "contests/contest" %>
+
+<%= @submit.file_sourcecode_path %>
+<br />
+<br />
+
+  <% line_num=0 %>
+  <% text=File.open(@submit.file_sourcecode_path, "r").read %>
+  <% text.gsub!(/\r\n?/, "\n") %>
+
+<pre>
+  <code class="cpp">  
+    <% text.each_line do |line| %>
+      <%= line %> <!-- "#{line_num += 1} #{line}" -->
+    <% end %>
+  </code>
+</pre>
+<br />

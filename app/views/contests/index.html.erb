@@ -1,20 +1,20 @@
-<h1>Listing contests</h1>
+<h1>Contests</h1>
 
-<%= link_to 'New Contest', new_contest_path, :class => "btn btn-primary" %>
-
-<br />
-<br />
+<% if can? :create, Contest %>
+  <%= link_to 'New Contest', new_contest_path, :class => "btn btn-primary" %>
+  <br />
+  <br />
+<% end %>
 
 <div class="well">
-  <table class="table">
+  <table class="table table-hover">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Description</th>
+        <th>Title</th>
+        <th>Type</th>
+        <!-- <th>Description</th> -->
         <th>Start time</th>
-        <th>Finish time</th>
-        <th></th>
-        <th></th>
+        <th>Duration</th>
         <th></th>
       </tr>
     </thead>
@@ -22,17 +22,14 @@
   <% @contests.each do |contest| %>
     <tbody>
       <tr>
-        <td><%= contest.name %></td>
-        <td><%= contest.description %></td>
-        <td><%= contest.time_start.strftime("%Y-%m-%d %H:%M") %></td>
-        <td><%= contest.time_finish.strftime("%Y-%m-%d %H:%M") %></td>
-        <td><%= link_to 'Show', contests_path+'/'+contest.path %></td>
-        <td><%= link_to 'Edit', contests_path+'/'+contest.path+'/edit' %></td>
-        <td><%= link_to 'Destroy', contests_path+'/'+contest.path, 
-              method: :delete, 
-              data: { confirm: 'Are you sure?' } 
-            %>
+        <td><%= contest.title %></td>
+        <td><%= (contest.type==0) ? "ACM" : "IOI" %></td>
+        <!-- <td><%= contest.description %></td> -->
+        <td>
+          <%= (contest.time_start.nil?) ? 'Not started' : contest.time_start.strftime("%Y-%m-%d %H:%M")%>
         </td>
+        <td><%= contest.duration %> min </td>
+        <td><%= link_to 'Show', contest_path(contest.path) %></td>
       </tr>
     </tbody>
   <% end %>
