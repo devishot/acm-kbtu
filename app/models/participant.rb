@@ -5,7 +5,8 @@ class Participant
   belongs_to :user
   belongs_to :contest
   has_many :submits
-
+  has_many :messages
+  
 # for standings
   field :penalty, type: Integer, default: 0
   field :penalties, type: Array

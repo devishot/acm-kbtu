@@ -21,12 +21,29 @@ class ContestsController < ApplicationController
     @navpill = 4
   end
 
+# messages
   def messages
     @contest = Contest.find_by(path: params[:id])
     @navpill = 3
-    @msgnav = 1
-
+    @messages = Message.all
   end
+
+  def new_message
+    @contest = Contest.find_by(path: params[:id])
+    @message = Message.new
+    @navpill = 3
+  end
+
+  def create_message
+    @message = Message.new(params[:message])
+    @message.participant = Participant.find_by(:user => current_user)
+    @contest = Contest.find(@message.participant.contest)
+
+    @message.save
+
+    redirect_to contest_messages_path(@contest.path)
+  end
+# end messages
 
   def standings
     @contest = Contest.find_by(path: params[:id])

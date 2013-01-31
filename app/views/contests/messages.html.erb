@@ -1,5 +1,24 @@
 <%= render "contest" %>
-<ul class="nav nav-pills">
-	<li <% "class=active" if @msgnav==1 %> ><a href="#">Send message</a></li>
-	<li <% "class=active" if @msgnav==2 %> ><a href="#">Messages</a></li>
-</ul>
+
+<h4>All messages</h4>
+
+<table class="table table-bordered" style="width:40%">
+  <tr>
+    <th>Text</th>
+    <th></th>
+  </tr>
+
+<% @messages.each do |message| %>
+  <tr>
+  	<td>
+	    <%= message.text[0..40].html_safe %>
+	    <% if message.text.length>40 %>
+	      ...
+	    <% end %>
+	  </td>
+    <td><%= link_to 'Show', message %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
