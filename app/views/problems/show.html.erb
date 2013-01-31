@@ -23,9 +23,11 @@
 
   <div id="articles">
 
-    <%= link_to '<i class="icon-pencil icon-white"></i> Edit'.html_safe, 
-        contest_path(@contest.path)+"/#{@submit.problem.order}/edit", 
-        :class => 'btn btn-info' %>
+    <% if can? :edit, @submit.problem %>
+      <%= link_to '<i class="icon-pencil icon-white"></i> Edit'.html_safe, 
+          contest_path(@contest.path)+"/#{@submit.problem.order}/edit", 
+          :class => 'btn btn-info' %>
+    <% end %>
 
     <center>
       <% if @contest.problems_upload == 1#every_problem %>
@@ -45,8 +47,9 @@
       </p>
     </center>
 
+
     <% if @contest.problems_upload == 0#one_archive %>
-      <%= link_to '<i class="icon-download-alt"></i> Download contest\'s statement'.html_safe, 
+      <%= link_to '<i class="icon-download-alt"></i> Contest\'s statement'.html_safe, 
           contest_path(@contest.path)+'/statement', :class => 'btn' %>
     <% else %>
       <%= render 'statement' %>
@@ -54,19 +57,23 @@
     <br />
 
 
-    <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
-      <%= hidden_field_tag :status %>
-      <%= hidden_field_tag :status_full %>
-      <%= hidden_field_tag :problem , @submit.problem_id %>
-      <%= hidden_field_tag :participant, @submit.participant_id %>
-      <%= file_field_tag :file %>
-      <div class="actions">
-        <%= submit_tag "Submit" %>
-      </div>
-      <br />
-    <% end %>
+    <!-- if NOT author and admin then he can send submit -->
+    <% if !(current_user == @contest.user || current_user.admin?) %>
+      <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
+        <%= hidden_field_tag :status %>
+        <%= hidden_field_tag :status_full %>
+        <%= hidden_field_tag :problem , @submit.problem_id %>
+        <%= hidden_field_tag :participant, @submit.participant_id %>
+        <%= file_field_tag :file %>
+        <div class="actions">
+          <%= submit_tag "Submit" %>
+        </div>
+        <br />
+      <% end %>
 
-    <%= render "submits/submits" %>
+      <%= render "submits/submits" %>
+    <% end %>
+    <br />
 
   </div>
 </div>

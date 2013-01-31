@@ -15,8 +15,13 @@ class Ability
     elsif user.student?
         can :read, Contest
     elsif user.teacher?
-        can :create, Contest
+        #Contest
+        can [:create, :read], Contest
         can :manage, Contest, :user_id => user.id
+        #Problem
+        can :manage, Problem, :contest => { :user_id => user.id }
+        #Submit
+        #can :read, Submit
     else
         can :read, [Node, Page]
     end

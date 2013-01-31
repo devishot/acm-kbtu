@@ -2,9 +2,13 @@
 <br />
 <br />
 
-<%= link_to '<i class="icon-wrench icon-white"></i> Control panel'.html_safe, contest_path(@contest.path)+'/control', class: "btn btn-inverse" %>
-<br />
-<br />
+<% if (@contest.user==current_user || current_user.admin?) %>
+  <%= link_to '<i class="icon-wrench icon-white"></i> Control panel'.html_safe, 
+      contest_path(@contest.path)+'/control', 
+      class: "btn btn-inverse" %>
+  <br />
+  <br />
+<% end %>
 
 <div id="body-bgcolor">
   <center style = "Но это центр, 
@@ -37,7 +41,8 @@
     </p>
   </center>
 
-  <% if (current_user.participants.where(contest: @contest).count == 0) then %>
+
+  <% if (@contest.user!=current_user && current_user.participants.where(contest: @contest).count==0) then %>
     <%= link_to "Participate", contest_path(@contest.path) + "/participate", 
         :method => :post, 
         :class => "btn btn-primary"%>

@@ -52,6 +52,7 @@ class ContestsController < ApplicationController
   # post /contests/:id/participate
   def participate 
     #@contest = Contest.find_by(path: params[:id])
+    return if current_user==@contest.user
     return if current_user.participants.where(contest: @contest).count != 0
 
     participant = Participant.new();
@@ -113,7 +114,8 @@ class ContestsController < ApplicationController
   # POST /contests
   def create
     @contest = Contest.new(params[:contest])
-    
+    @contest.user = current_user #author 
+
     respond_to do |format|
       if @contest.save
         format.html { redirect_to contest_path(@contest.path)+'/control', 
@@ -181,7 +183,7 @@ class ContestsController < ApplicationController
     @contest.problems_create(params[:statement])
 
     respond_to do |format|
-      format.html { redirect_to contest_path(contest.path)+'/control' }
+      format.html { redirect_to contest_path(@contest.path)+'/control' }
     end    
   end
 
@@ -190,5 +192,5 @@ private
   def find_by_path
     @contest = Contest.find_by(path: params[:id])
   end
-  
+
 end
