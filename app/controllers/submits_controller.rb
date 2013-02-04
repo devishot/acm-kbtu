@@ -11,10 +11,10 @@ class SubmitsController < ApplicationController
       :problem => params[:problem],
       :participant => params[:participant]
     })
-    @contest = @submit.problem.contest
+    contest = @submit.problem.contest
     name = @submit.id.to_s()+params[:file].original_filename
     directory = 
-      "#{Rails.root}/judge-files/contests/#{@contest.path}/participants/"+
+      "#{Rails.root}/judge-files/contests/#{contest.path}/participants/"+
       "#{@submit.participant.path}/#{@submit.problem.order}/"
     path = File.join(directory, name)
     tmpfile = params[:file].tempfile
@@ -22,7 +22,7 @@ class SubmitsController < ApplicationController
     
 
     respond_to do |format|
-      problem_path = contest_path(@contest.path)+"/#{@submit.problem.order}"
+      problem_path = contest_path(contest.path)+"/#{@submit.problem.order}"
       if @submit.save
         #save sourcecode
         FileUtils.mkdir_p directory unless File.directory? directory
@@ -34,10 +34,8 @@ class SubmitsController < ApplicationController
         Resque.enqueue(Tester, @submit.id)
 
         format.html { redirect_to problem_path, notice: 'Successfully submited.' }
-        #format.json { render json: @submit, status: :created, location: @submit }
       else
         format.html { redirect_to problem_path, notice: 'ERROR! Check and try again.' }
-        #format.json { render json: @submit.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -53,7 +51,6 @@ class SubmitsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      #format.json { render json: @submits }
     end
   end
 

@@ -8,30 +8,21 @@ class Ability
 =begin
     if user.admin?
         can :manage, :all
-    elsif user.moderator?
-        can :manage, [Node, Page]
-    elsif user.author?
-        can :read, Node
-        can [:read, :create], Page
-        can [:destroy, :update], Page, :user_id => user.id
     elsif user.student?
-        #Contest
-        can [:read, :download_statement, :participate, :standings, :messages, :summary], Contest
-        #Problem
-        can :read, Problem
         #Submit
         can [:read, :create], Submit
         can [:show_sourcecode, :download_sourcecode], Submit, :participant => { :user_id => user.id }
     elsif user.teacher?
+        can :create, Page
+        can :manage, Page, :user_id => user.id        
         #Contest
-        can [:create, :read], Contest
+        can :create, Contest
         can :manage, Contest, :user_id => user.id
         #Problem
         can :manage, Problem, :contest => { :user_id => user.id }
-    else
-        can :read, [Node, Page]
     end
 =end
+
 
     #
     # The first argument to `can` is the action you are giving the user permission to do.

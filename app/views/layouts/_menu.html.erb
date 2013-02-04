@@ -2,11 +2,13 @@
   <div class="navbar-inner">
     <a class="brand" href="/">ACM-KBTU</a>
 
-    <ul class="nav">
-      <li>
-        <%= link_to 'Edit..', list_path %>
-      </li>
-    </ul>
+    <% if !current_user.nil? && current_user.admin? %>
+      <ul class="nav">
+        <li>
+          <%= link_to 'Edit..', list_path %>
+        </li>
+      </ul>
+    <% end %>
 
     <ul class="nav pull-right">
       <% if user_signed_in? %>

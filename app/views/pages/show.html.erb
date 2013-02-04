@@ -3,16 +3,14 @@
 
   <div id="articles">
     <article>
-
       <header>
         <h3>
           <%= @page.text_title %>
         </h3>
-
         <div class="article-author">
-          Submitted by <%= @page.user.name %> on <%= @page.created_at.to_s(:long) if !@page.created_at.nil? %>
+          Submitted by 
+          <%= @page.user.name %> on <%= @page.created_at.to_s(:long) if not @page.created_at.nil? %>
         </div>
-
         <hr />
       </header>
 
@@ -20,8 +18,12 @@
         <%= @page.text_body.html_safe %>
       </p>
 
-      <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path+'/destroy' %> |
-      <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %> |
+      <% if can? :destroy, @page %>
+        <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path+'/destroy' %> |
+      <% end %>
+      <% if can? :edit, @page %>
+        <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %> |
+      <% end %>
       <%= link_to 'Back', :back %>
     </article>
     <br />

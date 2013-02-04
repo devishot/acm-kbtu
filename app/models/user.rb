@@ -16,16 +16,13 @@ class User
   field :encrypted_password, :type => String, :default => ""
 
 
-  ROLES = %w[admin moderator author student teacher]
+  ROLES = %w[admin student teacher]
   
-  field :role, :type => String, :default => "author"
+  field :role, :type => String, :default => "student"
 
   def admin?;     role == 'admin'; end
-  def moderator?; role == 'moderator'; end
-  def author?;    role == 'author'; end
   def student?;   role == 'student'; end
   def teacher?;   role == 'teacher'; end
-
 
   validates_presence_of :email
   validates_presence_of :encrypted_password

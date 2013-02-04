@@ -1,18 +1,18 @@
 class NodesController < ApplicationController
-  #load_and_authorize_resource
-
-  #before_filter :authenticate_user!, :except => [:show]
-  load_and_authorize_resource :except => [:show, :upd_order]
+  load_and_authorize_resource :except => :show
   skip_before_filter :verify_authenticity_token, :only => [:upd_pages_order, :upd_nodes_order]
 
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to root_url, :alert => exception.message
+  end
+
+
   # GET /nodes
-  # GET /nodes.json
   def index
     @nodes = Node.all.sort{ |a, b| a.order <=> b.order }
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @nodes }
     end
   end
 
@@ -32,10 +32,8 @@ class NodesController < ApplicationController
 
     respond_to do |format|
        format.html { redirect_to list_path, notice: '###' }
-       format.json { render json: list_path, status: :created, location: list_path }
     end
   end
-
 
   # POST
   def upd_nodes_order
@@ -51,12 +49,10 @@ class NodesController < ApplicationController
 
     respond_to do |format|
        format.html { redirect_to list_path, notice: '###' }
-       format.json { render json: list_path, status: :created, location: list_path }
-    end    
+    end
   end
 
   # GET /nodes/1
-  # GET /nodes/1.json
   def show
     @nodes = Node.all.sort{ |a, b| a.order <=> b.order }
     @node = Node.find_by(path: params[:id])
@@ -107,10 +103,8 @@ class NodesController < ApplicationController
     respond_to do |format|
       if @node.update_attributes(params[:node])
         format.html { redirect_to list_path, notice: 'Node was successfully updated.' }
-        format.json { head :no_content }
       else
         format.html { render action: "edit" }
-        format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
   end
