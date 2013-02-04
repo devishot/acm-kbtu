@@ -1,16 +1,20 @@
 <%= link_to 'edit registration', edit_user_registration_path, :class => "btn btn-primary" %>
 
-<br />
-<br />
-<%= link_to 'New Page', new_page_path, :class => "btn btn-primary" %>
 
-<br />
-<h2>Your pages</h2>
+<% if current_user.teacher? || current_user.admin? %>
 
+  <br />
+  <br />
+  <%= link_to 'New Page', new_page_path, :class => "btn btn-primary" %>
 
-<% @pages = current_user.pages %>
-<% if !@pages.empty? %>
-  <%= render 'pages/pages' %>
-<% else %>
-  <p>You don't have pages</p>
+  <br />
+  <h2>Your pages</h2>
+
+  <% @pages = current_user.pages %>
+  <% if !@pages.empty? %>
+    <%= render 'pages/pages' %>
+  <% else %>
+    <p>You don't have pages</p>
+  <% end %>
+
 <% end %>

@@ -103,7 +103,7 @@ class Tester
   end
 
   def self.perform(submit_id)
-    system_path = '/home/azamat/work/acm-kbtu/judge-files/check-system'
+    system_path = "#{Rails.root}/judge-files/check-system"
 
     a = Tester.new(submit_id, system_path)
     a.run
@@ -115,16 +115,16 @@ class Tester
 
     if @submit.status == "AC"
       if @participant.a[@problem.order] <= 0
-        p "AC"
+        #p "AC"
         @participant.a[@problem.order] = @participant.a[@problem.order].abs+1
-        p @participant.a
+        #p @participant.a
         @participant.penalties[@problem.order] += ((Time.now.to_i - @participant.contest.time_start.to_i)/60).to_i
-        p @participant.penalties
+        #p @participant.penalties
         @participant.save!
       end
     elsif @submit.status == "WA"
       if @participant.a[@problem.order] <= 0
-        p "WA"
+        #p "WA"
         @participant.a[@problem.order] -= 1
         @participant.penalties[@problem.order] += 20
         @participant.save!

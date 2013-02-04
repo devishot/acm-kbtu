@@ -42,7 +42,7 @@
   </center>
 
 
-  <% if (@contest.user!=current_user && current_user.participants.where(contest: @contest).count==0) then %>
+  <% if @contest.user!=current_user && !current_user.participate?(@contest) && !@contest.over? %>
     <%= link_to "Participate", contest_path(@contest.path) + "/participate", 
         :method => :post, 
         :class => "btn btn-primary"%>
@@ -66,8 +66,8 @@
           <b class="caret"></b>
         </a>
       <ul class="dropdown-menu">
-        <li><%= link_to "All clars", contest_messages_path(@contest.path) %></li>
-        <li><%= link_to "Submit clar", contest_new_message_path(@contest.path) %></li>
+        <li><%= link_to_if(1==0, "All clars", contest_messages_path(@contest.path)) %></li>
+        <li><%= link_to_if(1==0, "Submit clar", contest_new_message_path(@contest.path)) %></li>
       </ul>
     </li>
   </ul>

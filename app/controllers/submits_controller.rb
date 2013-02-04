@@ -35,7 +35,7 @@ class SubmitsController < ApplicationController
 
         format.html { redirect_to problem_path, notice: 'Successfully submited.' }
       else
-        format.html { redirect_to problem_path, notice: 'ERROR! Check and try again.' }
+        format.html { redirect_to problem_path, alarm: 'ERROR! Check and try again.' }
       end
     end
   end

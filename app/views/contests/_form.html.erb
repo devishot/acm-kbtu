@@ -11,12 +11,17 @@
     </div>
   <% end %>
 
-  <div class="control-group">
-    <%= f.label :type, "Type of contest", :class => 'control-label' %>
-    <div class="controls">
-      <%= f.select(:type, options_for_select([['ACM', 0], ['IOI', 1]], 0)) %>
-    </div>
+  <div>
+    <label class="checkbox inline">
+      <%= f.label :type, 'ACM' %>
+      <%= f.radio_button :type, 0 %>
+    </label>
+    <label class="checkbox inline">
+      <%= f.label :type, 'IOI' %>
+      <%= f.radio_button :type, 1, :disabled => true %>
+    </label>
   </div>
+  <br />
 
   <div class="control-group">
     <%= f.label :title, :class=>"control-label" %>

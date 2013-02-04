@@ -76,10 +76,8 @@ class PagesController < ApplicationController
         after_save_page(@page)
 
         format.html { redirect_to '/nodes/'+(@page.node).path, notice: 'Page was successfully created.' }
-        #format.json { render json: '/nodes/'+(@page.node).path, status: :created, location: list_path }
       else
         format.html { render action: "new" }
-        #format.json { render json: @page.errors, status: :unprocessable_entity }
       end
     end
 

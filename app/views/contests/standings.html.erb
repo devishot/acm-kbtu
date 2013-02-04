@@ -1,10 +1,14 @@
 <%= render "contest" %>
-<p>Last success by
-  <%= @last_success.participant.user.name %>
-  at <%= @last_success.created_at.strftime("%Y-%m-%d %H:%M") %>
-  . Problem <%= @last_success.problem.order %>
-</p>
- <table class="table table-striped table-bordered table-hover table-condensed" >
+
+<% if not @last_success.nil? %>
+  <p>Last success by
+    <%= @last_success.participant.user.name %>
+    at <%= @last_success.created_at.strftime("%Y-%m-%d %H:%M") %>
+    . Problem <%= @last_success.problem.order %>
+  </p>
+<% end %>
+
+<table class="table table-striped table-bordered table-hover table-condensed" >
   <thead>
     <tr>
       <th>ID</th>

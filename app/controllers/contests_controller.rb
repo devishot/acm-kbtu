@@ -1,8 +1,11 @@
 class ContestsController < ApplicationController
-  #before_filter :authenticate_user!, :except => [:index]
-  before_filter :find_by_path, 
+  before_filter :load_contest,
                 :except => [:index, :kill_participant, :new, :create]
-  load_and_authorize_resource
+  #load_and_authorize_resource
+
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to root_url, :alert => exception.message
+  end
 
   # GET /contests
   # GET /contests.json
@@ -67,7 +70,7 @@ class ContestsController < ApplicationController
   def participate 
     #@contest = Contest.find_by(path: params[:id])
     return if current_user==@contest.user
-    return if current_user.participants.where(contest: @contest).count != 0
+    return if not current_user.participants.where(contest: @contest).count == 0
 
     participant = Participant.new();
     @contest.participants << participant      # participant.contest will be automatically created
@@ -92,7 +95,7 @@ class ContestsController < ApplicationController
     if statement_link.nil?
       respond_to { |format|
         format.html { redirect_to contest_path(@contest.path), 
-                      notice: 'not uploaded yet'}
+                      alert: 'not uploaded yet'}
       }
     else    
       send_file(statement_link,
@@ -126,7 +129,7 @@ class ContestsController < ApplicationController
       if @contest.save
         format.html { redirect_to contest_path(@contest.path)+'/control', notice: ok}
       else
-        format.html { redirect_to contest_path(@contest.path)+'/control', notice: err}
+        format.html { redirect_to contest_path(@contest.path)+'/control', alert: err}
       end
     end
   end
@@ -184,7 +187,7 @@ class ContestsController < ApplicationController
         format.html { redirect_to contest_path(@contest.path)+'/control' }
       else
         format.html { redirect_to contest_path(@contest.path)+'/control',
-          notice: "ERROR: Was not updated"
+          alert: "ERROR: Was not updated"
         }
       end
     end
@@ -219,7 +222,7 @@ class ContestsController < ApplicationController
 
 
 private
-  def find_by_path
+  def load_contest
     @contest = Contest.find_by(path: params[:id])
   end
 

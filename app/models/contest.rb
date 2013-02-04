@@ -9,9 +9,9 @@ class Contest
   field :description, type: String
   field :path, type: String
   field :time_start, type: DateTime
-  field :duration, type: Integer, :default => 300
-  field :type, type: Integer #"ACM", "IOI"
-  field :problems_count, type: Integer, :default => 0
+  field :duration, type: Integer, :default => 300#minutes
+  field :type, type: Integer, :default => 0 #"ACM", "IOI"
+  field :problems_count, type: Integer, :default => 1
   field :problems_upload, type: Integer, :default => 0 #"one_archive", "every_problem"
 
   belongs_to :user
@@ -39,7 +39,15 @@ class Contest
   end
 
   def contest_dir
-    return "#{Rails.root}/judge-files/contests/#{self.path}"
+    "#{Rails.root}/judge-files/contests/#{self.path}"
+  end
+
+  def started?
+    (self.time_start.nil? || Time.now < self.time_start) ? false : true
+  end
+
+  def over?
+    (self.started? && Time.now > self.time_start+self.duration.minutes) ? true : false
   end
 
   def unpack(archive)
@@ -66,8 +74,11 @@ class Contest
       problem = Problem.new({
         :contest => self,
         :order => i,
-        :tests_path => (self.problems_upload==1) ? nil : self.contest_dir+"/problems/#{i.to_s}/tests",
-        :statement => (self.problems_upload==1) ? nil : {:link => self.put_statement(statement)}
+        :tests_path => (self.problems_upload==1) ? nil : self.contest_dir+"/problems/#{i}/tests",
+        :statement => (self.problems_upload==1) ? 
+                      {:title=>'', :text => '', :inputs => [], :outputs => []} 
+                      : 
+                      {:link => self.put_statement(statement)}
       });
       problem.save
       self.problems << problem

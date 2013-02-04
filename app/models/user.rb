@@ -5,6 +5,10 @@ class User
   has_many :contests
   has_many :participants
 
+  def participate?(contest)
+    (self.participants.where(contest: contest).count==0) ? false : true
+  end
+
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable

@@ -10,7 +10,7 @@ class Problem
   field :checker, type: String, :default => 'cmp_file'
   field :global_path, type: String
   field :statement, type: Hash 
-        #{:title=>'', :text => params[:text], :inputs => [], :outputs => []} || {:link=>''}
+        #{'title'=>'', 'text' => '', 'inputs' => [], 'outputs' => []} || {'link'=>''}
 
   belongs_to :contest
   has_many :submits

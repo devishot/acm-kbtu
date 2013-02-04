@@ -13,7 +13,7 @@
 
   <tbody>
   <% 3.times do |i| %>
-  <% next if @submit.problem.statement['inputs'][i].empty? %>
+  <% next if @submit.problem.statement['inputs'][i].nil? || @submit.problem.statement['inputs'][i].empty? %>
     <tr>
       <td style="width: 50%">
           <%= simple_format(@submit.problem.statement['inputs'][i]) %>

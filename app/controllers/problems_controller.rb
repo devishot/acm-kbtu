@@ -20,9 +20,12 @@ class ProblemsController < ApplicationController
     if current_user == @contest.user || current_user.admin?
       #nothing
     elsif current_user.participants.where(contest: @contest).count==0  then
-      redirect_to contest_path(@contest.path), notice: 'Please, register to participate.'
+      redirect_to contest_path(@contest.path), alert: 'Please, register to participate.'
       return
-    else
+    elsif not @contest.started?
+      redirect_to contest_path(@contest.path), alert: 'Contest does not start'
+      return      
+    elsif not @contest.over?
       participant = current_user.participants.find_by(contest: @contest)
       @submit.participant = participant
       @submissions = participant.submits.where(problem: @problem)
@@ -56,7 +59,7 @@ class ProblemsController < ApplicationController
           notice: 'Problem was successfully updated.' }
       else
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit",
-          notice: 'ERROR: Problem was not updated.' }
+          alert: 'ERROR: Problem was not updated.' }
       end
     end
   end    
@@ -84,7 +87,7 @@ class ProblemsController < ApplicationController
           notice: 'Problem\'s statement was successfully updated.' }
       else
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}", 
-          notice: 'ERROR: Problem\'s statement was not updated.' }
+          alert: 'ERROR: Problem\'s statement was not updated.' }
       end
     end
   end
