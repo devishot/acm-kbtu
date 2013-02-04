@@ -1,3 +1,0 @@
-(display (+ (read) (read)))
-(newline)
-

@@ -7,7 +7,6 @@ class ProblemsController < ApplicationController
   # GET /contests/:id/problems
   def index
     @navpill = 1
-
     redirect_to "/contests/#{params[:id]}/1"
   end
 

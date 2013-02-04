@@ -57,7 +57,7 @@ class ContestsController < ApplicationController
   def standings
     #@contest = Contest.find_by(path: params[:id])
 
-    @last_success = Submit.where(status: "ok")
+    @last_success = Submit.where(status: "AC").last
     @last_success = nil if @last_success.to_a == nil
 
     @navpill = 2

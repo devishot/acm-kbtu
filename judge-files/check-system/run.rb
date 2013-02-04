@@ -44,13 +44,15 @@ class Tester
     std_out = stdout.gets
     std_err = stderr.gets
 
+    puts "#{std_err} \n #{std_out}"
+
     @submit.status = case status.exitstatus
       when 0; "OK"
       when 4, 2; "PE"
       when 5, 1; "WA"
       else "SE" 
     end
-    @submit.status_full = ""
+    @submit.status_full = (@submit.status=="SE") ? "" : "#{status} | #{std_err} | #{std_out}"
 
     return (status.exitstatus==0) ? 1 : 0; #// @submit.status==0 <- "OK"
   end
@@ -96,11 +98,37 @@ class Tester
     return 1
   end
 
+  def get_status
+    return self.submit.status
+  end
+
   def self.perform(submit_id)
-    system_path = '/home/devishot/Documents/Programming/Rails Projects/acm-kbtu/judge-files/check-system'
+    system_path = '/home/azamat/work/acm-kbtu/judge-files/check-system'
 
     a = Tester.new(submit_id, system_path)
     a.run
-  end
 
+
+    @submit = Submit.find(submit_id)
+    @participant = @submit.participant
+    @problem = @submit.problem
+
+    if @submit.status == "AC"
+      if @participant.a[@problem.order] <= 0
+        p "AC"
+        @participant.a[@problem.order] = @participant.a[@problem.order].abs+1
+        p @participant.a
+        @participant.penalties[@problem.order] += ((Time.now.to_i - @participant.contest.time_start.to_i)/60).to_i
+        p @participant.penalties
+        @participant.save!
+      end
+    elsif @submit.status == "WA"
+      if @participant.a[@problem.order] <= 0
+        p "WA"
+        @participant.a[@problem.order] -= 1
+        @participant.penalties[@problem.order] += 20
+        @participant.save!
+      end
+    end
+  end
 end

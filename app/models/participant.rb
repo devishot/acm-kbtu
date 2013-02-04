@@ -9,24 +9,25 @@ class Participant
   
 # for standings
   field :penalty, type: Integer, default: 0
-  field :penalties, type: Array
-  field :a, type: Array
+  field :penalties, type: Array, default: []
+  field :a, type: Array, default: []
   field :point, type: Integer, default: 0
 
-  before_save :set_path, :set_standings
+  before_create :set_path, :set_standings
   
   def summarize
+    self.point = 0
+    self.penalty = 0    
     for i in 1..self.contest.problems_count
-      self.penalties[i] = (self.a[i] * 30).abs
-      self.penalty += self.penalties[i].to_i if self.a[i] > 0
+      self.penalty += self.penalties[i].to_i if self.a[i].to_i > 0
       self.point += 1 if self.a[i] > 0
     end
-
+    self.save!
   end
 
   def set_path
-    return if self.path != nil
-    participants = self.contest.participants
+    return if path != nil
+    participants = contest.participants
     self.path = (participants.exists?) ? (participants.last.path.to_i()+1).to_s() : '1'
   end
 
@@ -41,17 +42,10 @@ class Participant
   end
 
   def set_standings
-    self.penalties = self.penalties.to_a
-    self.a = self.a.to_a
-
-    for i in 1..self.contest.problems_count
-      self.a.insert(i, 0)
-      self.penalties.insert(i, 0)
+    contest.problems_count.times do |i|
+      a[i + 1] = 0
+      penalties[i + 1] = 0
     end
-
-    self.a[1] = 2
-    self.a[2] = -1
-
   end
 
 end

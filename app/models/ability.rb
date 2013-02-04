@@ -4,6 +4,8 @@ class Ability
   def initialize(user)
     user ||= User.new # guest user (not logged in)
     
+    can :manage, :all    
+=begin
     if user.admin?
         can :manage, :all
     elsif user.moderator?
@@ -29,6 +31,7 @@ class Ability
     else
         can :read, [Node, Page]
     end
+=end
 
     #
     # The first argument to `can` is the action you are giving the user permission to do.
