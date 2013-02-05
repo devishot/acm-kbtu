@@ -64,16 +64,18 @@
 
     <!-- if NOT author and admin then he can send submit -->
     <% if !(current_user == @contest.user || current_user.admin?) %>
-      <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
-        <%= hidden_field_tag :status %>
-        <%= hidden_field_tag :status_full %>
-        <%= hidden_field_tag :problem , @submit.problem_id %>
-        <%= hidden_field_tag :participant, @submit.participant_id %>
-        <%= file_field_tag :file %>
-        <div class="actions">
-          <%= submit_tag "Submit" %>
-        </div>
-        <br />
+      <% if not @contest.over? %>
+        <%= form_tag(send_submit_path, :method => :post, :multipart => true) do %>
+          <%= hidden_field_tag :status %>
+          <%= hidden_field_tag :status_full %>
+          <%= hidden_field_tag :problem , @submit.problem_id %>
+          <%= hidden_field_tag :participant, @submit.participant_id %>
+          <%= file_field_tag :file %>
+          <div class="actions">
+            <%= submit_tag "Submit" %>
+          </div>
+          <br />
+        <% end %>
       <% end %>
 
       <%= render "submits/submits" %>

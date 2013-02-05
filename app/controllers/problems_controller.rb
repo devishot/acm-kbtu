@@ -19,13 +19,13 @@ class ProblemsController < ApplicationController
 
     if current_user == @contest.user || current_user.admin?
       #nothing
-    elsif current_user.participants.where(contest: @contest).count==0  then
+    elsif not current_user.participate?(@contest)  then
       redirect_to contest_path(@contest.path), alert: 'Please, register to participate.'
       return
     elsif not @contest.started?
       redirect_to contest_path(@contest.path), alert: 'Contest does not start'
-      return      
-    elsif not @contest.over?
+      return
+    else
       participant = current_user.participants.find_by(contest: @contest)
       @submit.participant = participant
       @submissions = participant.submits.where(problem: @problem)

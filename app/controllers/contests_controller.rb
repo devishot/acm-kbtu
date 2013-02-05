@@ -107,7 +107,6 @@ class ContestsController < ApplicationController
   # GET /contests/:id/control
   def control
     #@contest = Contest.find_by(path: params[:id])
-    #raise "#{@contest.participants.first.user.participants}"
   end
 
   # POST /contests/:id/control/update
@@ -132,6 +131,10 @@ class ContestsController < ApplicationController
         format.html { redirect_to contest_path(@contest.path)+'/control', alert: err}
       end
     end
+  end
+
+  def control_problems
+    #@contest = Contest.find_by(path: params[:id])    
   end
 
   # GET /contests/new

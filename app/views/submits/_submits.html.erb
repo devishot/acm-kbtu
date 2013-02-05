@@ -27,7 +27,7 @@
         <td>  <%= i.status %>  </td>
         <td>  <%= i.status_full %>  </td>
         <td>  <%= link_to "view code", 
-              submit_path(i.participant.contest.path)+"/#{i.problem.order}/#{order}", 
+              submit_path(i.participant.contest.path)+"/#{i.participant.path}/#{order}", 
               :target => '_blank' %> </td>
       </tr>
     <% end %>

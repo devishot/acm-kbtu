@@ -36,8 +36,17 @@
       
       Duration:
       <b>
-        <%= @contest.duration %>
+        <%= @contest.duration %>min
       </b>
+
+      Status:
+        <% if not @contest.started? %>
+          <b>NOT STARTED<b/>
+        <% elsif @contest.over? %>
+          <b>OVER<b/>
+        <% else %>
+          <b>RUN<b/>
+        <% end %>
     </p>
   </center>
 
@@ -45,7 +54,9 @@
   <% if @contest.user!=current_user && !current_user.participate?(@contest) && !@contest.over? %>
     <%= link_to "Participate", contest_path(@contest.path) + "/participate", 
         :method => :post, 
-        :class => "btn btn-primary"%>
+        :class => "btn btn-large btn-primary"%>
+    <br />
+    <br />
   <% end %>
 
 

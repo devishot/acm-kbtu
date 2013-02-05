@@ -71,6 +71,7 @@ class Contest
 
   def problems_create(statement=nil)
     for i in 1..self.problems_count
+      next if not self.problems[i].nil?
       problem = Problem.new({
         :contest => self,
         :order => i,
