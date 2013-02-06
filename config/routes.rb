@@ -5,30 +5,28 @@ AcmKbtu::Application.routes.draw do
   resources :problems
 
   resources :contests
-  put   '/contests/:id/update_mode' => 'contests#update_mode'
   match '/contests/:id/upload' => 'contests#upload'
   post  '/contests/:id/unpack' => 'contests#unpack'
   post  '/contests/:id/participate' => 'contests#participate'
   delete 'kill_participant' => 'contests#kill_participant'
 
   match '/contests/:id/control' => 'contests#control'
-  post  '/contests/:id/control/update' => 'contests#control_update'
-  match '/contests/:id/problems' => 'contests#control_problems'
-  match '/contests/:id/participants' => 'contests#control_participants'
+#  post  '/contests/:id/control/update' => 'contests#control_update'
+  match '/contests/:id/control_problems' => 'contests#control_problems'
+  put  '/contests/:id/control_problems_count' => 'contests#control_problems_count'  
+  match '/contests/:id/control_participants' => 'contests#control_participants'
 
+  match '/contests/:id/problems' => 'problems#index'
   match '/contests/:id/statement' => 'contests#download_statement'
-
   match '/contests/:id/problems'=> 'problems#index'
   match '/contests/:id/standings'=> 'contests#standings'
+  match '/contests/:id/summary' => 'contests#summary'  
 
   match '/contests/:id/messages' => 'contests#messages', as: :contest_messages
   match '/contests/:id/new_message' => 'contests#new_message', as: :contest_new_message
   match '/contests/:id/create_message' => 'contests#create_message', as: :contest_create_message
   
-  match '/contests/:id/summary' => 'contests#summary'
-
   match '/contests/:id/:problem' => 'problems#show'
-
   match '/contests/:id/:problem/edit' => 'problems#edit'
   put   '/contests/:id/:problem' => 'problems#update'
   match '/contests/:id/:problem/edit_statement' => 'problems#edit_statement'  

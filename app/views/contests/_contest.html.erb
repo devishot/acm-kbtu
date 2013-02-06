@@ -51,7 +51,7 @@
   </center>
 
 
-  <% if @contest.user!=current_user && !current_user.participate?(@contest) && !@contest.over? %>
+  <% if @contest.user!=current_user && !current_user.admin? && !current_user.participate?(@contest) && !@contest.over? %>
     <%= link_to "Participate", contest_path(@contest.path) + "/participate", 
         :method => :post, 
         :class => "btn btn-large btn-primary"%>

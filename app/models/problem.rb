@@ -4,25 +4,45 @@ class Problem
   include Mongoid::Document
   include Mongoid::Timestamps
   field :order, type: Integer
-  field :tests_path, type: String
+  field :tests_path, type: String, :default => ''
   field :time_limit, type: Integer, :default => 2
   field :memory_limit, type: Integer, :default => 256
   field :checker, type: String, :default => 'cmp_file'
   field :global_path, type: String
-  field :statement, type: Hash 
-        #{'title'=>'', 'text' => '', 'inputs' => [], 'outputs' => []} || {'link'=>''}
+  field :statement, type: Hash, :default =>
+        {'title'=>'', 'text'=>'', 'inputs'=>[], 'outputs'=>[], 'file_link'=>''}
 
   belongs_to :contest
   has_many :submits
 
 
-  before_save :set_global_path
+  after_create :set_global_path
+  before_destroy :clear
   
   def set_global_path
-    return if self.global_path != nil || self.contest.problems_upload == 0
-    self.global_path = (Problem.exists? ? (Problem.last.global_path.to_i+1).to_s : '1')
+    return if self.order==0
+    return if not self.global_path.nil?
+    self.global_path = (Problem.exists?) ? 
+                    (Problem.all.sort_by{|i| i.global_path.to_i}.last.global_path.to_i+1).to_s 
+                      : 
+                    '1'
+    self.save
   end
 
+  def clear
+    self.submits.destroy_all
+    FileUtils.rm_rf self.tests_path
+  end
+
+  def use_template
+    template = self.contest.problems[0]
+    self.update_attributes(
+        :time_limit => template.time_limit,
+        :memory_limit => template.memory_limit,
+        :checker => template.checker,
+        :statement => {'file_link'=> template.statement['file_link']}
+    )
+  end
 
   def unzip(archive) 
     problem_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}"

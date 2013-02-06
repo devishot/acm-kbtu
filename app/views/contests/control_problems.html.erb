@@ -2,36 +2,38 @@
 <br />
 <br />
 
+<%= form_tag(contest_path(@contest.path)+'/control_problems_count', :method => :put) do %>
+  <div class="control-group">
+    <%= label_tag :problems_count, "Problems count", :class => 'control-label' %>
+    <div class="controls">
+      <%= number_field_tag :problems_count, @contest.problems_count, :in => 0..200, :class => 'span1'%>
+    </div>
+  </div>
 
-<table class="table table-bordered" style="width: 500px">
-  <p>Upload Problems</p>
-  <tr>
-    <td style="width: 50%">
-      <%= form_for(@contest, :url => contest_path(@contest.path)+'/update_mode', :method => :put) do |f| %>
-        <div class="control-group">
-          <%= f.label :problems_upload, "Type of adding", :class => 'control-label' %>
-          <div class="controls">
-            <%= f.select(
-                :problems_upload, 
-                options_for_select([['One archive',0], ['Every problem',1]], @contest.problems_upload)
-              )%>
-          </div>
-        </div>
+  <%= submit_tag 'Update', :class => "btn" %>
+<% end %>
 
-        <div class="control-group">
-          <%= f.label :problems_count, "Number of problems", :class => 'control-label' %>
-          <div class="controls">
-            <%= f.number_field :problems_count, :in => 1..200, :class => 'span1'%>
-          </div>
-        </div>
+<div class="tabbable" style="background-color: white;">
+  <ul class="nav nav-tabs" id="body-bgcolor">
+    <li class="active"><a href="#tab0" data-toggle="tab">Template</a></li>
 
-        <div class="actions">
-          <%= f.submit 'Update', :class => "btn" %>
-        </div>
-      <% end %>
-    </td>
-    <td>
-      <%= render (@contest.problems_upload == 0) ? 'upload_onearchive' : 'edit_problems' %>
-    </td>
-  </tr>
-</table>
+    <% for i in 1..@contest.problems_count %>
+      <li><a href="#tab<%= i %>" data-toggle="tab"> <%= i %> </a></li>
+    <% end %>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="tab0">
+      <p>I'm Template</p>
+      <% @problem = @contest.problems[0] %>
+      <%= render 'problems/form' %>      
+    </div>
+    <% for i in 1..@contest.problems_count %>
+      <div class="tab-pane" id="tab<%= i %>" >
+        <p>Howdy, I'm in Section "tab<%= i %>".</p>
+        <% @problem = @contest.problems[i] %>
+        <%= render 'problems/form' %>
+      </div>
+    <% end %>
+  </div>
+</div>

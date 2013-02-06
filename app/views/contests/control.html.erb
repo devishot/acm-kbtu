@@ -2,6 +2,16 @@
 <br />
 <br />
 
+<%= link_to "Edit Info", edit_contest_path(@contest.path), class: "btn btn-warning" %>
+||||
+<%= link_to 'Destroy Contest', contest_path(@contest.path), 
+  method: :delete, 
+  data: { confirm: 'Are you sure?' },
+  class: "btn btn-danger"
+%>
+<br />
+<br />
+
 
 <%= form_for(@contest, :url => contest_path(@contest.path)+'/control/update', :method => 'post') do |f| %>
   <table class="table table-bordered" style="width: 500px">
@@ -36,20 +46,8 @@
 
   </table>
 <% end %>
-<br />
 
-
-<%= link_to "Edit", edit_contest_path(@contest.path), class: "btn btn-warning" %>
-||||
-<%= link_to 'Destroy', contest_path(@contest.path), 
-  method: :delete, 
-  data: { confirm: 'Are you sure?' },
-  class: "btn btn-danger"
-%>
+<%= link_to "Edit Problems", contest_path(@contest.path)+'/control_problems', class: "btn" %>
 <br />
 <br />
-<br />
-<%= link_to "Edit Problems", contest_path(@contest.path)+'/problems', class: "btn" %>
-<br />
-<br />
-<%= link_to "Edit Participants", contest_path(@contest.path)+'/participants', class: "btn" %>
+<%= link_to "Edit Participants", contest_path(@contest.path)+'/control_participants', class: "btn" %>

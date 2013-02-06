@@ -11,8 +11,8 @@ class Contest
   field :time_start, type: DateTime
   field :duration, type: Integer, :default => 300#minutes
   field :type, type: Integer, :default => 0 #"ACM", "IOI"
-  field :problems_count, type: Integer, :default => 1
-  field :problems_upload, type: Integer, :default => 0 #"one_archive", "every_problem"
+  field :problems_count, type: Integer, :default => 0 #problems[0] <- it is template for other problem
+  field :statement_link, type: String
 
   belongs_to :user
   has_many :problems
@@ -20,18 +20,20 @@ class Contest
 
   before_save :set_path
   before_destroy :clear
+  after_create :create_template_problem
   
   def set_path
-    return if self.path != nil
+    return if not self.path.nil?
     self.path = (Contest.exists?) ? ( Contest.last.path.to_i + 1 ).to_s : '1'
+  end
+
+  def create_template_problem
+    self.problems_create(0)
   end
 
   def clear
     #destroy all problems and submits
-    self.problems.each do |problem|
-      problem.submits.destroy_all
-      problem.destroy
-    end
+    self.problems.destroy_all
     #destroy all participants
     self.participants.destroy_all
     #delete contest folder
@@ -69,30 +71,55 @@ class Contest
     FileUtils.remove_file(self.contest_dir+"/#{archive.original_filename}")
   end
 
-  def problems_create(statement=nil)
-    for i in 1..self.problems_count
-      next if not self.problems[i].nil?
+  def upd_problems_count(number)
+    if self.problems_count > number
+      self.problems_destroy(number+1, self.problems_count)
+
+    elsif self.problems_count < number
+      self.problems_create(self.problems_count+1, number)
+
+    end
+  end
+
+  def problems_create(from, to=nil)
+    to = from if to.nil?
+    for i in from..to do
       problem = Problem.new({
         :contest => self,
         :order => i,
-        :tests_path => (self.problems_upload==1) ? nil : self.contest_dir+"/problems/#{i}/tests",
-        :statement => (self.problems_upload==1) ? 
-                      {:title=>'', :text => '', :inputs => [], :outputs => []} 
-                      : 
-                      {:link => self.put_statement(statement)}
       });
+
+      #set template problems data
+      problem.use_template
+
       problem.save
       self.problems << problem
     end
+    #raise "#{self.problems.size}"
+    self.problems_count = self.problems.size - 1
+    self.save
+  end
+
+  def problems_destroy(from, to=nil)
+    to = from if to.nil?
+
+    for i in from..to do
+      self.problems[i].destroy
+      self.problems.delete_at(i) #destory array's cell which index is i
+    end
+    self.problems_count = self.problems.size - 1
+    self.save    
   end
 
   def put_statement(ufile)
     return if ufile.nil?
+
     statement_dir = self.contest_dir+'/statement'
     FileUtils.mkdir_p statement_dir
     File.open(Rails.root.join(statement_dir, ufile.original_filename), 'w') do |file|
       file.write(ufile.read.force_encoding('utf-8'))
     end
-    return statement_dir+"/#{ufile.original_filename}"
+    self.statement_link = statement_dir+"/#{ufile.original_filename}"
+    self.save
   end
 end

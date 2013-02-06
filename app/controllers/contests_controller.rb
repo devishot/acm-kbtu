@@ -91,14 +91,11 @@ class ContestsController < ApplicationController
   # GET /contests/:id/statement
   def download_statement
     #@contest = Contest.find_by(path: params[:id])
-    statement_link = @contest.problems.first.statement["link"]
-    if statement_link.nil?
-      respond_to { |format|
-        format.html { redirect_to contest_path(@contest.path), 
-                      alert: 'not uploaded yet'}
-      }
+    if @contest.statement_link.nil?
+      redirect_to contest_path(@contest.path), 
+                  alert: 'not uploaded yet'
     else    
-      send_file(statement_link,
+      send_file(@contest.statement_link,
                 :filename => "statement.pdf",
                 :type => "application/pdf")
     end
@@ -133,9 +130,19 @@ class ContestsController < ApplicationController
     end
   end
 
+  # GET /contests/:id/control_problems
   def control_problems
-    #@contest = Contest.find_by(path: params[:id])    
+    #@contest = Contest.find_by(path: params[:id])
   end
+
+  # PUT /contests/:id/control_problems
+  def control_problems_count
+    #@contest = Contest.find_by(path: params[:id])
+    @contest.upd_problems_count(params[:problems_count].to_i)
+
+    redirect_to contest_path(@contest.path)+'/control_problems',
+                notice: 'Problems count updated'
+ end
 
   # GET /contests/new
   def new
