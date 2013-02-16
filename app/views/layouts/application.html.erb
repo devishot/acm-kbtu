@@ -15,15 +15,31 @@
 
     <% if !notice.nil? %>
       <div class="alert alert-success well">
-        <%= notice %>
         <a class="close" data-dismiss="alert" href="#">×</a>
+        <% if notice.kind_of?(Array) %>
+          <% len = notice.length %>
+          <% len.times do |i|  %>
+            <%= notice[i] %>
+            <br /> 
+          <% end %>
+        <% else %>
+          <%= notice %>
+        <% end %>
       </div>
     <% end %>
 
     <% if !alert.nil? %>
       <div class="alert alert-error well">
-        <%= alert %>
         <a class="close" data-dismiss="alert" href="#">×</a>
+        <% if alert.kind_of?(Array) %>
+          <% len = alert.length %>
+          <% len.times do |i|  %>
+            <%= alert[i] %>
+            <br /> 
+          <% end %>
+        <% else %>
+          <%= alert.html_safe %>
+        <% end %>
       </div>
     <% end %>
   </div>
@@ -32,7 +48,7 @@
   <br/>
   <br/>
   <div class="container">
-      <%= yield %>
+    <%= yield %>
   </div>
 
 </body>

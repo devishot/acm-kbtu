@@ -17,8 +17,8 @@
   <br />
   <%= f.file_field 'uploaded_checker', :class => "btn" %>
 
-<%= raise "#{@checker_status['status']}" %>
-  <% if (!@checker_status.nil? && @checker_status['status']=='CE') %>
+
+<% if (!@checker_status.nil? && @checker_status['status']=='CE') %>
     <pre>
       <%= @checker_status['error'] %>
     </pre>

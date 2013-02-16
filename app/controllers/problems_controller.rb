@@ -1,8 +1,10 @@
 class ProblemsController < ApplicationController
+  include ActionView::Helpers::TextHelper
   before_filter :find_contest, :except => [:index, :update, :update_statement]
   before_filter :find_problem, :only => [:show, :edit, :edit_statement]
   before_filter :find_contest_problem, :only => [:update, :update_statement]
   load_and_authorize_resource
+
 
   # GET /contests/:id/problems
   def index
@@ -55,16 +57,23 @@ class ProblemsController < ApplicationController
     #@problem = @contest.problems.find_by(order: params[:problem_order])
     if not params[:problem][:uploaded_checker].nil?
       @checker_status = @problem.get_checker(params[:problem][:uploaded_checker])
-      raise "#{@checker_status}"
     end
     
     respond_to do |format|
+      flash[:notice] = flash[:alert] = []
+      if @checker_status['status'] == 'OK'
+        flash[:notice].push('Checker compiled')
+      else
+        flash[:alert].concat(@checker_status['error']) #it is array
+      end
+
       if @problem.update_attributes(params[:problem].except(:uploaded_checker))
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit", 
-          notice: 'Problem was successfully updated.'}
+          flash[:notice]=>'Problem properties was successfully updated.'
+        }
       else
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit",
-          alert: 'ERROR: Problem was not updated.'}
+          flash[:alert].push('Problem properties was not updated.')}
       end
     end
   end    
