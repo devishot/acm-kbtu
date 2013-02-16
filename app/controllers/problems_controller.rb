@@ -53,13 +53,18 @@ class ProblemsController < ApplicationController
   def update
     #@contest = Contest.find(params[:contest_id])
     #@problem = @contest.problems.find_by(order: params[:problem_order])
+    if not params[:problem][:uploaded_checker].nil?
+      @checker_status = @problem.get_checker(params[:problem][:uploaded_checker])
+      raise "#{@checker_status}"
+    end
+    
     respond_to do |format|
-      if @problem.update_attributes(params[:problem])
+      if @problem.update_attributes(params[:problem].except(:uploaded_checker))
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit", 
-          notice: 'Problem was successfully updated.' }
+          notice: 'Problem was successfully updated.'}
       else
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit",
-          alert: 'ERROR: Problem was not updated.' }
+          alert: 'ERROR: Problem was not updated.'}
       end
     end
   end    

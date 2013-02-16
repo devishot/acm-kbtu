@@ -1,13 +1,16 @@
 require 'zip/zipfilesystem'
+require "#{Rails.root}/judge-files/check-system/compiler"
 
 class Problem
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Compiler
   field :order, type: Integer
   field :tests_path, type: String, :default => ''
   field :time_limit, type: Integer, :default => 2
   field :memory_limit, type: Integer, :default => 256
   field :checker, type: String, :default => 'cmp_file'
+  field :checker_path, type: String
   field :global_path, type: String
   field :statement, type: Hash, :default =>
         {'title'=>'', 'text'=>'', 'inputs'=>[], 'outputs'=>[], 'file_link'=>''}
@@ -66,5 +69,20 @@ class Problem
     FileUtils.remove_file(problem_dir+"/#{archive.original_filename}")
     #set tests_path
     self.tests_path = problem_dir+"/tests"
+  end
+
+  def get_checker(ufile)
+    problem_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}"
+    checker_dir = problem_dir + '/checker'
+    #create new
+    FileUtils.mkdir_p checker_dir
+    #write ufile in problem_dir
+    File.open(Rails.root.join(checker_dir, ufile.original_filename), 'w') do |file|
+      file.write(ufile.read.force_encoding('utf-8'))
+    end
+    #compile
+    status = Compiler.compile(checker_dir+'/'+ufile.original_filename)
+    #raise "#{status['status']} || #{status['error']}"
+    return status
   end
 end

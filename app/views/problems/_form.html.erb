@@ -1,23 +1,30 @@
-<%= form_for(@problem) do |f| %>
-  
-  <div class="control-group">  
-    <%= f.label :time_limit, "Time limit", :class => 'control-label' %>
-    <div class="controls">    
-      <%= f.number_field :time_limit, :in => 1..5 %>
-    </div>
-  </div>
-
+<%= form_for(@problem, :multipart => true) do |f| %>
   <%= hidden_field_tag :contest_id, @problem.contest.id %>
   <%= hidden_field_tag :problem_order, @problem.order %>
   <%= f.hidden_field :order %>
 
+  
+  <%= f.label :time_limit, "Time limit", :class => 'control-label' %>
+  <%= f.number_field :time_limit, :in => 1..5, :class => 'span1' %>
+
   <%= f.label :memory_limit , "Memory limit" %>
-  <%= f.number_field :memory_limit, :in => 16..512, :step => 16  %>
+  <%= f.number_field :memory_limit, :in => 16..512, :step => 16, :class => 'span1'  %>
 
   <%= f.label :checker, "Checker" %>
   <%= f.select :checker, ["cmp_file", "cmp_file_nospace", "cmp_long_long", "cmp_long_long_seq",
                           "cmp_long_double", "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
 
+  <br />
+  <%= f.file_field 'uploaded_checker', :class => "btn" %>
+
+<%= raise "#{@checker_status['status']}" %>
+  <% if (!@checker_status.nil? && @checker_status['status']=='CE') %>
+    <pre>
+      <%= @checker_status['error'] %>
+    </pre>
+  <% end %>
+  <br />
+  <br />
 
   <div class="actions">
     <%= f.submit "Update", :class => "btn" %>
@@ -27,4 +34,3 @@
 
 <%= link_to '<i class="icon-pencil icon-white"></i> Edit statement'.html_safe, 
     contest_path(@contest.path)+"/#{@problem.order}/edit_statement", :class => 'btn btn-info' %>
-
