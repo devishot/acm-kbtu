@@ -57,23 +57,27 @@ class ProblemsController < ApplicationController
     #@problem = @contest.problems.find_by(order: params[:problem_order])
     if not params[:problem][:uploaded_checker].nil?
       @checker_status = @problem.get_checker(params[:problem][:uploaded_checker])
+      flash[:notice] = []
+      flash[:alert]  = []
+      if @checker_status['status'] == 'OK'
+        flash[:notice].push('Checker compiled.')
+        flash[:notice].push('')
+      else
+        flash[:alert].push('Checker was not compiled.')
+        flash[:alert].concat(@checker_status['error']) #it is array
+        flash[:alert].push('')        
+      end
     end
     
     respond_to do |format|
-      flash[:notice] = flash[:alert] = []
-      if @checker_status['status'] == 'OK'
-        flash[:notice].push('Checker compiled')
+      flash[:notice] = [] if flash[:notice].nil?
+      flash[:alert]  = [] if flash[:alert].nil?
+      if !@problem.update_attributes(params[:problem].except(:uploaded_checker))
+        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit"}
+        flash[:notice].push('Problem properties was successfully updated.');
       else
-        flash[:alert].concat(@checker_status['error']) #it is array
-      end
-
-      if @problem.update_attributes(params[:problem].except(:uploaded_checker))
-        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit", 
-          flash[:notice]=>'Problem properties was successfully updated.'
-        }
-      else
-        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit",
-          flash[:alert].push('Problem properties was not updated.')}
+        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit"}
+        flash[:alert].push('Problem properties was not updated.')
       end
     end
   end    

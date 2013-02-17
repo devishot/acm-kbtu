@@ -13,33 +13,43 @@
   <div class="container" id="header">
     <%= render 'layouts/menu' %>
 
-    <% if !notice.nil? %>
+    <% if !notice.blank? %>
       <div class="alert alert-success well">
         <a class="close" data-dismiss="alert" href="#">×</a>
         <% if notice.kind_of?(Array) %>
+
           <% len = notice.length %>
           <% len.times do |i|  %>
+            <% next if i+1==len && notice[i].empty? %>
             <%= notice[i] %>
             <br /> 
           <% end %>
+
         <% else %>
           <%= notice %>
+
         <% end %>
+
       </div>
     <% end %>
 
-    <% if !alert.nil? %>
+    <% if !alert.blank? %>
       <div class="alert alert-error well">
         <a class="close" data-dismiss="alert" href="#">×</a>
+
         <% if alert.kind_of?(Array) %>
+
           <% len = alert.length %>
           <% len.times do |i|  %>
+            <% next if i+1==len && alert[i].empty? %>
             <%= alert[i] %>
             <br /> 
           <% end %>
+
         <% else %>
           <%= alert.html_safe %>
         <% end %>
+
       </div>
     <% end %>
   </div>
