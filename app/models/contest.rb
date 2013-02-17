@@ -111,6 +111,10 @@ class Contest
     self.save    
   end
 
+  def upd_problems_template
+    self.problems.each { |problem| problem.use_template }
+  end
+
   def put_statement(ufile)
     return if ufile.nil?
 

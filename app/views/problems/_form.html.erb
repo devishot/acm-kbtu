@@ -10,21 +10,44 @@
   <%= f.label :memory_limit , "Memory limit" %>
   <%= f.number_field :memory_limit, :in => 16..512, :step => 16, :class => 'span1'  %>
 
-  <%= f.label :checker, "Checker" %>
-  <%= f.select :checker, ["cmp_file", "cmp_file_nospace", "cmp_long_long", "cmp_long_long_seq",
-                          "cmp_long_double", "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
+  <table class="table table-bordered" style="widht:100;">
+    <tbody>
+      <tr>
 
-  <br />
-  <%= f.file_field 'uploaded_checker', :class => "btn" %>
+        <td>
+          <div>
+            <label class="checkbox">
+              <%= f.radio_button :checker_mode, 0 %>
+              System
+            </label>
+            <label class="checkbox">
+              <%= f.radio_button :checker_mode, 1, 
+                  :disabled => (@problem.contest.problems[0].checker_path.blank?) ? true : false %>
+              Template
+            </label>
+            <label class="checkbox">
+              <%= f.radio_button :checker_mode, 3 %>
+              Own
+            </label>
+          </div>
+        </td>
 
+        <td>
+          <%= f.label :checker, "Checker" %>
+          <%= f.select :checker, ["cmp_file", "cmp_file_nospace", "cmp_long_long", "cmp_long_long_seq",
+                                  "cmp_long_double", "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
+        </td>
 
-<% if (!@checker_status.nil? && @checker_status['status']=='CE') %>
-    <pre>
-      <%= @checker_status['error'] %>
-    </pre>
-  <% end %>
-  <br />
-  <br />
+        <td>
+          view code here..
+        </td>
+
+        <td>
+          <%= f.file_field 'uploaded_checker', :class => "btn" %>
+          view code here..
+        </td>
+    </tbody>
+  </table>
 
   <div class="actions">
     <%= f.submit "Update", :class => "btn" %>

@@ -11,6 +11,7 @@ class Problem
   field :memory_limit, type: Integer, :default => 256
   field :checker, type: String, :default => 'cmp_file'
   field :checker_path, type: String
+  field :checker_mode, type: Integer, :default => 0 # 0-standart 1-template 2-own
   field :global_path, type: String
   field :statement, type: Hash, :default =>
         {'title'=>'', 'text'=>'', 'inputs'=>[], 'outputs'=>[], 'file_link'=>''}
@@ -42,7 +43,9 @@ class Problem
     self.update_attributes(
         :time_limit => template.time_limit,
         :memory_limit => template.memory_limit,
+        :checker_mode => template.checker_mode,
         :checker => template.checker,
+        :checker_path => template.checker_path,
         :statement => {'file_link'=> template.statement['file_link']}
     )
   end
@@ -71,8 +74,12 @@ class Problem
     self.tests_path = problem_dir+"/tests"
   end
 
-  def get_checker(ufile)
-    problem_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}"
+  def put_checker(ufile)
+    if self.global_path.nil? #self.order==0 -> self is template for contests problems
+      problem_dir = "#{Rails.root}/judge-files/contests/#{self.contest.path}"
+    else
+      problem_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}"
+    end
     checker_dir = problem_dir + '/checker'
     #create new
     FileUtils.mkdir_p checker_dir
@@ -83,6 +90,7 @@ class Problem
     #compile
     status = Compiler.compile(checker_dir+'/'+ufile.original_filename)
     #raise "#{status['status']} || #{status['error']}"
+    self.checker_path = checker_dir+'/'+ufile.original_filename if status['status'] == 'OK'
     return status
   end
 end

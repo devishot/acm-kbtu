@@ -56,7 +56,7 @@ class ProblemsController < ApplicationController
     #@contest = Contest.find(params[:contest_id])
     #@problem = @contest.problems.find_by(order: params[:problem_order])
     if not params[:problem][:uploaded_checker].nil?
-      @checker_status = @problem.get_checker(params[:problem][:uploaded_checker])
+      @checker_status = @problem.put_checker(params[:problem][:uploaded_checker])
       flash[:notice] = []
       flash[:alert]  = []
       if @checker_status['status'] == 'OK'
@@ -72,13 +72,16 @@ class ProblemsController < ApplicationController
     respond_to do |format|
       flash[:notice] = [] if flash[:notice].nil?
       flash[:alert]  = [] if flash[:alert].nil?
-      if !@problem.update_attributes(params[:problem].except(:uploaded_checker))
+      if @problem.update_attributes(params[:problem].except(:uploaded_checker))
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit"}
         flash[:notice].push('Problem properties was successfully updated.');
       else
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit"}
         flash[:alert].push('Problem properties was not updated.')
       end
+
+      #@problem is template(@problem.order=0)
+      @contest.upd_problems_template if @problem.global_path.nil? 
     end
   end    
 
