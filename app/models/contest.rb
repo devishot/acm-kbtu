@@ -104,8 +104,8 @@ class Contest
     to = from if to.nil?
 
     for i in from..to do
-      self.problems[i].destroy
-      self.problems.delete_at(i) #destory array's cell which index is i
+      #destory array's cell and object 
+      self.problems.delete(self.problems.find_by(order: i)).destroy
     end
     self.problems_count = self.problems.size - 1
     self.save    

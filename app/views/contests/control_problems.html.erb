@@ -25,13 +25,13 @@
   <div class="tab-content">
     <div class="tab-pane active" id="tab0">
       <p>I'm Template</p>
-      <% @problem = @contest.problems[0] %>
+      <% @problem = @contest.problems.find_by(order: 0) %>
       <%= render 'problems/form' %>      
     </div>
     <% for i in 1..@contest.problems_count %>
       <div class="tab-pane" id="tab<%= i %>" >
         <p>Howdy, I'm in Section "tab<%= i %>".</p>
-        <% @problem = @contest.problems[i] %>
+        <% @problem = @contest.problems.find_by(order: i) %>
         <%= render 'problems/form' %>
       </div>
     <% end %>

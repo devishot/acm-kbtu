@@ -65,23 +65,32 @@ class ProblemsController < ApplicationController
       else
         flash[:alert].push('Checker was not compiled.')
         flash[:alert].concat(@checker_status['error']) #it is array
-        flash[:alert].push('')        
+        flash[:alert].push('')
+      end
+      params[:problem].delete(:uploaded_checker)
+    end
+
+
+    if not params[:problem][:checker_mode]==@problem.checker_mode
+      if params[:problem][:checker_mode]=='2' && @problem.checker_path.blank?
+        params[:problem][:checker_mode] = (@problem.template.checker_mode==2) ? '1' : '0'
       end
     end
+
     
     respond_to do |format|
       flash[:notice] = [] if flash[:notice].nil?
       flash[:alert]  = [] if flash[:alert].nil?
-      if @problem.update_attributes(params[:problem].except(:uploaded_checker))
-        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit"}
+      if @problem.update_attributes(params[:problem])
+        format.html { redirect_to contest_path(@contest.path)+"/control_problems"}
         flash[:notice].push('Problem properties was successfully updated.');
       else
-        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}/edit"}
+        format.html { redirect_to contest_path(@contest.path)+"/control_problems"}
         flash[:alert].push('Problem properties was not updated.')
       end
 
       #@problem is template(@problem.order=0)
-      @contest.upd_problems_template if @problem.global_path.nil? 
+      @contest.upd_problems_template if @problem.order==0 
     end
   end    
 

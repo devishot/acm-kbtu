@@ -20,13 +20,17 @@
               <%= f.radio_button :checker_mode, 0 %>
               System
             </label>
+
+            <% if not @problem.order==0 then %>
             <label class="checkbox">
               <%= f.radio_button :checker_mode, 1, 
-                  :disabled => (@problem.contest.problems[0].checker_path.blank?) ? true : false %>
+                  :disabled => (@problem.template.checker_path.blank?) ? true : false %>
               Template
             </label>
+            <% end %>
+
             <label class="checkbox">
-              <%= f.radio_button :checker_mode, 3 %>
+              <%= f.radio_button :checker_mode, 2 %>
               Own
             </label>
           </div>
@@ -38,13 +42,16 @@
                                   "cmp_long_double", "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
         </td>
 
+        <% if not @problem.order==0 then %>
         <td>
           view code here..
         </td>
+        <% end %>
 
         <td>
-          <%= f.file_field 'uploaded_checker', :class => "btn" %>
-          view code here..
+          <%= f.file_field 'uploaded_checker' %>
+          <br />
+          <%= (@problem.checker_path.blank?) ? 'empty' : @problem.checker_path %>
         </td>
     </tbody>
   </table>

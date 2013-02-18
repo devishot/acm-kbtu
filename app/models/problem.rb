@@ -39,15 +39,19 @@ class Problem
   end
 
   def use_template
-    template = self.contest.problems[0]
+    return if self.id == self.template.id
     self.update_attributes(
-        :time_limit => template.time_limit,
-        :memory_limit => template.memory_limit,
-        :checker_mode => template.checker_mode,
-        :checker => template.checker,
-        :checker_path => template.checker_path,
-        :statement => {'file_link'=> template.statement['file_link']}
+        :time_limit   => self.template.time_limit,
+        :memory_limit => self.template.memory_limit,
+        :checker      => self.template.checker,
+#       :checker_path => self.template.checker_path,
+        :checker_mode => (self.template.checker_mode == 2) ? 1 : 0,        
+        :statement    => {'file_link'=> self.template.statement['file_link']}
     )
+  end
+
+  def template
+    return self.contest.problems.find_by(order: 0)
   end
 
   def unzip(archive) 
