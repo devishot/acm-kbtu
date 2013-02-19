@@ -15,21 +15,23 @@
 
 <div class="tabbable" style="background-color: white;">
   <ul class="nav nav-tabs" id="body-bgcolor">
-    <li class="active"><a href="#tab0" data-toggle="tab">Template</a></li>
+    <li class="<%= 'active' if params[:tab]=='0' || params[:tab].nil? %>">
+      <a href="#tab0" data-toggle="tab">Template</a>
+    </li>
 
     <% for i in 1..@contest.problems_count %>
-      <li><a href="#tab<%= i %>" data-toggle="tab"> <%= i %> </a></li>
+      <li class="<%='active'if params[:tab]==i.to_s %>" ><a href="#tab<%= i %>" data-toggle="tab"> <%= i %> </a></li>
     <% end %>
   </ul>
 
   <div class="tab-content">
-    <div class="tab-pane active" id="tab0">
+    <div class="tab-pane <%='active' if params[:tab]=='0' || params[:tab].nil? %>" id="tab0">
       <p>I'm Template</p>
       <% @problem = @contest.problems.find_by(order: 0) %>
       <%= render 'problems/form' %>      
     </div>
     <% for i in 1..@contest.problems_count %>
-      <div class="tab-pane" id="tab<%= i %>" >
+      <div class="tab-pane <%='active'if params[:tab]==i.to_s %>" id="tab<%= i %>" >
         <p>Howdy, I'm in Section "tab<%= i %>".</p>
         <% @problem = @contest.problems.find_by(order: i) %>
         <%= render 'problems/form' %>

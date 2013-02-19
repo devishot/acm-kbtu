@@ -12,7 +12,7 @@ class Contest
   field :duration, type: Integer, :default => 300#minutes
   field :type, type: Integer, :default => 0 #"ACM", "IOI"
   field :problems_count, type: Integer, :default => 0 #problems[0] <- it is template for other problem
-  field :statement_link, type: String
+# field :statement_link, type: String
 
   belongs_to :user
   has_many :problems
@@ -52,24 +52,24 @@ class Contest
     (self.started? && Time.now > self.time_start+self.duration.minutes) ? true : false
   end
 
-  def unpack(archive)
-    #create folder if not exist
-    FileUtils.mkdir_p self.contest_dir
-    #write archive_file(.zip) in contest_dir
-    File.open(Rails.root.join(self.contest_dir, archive.original_filename), 'w') do |file|
-      file.write(archive.read.force_encoding('utf-8'))
-    end
-    #exctract files(folders) from archive_file(.zip)
-    Zip::ZipFile.open(self.contest_dir+"/#{archive.original_filename}"){ |zip_file|
-      zip_file.each { |f|
-        f_path=File.join(self.contest_dir, f.name)
-        FileUtils.mkdir_p(File.dirname(f_path))
-        zip_file.extract(f, f_path) unless File.exist?(f_path)
-      }
-    }
-    #delete archive_file(.zip)
-    FileUtils.remove_file(self.contest_dir+"/#{archive.original_filename}")
-  end
+  # def unpack(archive)
+  #   #create folder if not exist
+  #   FileUtils.mkdir_p self.contest_dir
+  #   #write archive_file(.zip) in contest_dir
+  #   File.open(Rails.root.join(self.contest_dir, archive.original_filename), 'w') do |file|
+  #     file.write(archive.read.force_encoding('utf-8'))
+  #   end
+  #   #exctract files(folders) from archive_file(.zip)
+  #   Zip::ZipFile.open(self.contest_dir+"/#{archive.original_filename}"){ |zip_file|
+  #     zip_file.each { |f|
+  #       f_path=File.join(self.contest_dir, f.name)
+  #       FileUtils.mkdir_p(File.dirname(f_path))
+  #       zip_file.extract(f, f_path) unless File.exist?(f_path)
+  #     }
+  #   }
+  #   #delete archive_file(.zip)
+  #   FileUtils.remove_file(self.contest_dir+"/#{archive.original_filename}")
+  # end
 
   def upd_problems_count(number)
     if self.problems_count > number
@@ -115,15 +115,15 @@ class Contest
     self.problems.each { |problem| problem.use_template }
   end
 
-  def put_statement(ufile)
-    return if ufile.nil?
+  # def put_statement(ufile)
+  #   return if ufile.nil?
 
-    statement_dir = self.contest_dir+'/statement'
-    FileUtils.mkdir_p statement_dir
-    File.open(Rails.root.join(statement_dir, ufile.original_filename), 'w') do |file|
-      file.write(ufile.read.force_encoding('utf-8'))
-    end
-    self.statement_link = statement_dir+"/#{ufile.original_filename}"
-    self.save
-  end
+  #   statement_dir = self.contest_dir+'/statement'
+  #   FileUtils.mkdir_p statement_dir
+  #   File.open(Rails.root.join(statement_dir, ufile.original_filename), 'w') do |file|
+  #     file.write(ufile.read.force_encoding('utf-8'))
+  #   end
+  #   self.statement_link = statement_dir+"/#{ufile.original_filename}"
+  #   self.save
+  # end
 end

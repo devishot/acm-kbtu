@@ -10,10 +10,10 @@
   <%= f.label :memory_limit , "Memory limit" %>
   <%= f.number_field :memory_limit, :in => 16..512, :step => 16, :class => 'span1'  %>
 
+  <p>Checker</p>
   <table class="table table-bordered" style="widht:100;">
     <tbody>
       <tr>
-
         <td>
           <div>
             <label class="checkbox">
@@ -37,25 +37,48 @@
         </td>
 
         <td>
-          <%= f.label :checker, "Checker" %>
+          <p>System checker</p>
           <%= f.select :checker, ["cmp_file", "cmp_file_nospace", "cmp_long_long", "cmp_long_long_seq",
                                   "cmp_long_double", "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
         </td>
 
         <% if not @problem.order==0 then %>
         <td>
+          <p>Template checker</p>
           view code here..
         </td>
         <% end %>
 
         <td>
+          <p>Own checker</p>
           <%= f.file_field 'uploaded_checker' %>
-          <br />
-          <%= (@problem.checker_path.blank?) ? 'empty' : @problem.checker_path %>
+          <% if not @problem.checker_path.blank? then %>
+            <span class="label label-success"> 
+              <%= File.basename(@problem.checker_path) %> 
+              (<%= File.ctime(@problem.checker_path).to_s(:long) %>)
+            </span>
+          <% end %>
         </td>
     </tbody>
   </table>
 
+  <%= label_tag 'tests_archive', "Upload archive of tests" %>
+  <%= file_field_tag 'tests_archive' %>
+  <% if not @problem.tests_path.blank? then %>
+    <span class="label label-success"> 
+      Tests uploaded
+      (<%= File.ctime(@problem.tests_path).to_s(:long) %>)
+    </span>
+  <% end %>
+
+  <%= label_tag 'solution_file', "System test" %>
+  <%= file_field_tag 'solution_file' %>
+  <%= session["solution_#{@problem.order}_status"] %>
+  <%= session["solution_#{@problem.order}_status_full"] %>
+  
+
+  <br />
+  <br />
   <div class="actions">
     <%= f.submit "Update", :class => "btn" %>
   </div>

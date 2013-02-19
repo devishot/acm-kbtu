@@ -88,51 +88,62 @@ class ContestsController < ApplicationController
     redirect_to contest_path(contest.path)+"/control"
   end  
 
-  # GET /contests/:id/statement
-  def download_statement
-    #@contest = Contest.find_by(path: params[:id])
-    if @contest.statement_link.nil?
-      redirect_to contest_path(@contest.path), 
-                  alert: 'not uploaded yet'
-    else    
-      send_file(@contest.statement_link,
-                :filename => "statement.pdf",
-                :type => "application/pdf")
-    end
-  end
+  # # GET /contests/:id/statement
+  # def download_statement
+  #   #@contest = Contest.find_by(path: params[:id])
+  #   if @contest.statement_link.nil?
+  #     redirect_to contest_path(@contest.path), 
+  #                 alert: 'not uploaded yet'
+  #   else    
+  #     send_file(@contest.statement_link,
+  #               :filename => "statement.pdf",
+  #               :type => "application/pdf")
+  #   end
+  # end
 
   # GET /contests/:id/control
   def control
     #@contest = Contest.find_by(path: params[:id])
   end
 
-  # POST /contests/:id/control/update
-  def control_update
-    #@contest = Contest.find_by(path: params[:id])
-    if params[:commit] == "Update"
-      @contest.time_start = Contest.new(params[:contest]).time_start
-      @contest.duration = Contest.new(params[:contest]).duration
-        ok = 'Start time successfully updated'
-        err = 'Error: Start time was not updated'
-    elsif params[:commit] == "Start"
-      @contest.time_start = DateTime.now
-      @contest.duration = Contest.new(params[:contest]).duration
-        ok = 'Contest started'
-        err = 'Error: Contest was not started'
-    end
+  # # POST /contests/:id/control/update
+  # def control_update
+  #   #@contest = Contest.find_by(path: params[:id])
+  #   if params[:commit] == "Update"
+  #     @contest.time_start = Contest.new(params[:contest]).time_start
+  #     @contest.duration = Contest.new(params[:contest]).duration
+  #       ok = 'Start time successfully updated'
+  #       err = 'Error: Start time was not updated'
+  #   elsif params[:commit] == "Start"
+  #     @contest.time_start = DateTime.now
+  #     @contest.duration = Contest.new(params[:contest]).duration
+  #       ok = 'Contest started'
+  #       err = 'Error: Contest was not started'
+  #   end
 
-    respond_to do |format|
-      if @contest.save
-        format.html { redirect_to contest_path(@contest.path)+'/control', notice: ok}
-      else
-        format.html { redirect_to contest_path(@contest.path)+'/control', alert: err}
-      end
-    end
-  end
+  #   respond_to do |format|
+  #     if @contest.save
+  #       format.html { redirect_to contest_path(@contest.path)+'/control', notice: ok}
+  #     else
+  #       format.html { redirect_to contest_path(@contest.path)+'/control', alert: err}
+  #     end
+  #   end
+  # end
 
   # GET /contests/:id/control_problems
   def control_problems
     #@contest = Contest.find_by(path: params[:id])
+    #raise "#{session.inspect}"
+    @contest.problems.each do |problem| 
+      id = session["solution_#{problem.order}_id"]
+      next if id.nil?
+      next if not session["solution_#{problem.order}_status"].nil?
+      submit = Submit.find(id)
+      session["solution_#{problem.order}_status"] = submit.status
+      session["solution_#{problem.order}_status_full"] = submit.status_full
+    end
+    #raise "#{session.inspect}"
+
   end
 
   # PUT /contests/:id/control_problems
@@ -182,26 +193,26 @@ class ContestsController < ApplicationController
     end
   end
 
-  # PUT /contests/1/update_mode
-  def update_mode
-    #@contest = Contest.find_by(path: params[:id])
-    if params[:contest][:problems_upload] != @contest.problems_upload
-      @contest.clear
-    end
+  # # PUT /contests/1/update_mode
+  # def update_mode
+  #   #@contest = Contest.find_by(path: params[:id])
+  #   if params[:contest][:problems_upload] != @contest.problems_upload
+  #     @contest.clear
+  #   end
 
-    respond_to do |format|
-      if @contest.update_attributes(params[:contest])
-        #create new problem
-        @contest.problems_create
+  #   respond_to do |format|
+  #     if @contest.update_attributes(params[:contest])
+  #       #create new problem
+  #       @contest.problems_create
 
-        format.html { redirect_to contest_path(@contest.path)+'/control' }
-      else
-        format.html { redirect_to contest_path(@contest.path)+'/control',
-          alert: "ERROR: Was not updated"
-        }
-      end
-    end
-  end
+  #       format.html { redirect_to contest_path(@contest.path)+'/control' }
+  #     else
+  #       format.html { redirect_to contest_path(@contest.path)+'/control',
+  #         alert: "ERROR: Was not updated"
+  #       }
+  #     end
+  #   end
+  # end
 
 
   # DELETE /contests/1
@@ -212,23 +223,23 @@ class ContestsController < ApplicationController
     redirect_to contests_url  
   end
 
-  # GET /contests/:id/upload
-  def upload
-    #@contest = Contest.find_by(path: params[:id])
-  end
+  # # GET /contests/:id/upload
+  # def upload
+  #   #@contest = Contest.find_by(path: params[:id])
+  # end
 
-  # POST /contests/:id/unpack
-  def unpack
-    #@contest = Contest.find_by(path: params[:id])
+  # # POST /contests/:id/unpack
+  # def unpack
+  #   #@contest = Contest.find_by(path: params[:id])
 
-    @contest.unpack(params[:archive])
-    @contest.problems.destroy_all #destroy perviouse problems!!!
-    @contest.problems_create(params[:statement])
+  #   @contest.unpack(params[:archive])
+  #   @contest.problems.destroy_all #destroy perviouse problems!!!
+  #   @contest.problems_create(params[:statement])
 
-    respond_to do |format|
-      format.html { redirect_to contest_path(@contest.path)+'/control' }
-    end    
-  end
+  #   respond_to do |format|
+  #     format.html { redirect_to contest_path(@contest.path)+'/control' }
+  #   end    
+  # end
 
 
 private

@@ -4,19 +4,24 @@ module Compiler
       pid, stdin, stdout, stderr = 
         Open4::popen4 "g++ \'#{File.path(ufile)}\' -o \'#{File.dirname(ufile)}/checker.exe\'"
       compile_err = stderr.readlines #we need to save, it will changed
+
     elsif File.extname(ufile) == ".pas"
       pid, stdin, stdout, stderr = 
         Open4::popen4 "fpc \'#{File.path(ufile)}\' -o\'#{File.dirname(ufile)}/checker.exe\'"
-      #puts "#{pid} #{stdout.readlines.inspect} #{stderr.readlines.inspect}"
       compile_err = stderr.readlines #we need to save, it will changed
-      compile_err.each_with_index do |value,index|
-        #value.include? "warning:"
+      compile_out = stdout.readlines  #there is only warnings, so stupid fpc
+      #two example of fpc compilation errors: http://pastie.org/6222145
+      if compile_out.include? "Fatal: Compilation aborted\n"
+        compile_err = compile_out[4..-2]  #we ingore warnings and save here compile errors
+      else
+        compile_err = [] # .pas successfuly compiled
       end
+
     else
       compile_err = ["file extension not supported."]
     end
-      
-
+  
+  
     if compile_err.blank?
       return {'status' => 'OK'}
     else

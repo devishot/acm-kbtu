@@ -2,35 +2,35 @@ require 'fileutils'
 require 'open4'
 require 'date'
 require 'resque'
+require "#{Rails.root}/judge-files/check-system/compiler"
 
 class Tester
   @queue = :simple
+
+  def put_sourcecode
+    #delete and create new work directory
+    FileUtils.remove_dir @work_dir if File.exist? @work_dir
+    FileUtils.mkdir_p @work_dir
+    #copy sourcecode in 1.cpp
+    FileUtils.cp @submit.file_sourcecode_path, "#{@work_dir}1#{@src_ext}"
+  end
 
   def initialize(submit_id, system_path)
     @submit = Submit.find(submit_id)
     @work_dir = "#{system_path}/work/"
     @tests_path = @submit.problem.tests_path
+    @src_ext = File.extname(@submit.file_sourcecode_path)
+
+    self.put_sourcecode
   end
 
   def compile()
-    #delete and create new work directory
-    FileUtils.remove_dir @work_dir if File.exist? @work_dir
-    FileUtils.mkdir @work_dir
-    #copy sourcecode in 1.cpp
-    FileUtils.cp @submit.file_sourcecode_path, "#{@work_dir}1.cpp"
-
-    pid, stdin, stdout, stderr = Open4::popen4 "g++ \'#{@work_dir}1.cpp\' -o \'#{@work_dir}1.exe\'"
-    compile_err = stderr.gets #we need to save, it will changed
-
-    if compile_err.nil?
-      @submit.status = "OK"
-      @submit.status_full = ""
-      return 1
-    else
-      @submit.status = "CE"
-      @submit.status_full = compile_err
-      return 0
-    end
+    #compile
+    status = Compiler.compile("#{@work_dir}1#{@src_ext}")
+    #raise "#{status['status']} || #{status['error']}"
+    @submit.status = status['status']
+    @submit.status_full = status['error']
+    return (status['status']=="OK") ? 1 : 0
   end
 
   def check(tin, tout)
@@ -44,7 +44,7 @@ class Tester
     std_out = stdout.gets
     std_err = stderr.gets
 
-    puts "#{std_err} \n #{std_out}"
+    #puts "#{std_err} \n #{std_out}"
 
     @submit.status = case status.exitstatus
       when 0; "OK"
@@ -61,9 +61,9 @@ class Tester
     #//compile sourcecode
     if self.compile == 0
       @submit.save
-      return 0
+      return
     end
-    #//get every test(pair of 'file' and 'file.smth')
+    #//get every test(pair of 'file' and 'file.ans')
     Dir.entries(@tests_path).sort.each_slice(2) do |t|
       next if t[0] == '.'
       #copy current test's input to work/input.txt file      
@@ -82,31 +82,37 @@ class Tester
         #//CHECK(COMPARE)
         if self.check(t[0], t[1]) == 0
           @submit.save
-          return 0
+          return
         end
       else
         @submit.status = verdict  #// TL or other errors
-        @submit.status_full = ""
+        @submit.status_full = []
         @submit.save
-        return 0
+        return
       end
     end
 
     @submit.status = "AC"
-    @submit.status_full = ""
+    @submit.status_full = []
     @submit.save
-    return 1
+    return
   end
 
   def get_status
-    return self.submit.status
+    return @submit.status
   end
 
-  def self.perform(submit_id)
+  def get_status_full
+    return @submit.status_full
+  end
+
+  def self.perform(submit_id, hidden=false)
     system_path = "#{Rails.root}/judge-files/check-system"
 
     a = Tester.new(submit_id, system_path)
     a.run
+    #puts "#{a.get_status} #{a.get_status_full}"
+    return if hidden==true
 
 
     @submit = Submit.find(submit_id)

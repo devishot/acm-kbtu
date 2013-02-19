@@ -54,13 +54,12 @@ class Problem
     return self.contest.problems.find_by(order: 0)
   end
 
-  def unzip(archive) 
+  def put_tests(archive) 
+    return if self.order==0
     problem_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}"
-    #clear
+    #clear & create new & write archive_file(.zip) in problem_dir
     FileUtils.rm_rf problem_dir
-    #create new
     FileUtils.mkdir_p problem_dir
-    #write archive_file(.zip) in problem_dir
     File.open(Rails.root.join(problem_dir, archive.original_filename), 'w') do |file|
       file.write(archive.read.force_encoding('utf-8'))
     end
@@ -97,4 +96,23 @@ class Problem
     self.checker_path = checker_dir+'/'+ufile.original_filename if status['status'] == 'OK'
     return status
   end
+
+  def check_problem(ufile)
+    return if self.order==0
+    #clear & create new & write ufile in solution_dir
+    solution_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}/solution"    
+    FileUtils.rm_rf solution_dir
+    FileUtils.mkdir_p solution_dir    
+    File.open(Rails.root.join(solution_dir, ufile.original_filename), 'w') do |file|
+      file.write(ufile.read.force_encoding('utf-8'))
+    end    
+    submit = Submit.new({
+      :problem => self,
+      :file_sourcecode_path => solution_dir+'/'+ufile.original_filename
+    })
+    submit.save
+    Resque.enqueue(Tester, submit.id, true)
+    return submit.id
+  end
+
 end

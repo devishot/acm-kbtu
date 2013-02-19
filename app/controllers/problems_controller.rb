@@ -55,10 +55,20 @@ class ProblemsController < ApplicationController
   def update
     #@contest = Contest.find(params[:contest_id])
     #@problem = @contest.problems.find_by(order: params[:problem_order])
+    #//put problem's tests if uploaded
+    @problem.put_tests(params[:tests_archive]) if not params[:tests_archive].nil?
+    #//check solution file CHECK TESTS AND CHECKER
+    if not params[:solution_file].nil?
+      session["solution_#{@problem.order}_id"] = @problem.check_problem(params[:solution_file])
+      session["solution_#{@problem.order}_status"] = nil
+      session["solution_#{@problem.order}_status_full"] = nil
+    end
+
+    #//put checker if uploaded
+    flash[:notice] = []
+    flash[:alert]  = []    
     if not params[:problem][:uploaded_checker].nil?
       @checker_status = @problem.put_checker(params[:problem][:uploaded_checker])
-      flash[:notice] = []
-      flash[:alert]  = []
       if @checker_status['status'] == 'OK'
         flash[:notice].push('Checker compiled.')
         flash[:notice].push('')
@@ -69,26 +79,21 @@ class ProblemsController < ApplicationController
       end
       params[:problem].delete(:uploaded_checker)
     end
-
-
+    #//set template's checker if used
     if not params[:problem][:checker_mode]==@problem.checker_mode
       if params[:problem][:checker_mode]=='2' && @problem.checker_path.blank?
         params[:problem][:checker_mode] = (@problem.template.checker_mode==2) ? '1' : '0'
       end
     end
-
     
     respond_to do |format|
-      flash[:notice] = [] if flash[:notice].nil?
-      flash[:alert]  = [] if flash[:alert].nil?
       if @problem.update_attributes(params[:problem])
-        format.html { redirect_to contest_path(@contest.path)+"/control_problems"}
+        format.html { redirect_to contest_control_problems_path(@contest.path, tab:@problem.order)}
         flash[:notice].push('Problem properties was successfully updated.');
       else
-        format.html { redirect_to contest_path(@contest.path)+"/control_problems"}
+        format.html { redirect_to contest_control_problems_path(@contest.path, tab:@problem.order)}
         flash[:alert].push('Problem properties was not updated.')
       end
-
       #@problem is template(@problem.order=0)
       @contest.upd_problems_template if @problem.order==0 
     end
@@ -107,10 +112,7 @@ class ProblemsController < ApplicationController
     @problem.statement = {:title => params[:title], 
                           :text => params[:text], 
                           :inputs => inputs, 
-                          :outputs => outputs }
-    #and set tests_path if uploaded
-    @problem.unzip(params[:archive]) if !params[:archive].nil?
-    
+                          :outputs => outputs }    
     respond_to do |format|
       if @problem.save
         format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}", 
