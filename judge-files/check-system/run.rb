@@ -52,7 +52,7 @@ class Tester
       when 5, 1; "WA"
       else "SE" 
     end
-    @submit.status_full = (@submit.status=="SE") ? "" : "#{status} | #{std_err} | #{std_out}"
+    @submit.status_full = (@submit.status=="SE") ? "#{status} | #{std_err} | #{std_out}" : ""
 
     return (status.exitstatus==0) ? 1 : 0; #// @submit.status==0 <- "OK"
   end
@@ -77,7 +77,7 @@ class Tester
                       "\'#{@work_dir}1.exe\'"
       verdict = stderr.gets
       verdict = verdict[8,9].strip
-
+      puts "#{t[0]} #{t[1]} #{verdict}"
       if verdict == 'OK'
         #//CHECK(COMPARE)
         if self.check(t[0], t[1]) == 0

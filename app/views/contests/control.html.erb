@@ -13,7 +13,7 @@
 <br />
 
 
-<%= form_for(@contest, :url => contest_path(@contest.path)+'/control/update', :method => 'post') do |f| %>
+<%= form_for(@contest, :url => contest_path(@contest.path)+'/control', :method => 'put') do |f| %>
   <table class="table table-bordered" style="width: 500px">
     <tr>
       <td>

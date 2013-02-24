@@ -11,7 +11,7 @@ AcmKbtu::Application.routes.draw do
   delete 'kill_participant' => 'contests#kill_participant'
 
   match '/contests/:id/control' => 'contests#control'
-#  post  '/contests/:id/control/update' => 'contests#control_update'
+  put   '/contests/:id/control' => 'contests#control_update'
   match '/contests/:id/control_problems' => 'contests#control_problems', as: :contest_control_problems
   put  '/contests/:id/control_problems_count' => 'contests#control_problems_count'  
   match '/contests/:id/control_participants' => 'contests#control_participants'

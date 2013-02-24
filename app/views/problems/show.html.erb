@@ -30,11 +30,9 @@
     <% end %>
 
     <center>
-      <% if @contest.problems_upload == 1#every_problem %>
-        <h3>
-          <%= @submit.problem.statement['title'] %>
-        </h3>
-      <% end %>
+      <h3>
+        <%= @submit.problem.statement['title'] %>
+      </h3>
 
       <p>
         <b>Time limit:</b>
@@ -48,14 +46,11 @@
     </center>
 
 
-    <% if @contest.problems_upload == 0#one_archive %>
-      <% if @problem.statement["link"].nil? %>
-        <p>Statement not uploaded yet</p>
-      <% else %>
-        <%= link_to '<i class="icon-download-alt"></i> Contest\'s statement'.html_safe, 
-            contest_path(@contest.path)+'/statement', :class => 'btn' %>
-      <% end %>
-    <% else %>
+    <% if not @problem.statement["file_link"].blank? %>
+      <%= link_to '<i class="icon-download-alt"></i> Contest\'s statement'.html_safe, 
+          contest_path(@contest.path)+'/statement', :class => 'btn' %>
+    <% end %>
+    <% if not @problem.statement["text"].blank? %>
       <%= render 'statement' %>
     <% end %>
     <br />
@@ -70,7 +65,7 @@
           <%= hidden_field_tag :status_full %>
           <%= hidden_field_tag :problem , @submit.problem_id %>
           <%= hidden_field_tag :participant, @submit.participant_id %>
-          <%= file_field_tag :file %>
+          <%= file_field_tag   :file %>
           <div class="actions">
             <%= submit_tag "Submit" %>
           </div>
