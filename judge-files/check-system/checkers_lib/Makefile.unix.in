@@ -1,0 +1,220 @@
+# -*- Makefile -*-
+# $Id: Makefile.unix.in 6192 2011-03-27 17:05:06Z cher $
+
+# Copyright (C) 2003-2010 Alexander Chernov <cher@ejudge.ru> */
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+datarootdir=@datarootdir@
+datadir=@datadir@
+includedir=@includedir@
+libdir=@libdir@
+libexecdir=@libexecdir@
+cgibindir=@cgibindir@
+
+CGI_PROG_SUFFIX=@ac_cv_cgi_suffix@
+STATIC=@ac_cv_static@
+NO_KERNEL=@ac_cv_no_kernel@
+ENABLE_NLS=@ac_cv_nls@
+NO_RPATH=@ac_cv_no_rpath@
+WPTRSIGN=@ac_cv_gcc_wno_pointer_sign@
+
+XGETTEXT=@XGETTEXT@
+MSGMERGE=@MSGMERGE@
+MSGFMT=@MSGFMT@
+
+EXPAT_DIR=@ac_cv_expat_root@
+EXPAT_INCL_OPT=@ac_cv_expat_include_opt@
+EXPAT_LIB_OPT=@ac_cv_expat_lib_opt@
+
+LIBCAP_DIR=@ac_cv_libcap_root@
+LIBCAP_INCL_OPT=@ac_cv_libcap_include_opt@
+LIBCAP_LIB_OPT=@ac_cv_libcap_lib_opt@
+
+WERROR=@ac_cv_werror_flag@
+
+ifdef RELEASE
+CDEBUGFLAGS=-O2 -s -Wall -DNDEBUG -DRELEASE ${WERROR}
+else
+CDEBUGFLAGS=-g -Wall ${WERROR}
+endif
+
+ifdef STATIC
+CDEBUGFLAGS += -static
+endif
+
+ifndef NO_RPATH
+RPATHOPT=-Wl,-rpath,${libdir}
+endif
+
+CCOMPFLAGS=-D_GNU_SOURCE
+LDCOMPFLAGS=
+
+LDLIBS=${EXTRALIBS} -lm
+CFLAGS=-I. ${CDEBUGFLAGS} ${CCOMPFLAGS} ${CEXTRAFLAGS} ${WPTRSIGN}
+LDFLAGS=${CDEBUGFLAGS} ${LDCOMPFLAGS} ${LDEXTRAFLAGS}
+CC=gcc
+LD=gcc
+AR=ar
+
+include files.make
+
+OFILES=$(CFILES:.c=.o) testinfo.o
+PICOFILES = $(CFILES:%.c=pic/%.o) pic/testinfo.o
+CHKXFILES = $(CHKCFILES:.c=)
+STYLEXFILES = $(STYLECFILES:.c=)
+
+ifndef STATIC
+TARGETS = pic libchecker.a libchecker.so ${CHKXFILES} ${STYLEXFILES}
+TARGETSHAREDLIBS = libchecker.so
+else
+TARGETS = libchecker.a ${CHKXFILES} ${STYLEXFILES}
+TARGETSHAREDLIBS =
+endif
+TARGETLIBS = libchecker.a
+
+all : ${TARGETS}
+
+clean :
+	-rm -fr *.o *.a *.so *~ *.bak testinfo.h testinfo.c pic ${CHKXFILES} ${STYLEXFILES}
+pic :
+	mkdir pic
+
+distclean : clean
+	rm -f Makefile Makefile.in
+
+install : all
+	mkdir -p "${DESTDIR}${includedir}/ejudge"
+	for i in checker.h checker_internal.h checkutils.h testinfo.h; do install -m 644 $$i "${DESTDIR}${includedir}/ejudge"; done
+	mkdir -p "${DESTDIR}${libdir}"
+	install -m 644 libchecker.a "${DESTDIR}${libdir}"
+	if [ x"${STATIC}" = x ]; then install -m 755 libchecker.so "${DESTDIR}${libdir}"; else rm -f "${DESTDIR}${libdir}/libchecker.so"; fi
+	mkdir -p "${DESTDIR}${datadir}/ejudge/testlib"
+	mkdir -p "${DESTDIR}${datadir}/ejudge/testlib/fpc"
+	mkdir -p "${DESTDIR}${datadir}/ejudge/testlib/delphi"
+	for i in symbols.pas testlib.pas; do install -m 644 fpc/$$i "${DESTDIR}${datadir}/ejudge/testlib/fpc"; done
+	install -m 644 delphi/testlib.pas "${DESTDIR}${datadir}/ejudge/testlib/delphi"
+	mkdir -p "${DESTDIR}${libexecdir}/ejudge/checkers"
+	for i in ${CHKXFILES} ${STYLEXFILES}; do install -m 755 $$i "${DESTDIR}${libexecdir}/ejudge/checkers"; done
+	-cd "${DESTDIR}${datadir}/ejudge/testlib/fpc"; FPC=`"${DESTDIR}${libexecdir}/ejudge"/fpc-version -p`; [ x"$$FPC" != x ] && "$$FPC" testlib.pas
+	-cd "${DESTDIR}${datadir}/ejudge/testlib/delphi"; DCC=`"${DESTDIR}${libexecdir}/ejudge"/dcc-version -p`; [ x"$$DCC" != x ] && "$$DCC" testlib.pas
+
+libchecker.a : ${OFILES}
+	${AR} rcv $@ $^
+libchecker.so : ${PICOFILES}
+	${CC} -shared $^ -o $@ -lm
+
+corr_close.o: corr_close.c checker_internal.h
+pic/corr_close.o: corr_close.c checker_internal.h
+corr_eof.o: corr_eof.c checker_internal.h
+pic/corr_eof.o: corr_eof.c checker_internal.h
+eq_double.o : eq_double.c checker_internal.h
+	${CC} ${CFLAGS} -std=gnu99 -c $< -o $@
+eq_double_abs.o : eq_double_abs.c checker_internal.h
+	${CC} ${CFLAGS} -std=gnu99 -c $< -o $@
+pic/eq_double.o : eq_double.c checker_internal.h
+	${CC} ${CFLAGS} -fPIC -DPIC -std=gnu99 -c $< -o $@
+pic/eq_double_abs.o : eq_double_abs.c checker_internal.h
+	${CC} ${CFLAGS} -fPIC -DPIC -std=gnu99 -c $< -o $@
+eq_float.o : eq_float.c checker_internal.h
+	${CC} ${CFLAGS} -std=gnu99 -c $< -o $@
+eq_float_abs.o : eq_float_abs.c checker_internal.h
+	${CC} ${CFLAGS} -std=gnu99 -c $< -o $@
+pic/eq_float.o : eq_float.c checker_internal.h
+	${CC} ${CFLAGS} -fPIC -DPIC -std=gnu99 -c $< -o $@
+pic/eq_float_abs.o : eq_float_abs.c checker_internal.h
+	${CC} ${CFLAGS} -fPIC -DPIC -std=gnu99 -c $< -o $@
+eq_long_double.o : eq_long_double.c checker_internal.h
+	${CC} ${CFLAGS} -std=gnu99 -c $< -o $@
+eq_long_double_abs.o : eq_long_double_abs.c checker_internal.h
+	${CC} ${CFLAGS} -std=gnu99 -c $< -o $@
+pic/eq_long_double.o : eq_long_double.c checker_internal.h
+	${CC} ${CFLAGS} -fPIC -DPIC -std=gnu99 -c $< -o $@
+pic/eq_long_double_abs.o : eq_long_double_abs.c checker_internal.h
+	${CC} ${CFLAGS} -fPIC -DPIC -std=gnu99 -c $< -o $@
+fatal.o: fatal.c checker_internal.h
+pic/fatal.o: fatal.c checker_internal.h
+fatal_cf.o: fatal_cf.c checker_internal.h
+pic/fatal_cf.o: fatal_cf.c checker_internal.h
+fatal_pe.o: fatal_pe.c checker_internal.h
+pic/fatal_pe.o: fatal_pe.c checker_internal.h
+fatal_wa.o: fatal_wa.c checker_internal.h
+pic/fatal_wa.o: fatal_wa.c checker_internal.h
+in_close.o: in_close.c checker_internal.h
+pic/in_close.o: in_close.c checker_internal.h
+in_eof.o: in_eof.c checker_internal.h
+pic/in_eof.o: in_eof.c checker_internal.h
+init.o: init.c checker_internal.h testinfo.h
+pic/init.o: init.c checker_internal.h testinfo.h
+normalize_file.o: normalize_file.c checker_internal.h
+pic/normalize_file.o: normalize_file.c checker_internal.h
+normalize_spaces_in_file.o: normalize_file.c checker_internal.h
+pic/normalize_spaces_in_file.o: normalize_file.c checker_internal.h
+ok.o: ok.c checker_internal.h
+pic/ok.o: ok.c checker_internal.h
+read_buf.o: read_buf.c checker_internal.h
+pic/read_buf.o: read_buf.c checker_internal.h
+read_corr_int.o: read_corr_int.c checker_internal.h
+pic/read_corr_int.o: read_corr_int.c checker_internal.h
+read_double.o: read_double.c checker_internal.h
+pic/read_double.o: read_double.c checker_internal.h
+read_file_by_line.o: read_file_by_line.c checker_internal.h
+pic/read_file_by_line.o: read_file_by_line.c checker_internal.h
+read_file.o: read_file.c checker_internal.h
+pic/read_file.o: read_file.c checker_internal.h
+read_in_double.o: read_in_double.c checker_internal.h
+pic/read_in_double.o: read_in_double.c checker_internal.h
+read_in_int.o: read_in_int.c checker_internal.h
+pic/read_in_int.o: read_in_int.c checker_internal.h
+read_team_double.o: read_team_double.c checker_internal.h
+pic/read_team_double.o: read_team_double.c checker_internal.h
+read_team_int.o: read_team_int.c checker_internal.h
+pic/read_team_int.o: read_team_int.c checker_internal.h
+read_team_long_double.o: read_team_long_double.c checker_internal.h
+pic/read_team_long_double.o: read_team_long_double.c checker_internal.h
+team_close.o: team_close.c checker_internal.h
+pic/team_close.o: team_close.c checker_internal.h
+team_eof.o: team_eof.c checker_internal.h
+pic/team_eof.o: team_eof.c checker_internal.h
+vars.o: vars.c checker_internal.h
+pic/vars.o: vars.c checker_internal.h
+xcalloc.o: xcalloc.c checker_internal.h
+pic/xcalloc.o: xcalloc.c checker_internal.h
+xmalloc.o: xmalloc.c checker_internal.h
+pic/xmalloc.o: xmalloc.c checker_internal.h
+xrealloc.o: xrealloc.c checker_internal.h
+pic/xrealloc.o: xrealloc.c checker_internal.h
+xstrdup.o: xstrdup.c checker_internal.h
+pic/xstrdup.o: xstrdup.c checker_internal.h
+testinfo.o: testinfo.c testinfo.h
+pic/testinfo.o: testinfo.c testinfo.h
+
+testinfo.h: ../testinfo.h
+	ln -f ../testinfo.h .
+testinfo.c: ../testinfo.c
+	ln -sf ../testinfo.c
+
+ifdef STATIC
+cmp_% : cmp_%.c checker.h checker_internal.h libchecker.a
+	${CC} ${CFLAGS} ${LDFLAGS} -L. $< -o $@ -lchecker -lm
+else
+cmp_% : cmp_%.c checker.h checker_internal.h libchecker.so
+	${CC} ${CFLAGS} ${LDFLAGS} ${RPATHOPT} -L. $< -o $@ -lchecker -lm
+endif
+
+style_% : style_%.c
+	${CC} ${CFLAGS} ${LDFLAGS} -L.. $< -o $@ -lcommon -lplatform -lcommon -lz -lm
+
+pic/%.o : %.c
+	${CC} ${CFLAGS} -fPIC -DPIC -c $< -o $@

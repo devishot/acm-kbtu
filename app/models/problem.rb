@@ -6,11 +6,10 @@ class Problem
   include Mongoid::Timestamps
   include Compiler
   field :order, type: Integer
-  field :tests_path, type: String, :default => ''
   field :time_limit, type: Integer, :default => 2
   field :memory_limit, type: Integer, :default => 256
   field :checker, type: String, :default => 'cmp_file'
-  field :checker_path, type: String
+  field :checker_path, type: String #path to checker sourcecode, executable it is 'checker' file
   field :checker_mode, type: Integer, :default => 0 # 0-standart 1-template 2-own
   field :global_path, type: String
   field :statement, type: Hash, :default =>
@@ -20,22 +19,36 @@ class Problem
   has_many :submits
 
 
-  after_create :set_global_path
+  after_create :set_global_path, :create_folder
   before_destroy :clear
   
   def set_global_path
     return if self.order==0
     return if not self.global_path.nil?
     self.global_path = (Problem.exists?) ? 
-                    (Problem.all.sort_by{|i| i.global_path.to_i}.last.global_path.to_i+1).to_s 
-                      : 
-                    '1'
+       (Problem.all.sort_by{|i| i.global_path.to_i}.last.global_path.to_i+1).to_s : '1'
     self.save
   end
 
+  def create_folder
+    FileUtils.mkdir_p self.problem_dir
+  end  
+
   def clear
     self.submits.destroy_all
-    FileUtils.rm_rf self.tests_path
+    FileUtils.rm_rf self.problem_dir
+  end
+
+  def problem_dir
+    self.contest.contest_dir+"/problems/#{self.order}"
+  end
+
+  def tests_dir
+    self.problem_dir+"/tests"
+  end
+
+  def checker_dir
+    self.problem_dir+"/checker"
   end
 
   def use_template
@@ -56,62 +69,68 @@ class Problem
 
   def put_tests(archive) 
     return if self.order==0
-    problem_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}"
-    #clear & create new & write archive_file(.zip) in problem_dir
-    FileUtils.rm_rf problem_dir
-    FileUtils.mkdir_p problem_dir
-    File.open(Rails.root.join(problem_dir, archive.original_filename), 'w') do |file|
+    extention = File.extname(archive.original_filename)
+    return if not (extention=='.zip' || extention=='.tgz')
+    tests_dir = self.tests_dir
+    #clear & create new & write archive_file(.zip) in tests_dir
+    FileUtils.rm_rf tests_dir
+    FileUtils.mkdir_p tests_dir
+    File.open(Rails.root.join(tests_dir, archive.original_filename), 'w') do |file|
       file.write(archive.read.force_encoding('utf-8'))
     end
-    #exctract files from file(.zip)
-    Zip::ZipFile.open(problem_dir+"/#{archive.original_filename}"){ |zip_file|
-      zip_file.each { |f|
-        f_path=File.join(problem_dir, f.name)
-        FileUtils.mkdir_p(File.dirname(f_path))
-        zip_file.extract(f, f_path) unless File.exist?(f_path)
+    #exctract files from file
+    if extention == '.zip'
+      Zip::ZipFile.open(tests_dir+"/#{archive.original_filename}"){ |zip_file|
+        zip_file.each { |f|
+          f_path=File.join(tests_dir, f.name)
+          FileUtils.mkdir_p(File.dirname(f_path))
+          zip_file.extract(f, f_path) unless File.exist?(f_path)
+        }
       }
-    }
-    #remove(delete) file(.zip)
-    FileUtils.remove_file(problem_dir+"/#{archive.original_filename}")
-    #set tests_path
-    self.tests_path = problem_dir+"/tests"
+    elsif extention == '.tgz'
+      puts "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\'"
+      pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\' -C \'#{tests_dir}\'"
+    end
+    #remove(delete) file
+    FileUtils.remove_file(tests_dir+"/#{archive.original_filename}")
   end
 
   def put_checker(ufile)
-    if self.global_path.nil? #self.order==0 -> self is template for contests problems
-      problem_dir = "#{Rails.root}/judge-files/contests/#{self.contest.path}"
-    else
-      problem_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}"
-    end
-    checker_dir = problem_dir + '/checker'
-    #create new
+    #self.order==0 || self.global_path.nil? -> self problem is template for contests problems
+    checker_dir = self.checker_dir
+    #clear & create new & write ufile(.cpp) in checker_dir
+    FileUtils.rm_rf checker_dir
     FileUtils.mkdir_p checker_dir
-    #write ufile in problem_dir
     File.open(Rails.root.join(checker_dir, ufile.original_filename), 'w') do |file|
       file.write(ufile.read.force_encoding('utf-8'))
     end
     #compile
-    status = Compiler.compile(checker_dir+'/'+ufile.original_filename)
-    #raise "#{status['status']} || #{status['error']}"
-    self.checker_path = checker_dir+'/'+ufile.original_filename if status['status'] == 'OK'
+    status = Compiler.compile(checker_dir+'/'+ufile.original_filename, true)#compile(file_path, checker=true)
+    if status['status'] == 'OK'
+      self.checker_path = checker_dir+'/'+ufile.original_filename
+    else
+      FileUtils.rm_rf checker_dir
+    end
+
     return status
   end
 
   def check_problem(ufile)
     return if self.order==0
     #clear & create new & write ufile in solution_dir
-    solution_dir = "#{Rails.root}/judge-files/problems/#{self.global_path}/solution"    
+    solution_dir = self.problem_dir+"/solution"
     FileUtils.rm_rf solution_dir
     FileUtils.mkdir_p solution_dir    
     File.open(Rails.root.join(solution_dir, ufile.original_filename), 'w') do |file|
       file.write(ufile.read.force_encoding('utf-8'))
-    end    
+    end
+    #send to check
     submit = Submit.new({
       :problem => self,
       :file_sourcecode_path => solution_dir+'/'+ufile.original_filename
     })
     submit.save
-    Resque.enqueue(Tester, submit.id, true)
+    Resque.enqueue(Tester, submit.id, true) #Tester(submit.id, hidden=true)
     return submit.id
   end
 

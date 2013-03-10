@@ -57,13 +57,6 @@ class ProblemsController < ApplicationController
     #@problem = @contest.problems.find_by(order: params[:problem_order])
     #//put problem's tests if uploaded
     @problem.put_tests(params[:tests_archive]) if not params[:tests_archive].nil?
-    #//check solution file CHECK TESTS AND CHECKER
-    if not params[:solution_file].nil?
-      session["solution_#{@problem.order}_id"] = @problem.check_problem(params[:solution_file])
-      session["solution_#{@problem.order}_status"] = nil
-      session["solution_#{@problem.order}_status_full"] = nil
-    end
-
     #//put checker if uploaded
     flash[:notice] = []
     flash[:alert]  = []    
@@ -72,10 +65,17 @@ class ProblemsController < ApplicationController
       if @checker_status['status'] == 'OK'
         flash[:notice].push('Checker compiled.')
         flash[:notice].push('')
-      else
+        params[:problem][:checker_mode] = '2'
+
+      elsif @checker_status['status'] == 'CE'
         flash[:alert].push('Checker was not compiled.')
         flash[:alert].concat(@checker_status['error']) #it is array
         flash[:alert].push('')
+
+      elsif @checker_status['status'] == 'NW'
+        flash[:alert].push('Checker was not work.')
+        flash[:alert].concat(@checker_status['error']) #it is array
+        flash[:alert].push('')        
       end
       params[:problem].delete(:uploaded_checker)
     end
@@ -85,7 +85,15 @@ class ProblemsController < ApplicationController
         params[:problem][:checker_mode] = (@problem.template.checker_mode==2) ? '1' : '0'
       end
     end
-    
+
+    #//check solution file CHECK TESTS AND CHECKER
+    if not params[:solution_file].nil?
+      session["solution_#{@problem.order}_id"] = @problem.check_problem(params[:solution_file])
+      session["solution_#{@problem.order}_status"] = nil
+      session["solution_#{@problem.order}_status_full"] = nil
+    end
+
+
     respond_to do |format|
       if @problem.update_attributes(params[:problem])
         format.html { redirect_to contest_control_problems_path(@contest.path, tab:@problem.order)}

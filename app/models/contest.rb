@@ -18,13 +18,16 @@ class Contest
   has_many :problems
   has_many :participants
 
-  before_save :set_path
-  before_destroy :clear
-  after_create :create_template_problem
+  after_create :set_path, :create_folder, :create_template_problem
+  before_destroy :clear  
   
   def set_path
-    return if not self.path.nil?
-    self.path = (Contest.exists?) ? ( Contest.last.path.to_i + 1 ).to_s : '1'
+    self.path = (Contest.exists?) ? 
+      ( Contest.all.sort_by{|i| i.path.to_i}.last.path.to_i + 1 ).to_s : '1'
+  end
+
+  def create_folder
+    FileUtils.mkdir_p self.contest_dir
   end
 
   def create_template_problem
@@ -86,16 +89,13 @@ class Contest
     for i in from..to do
       problem = Problem.new({
         :contest => self,
-        :order => i,
+        :order => i
       });
-
       #set template problems data
-      problem.use_template
-
+      problem.use_template if not problem.order == 0
       problem.save
       self.problems << problem
     end
-    #raise "#{self.problems.size}"
     self.problems_count = self.problems.size - 1
     self.save
   end

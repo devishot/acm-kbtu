@@ -13,8 +13,37 @@ class Participant
   field :a, type: Array, default: []
   field :point, type: Integer, default: 0
 
-  before_create :set_path, :set_standings
+  before_create :set_path, :create_folder, :set_standings
+  before_destroy :clear
   
+  def set_path
+    participants = contest.participants
+    self.path = (participants.exists?) ? 
+        ( participants.all.sort_by{|i| i.path.to_i}.last.path.to_i + 1 ).to_s : '1'
+  end
+
+  def create_folder
+    FileUtils.mkdir_p self.participant_dir
+  end     
+
+  def set_standings
+    contest.problems_count.times do |i|
+      a[i + 1] = 0
+      penalties[i + 1] = 0
+    end
+  end
+
+  def clear
+    self.user.participants.delete(self)    
+    self.contest.participants.delete(self)
+    self.submits.destroy_all
+    FileUtils.rm_rf self.participant_dir
+  end
+
+  def participant_dir
+    self.contest.contest_dir+"/participants/#{self.path}"
+  end
+
   def summarize
     self.point = 0
     self.penalty = 0    
@@ -23,29 +52,6 @@ class Participant
       self.point += 1 if self.a[i] > 0
     end
     self.save!
-  end
-
-  def set_path
-    return if path != nil
-    participants = contest.participants
-    self.path = (participants.exists?) ? (participants.last.path.to_i()+1).to_s() : '1'
-  end
-
-  before_destroy do |participant|
-    participant_folder = 
-      "#{Rails.root}/judge-files/contests/#{participant.contest.path}/participants/#{participant.path}"    
-    participant.user.participants.delete(participant)    
-    participant.contest.participants.delete(participant)
-    participant.submits.destroy_all
-
-    FileUtils.rm_rf participant_folder
-  end
-
-  def set_standings
-    contest.problems_count.times do |i|
-      a[i + 1] = 0
-      penalties[i + 1] = 0
-    end
   end
 
 end

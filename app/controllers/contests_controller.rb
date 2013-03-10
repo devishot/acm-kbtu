@@ -50,7 +50,6 @@ class ContestsController < ApplicationController
     @message = Message.new(params[:message])
     @message.participant = Participant.find_by(:user => current_user)
     @contest = Contest.find(@message.participant.contest)
-
     @message.save
 
     redirect_to contest_messages_path(@contest.path)
@@ -59,7 +58,6 @@ class ContestsController < ApplicationController
 
   def standings
     #@contest = Contest.find_by(path: params[:id])
-
     @last_success = Submit.where(status: "AC").last
     @last_success = nil if @last_success.to_a == nil
 
@@ -142,8 +140,6 @@ class ContestsController < ApplicationController
       session["solution_#{problem.order}_status"] = submit.status
       session["solution_#{problem.order}_status_full"] = submit.status_full
     end
-    #raise "#{session.inspect}"
-
   end
 
   # PUT /contests/:id/control_problems
@@ -151,8 +147,7 @@ class ContestsController < ApplicationController
     #@contest = Contest.find_by(path: params[:id])
     @contest.upd_problems_count(params[:problems_count].to_i)
 
-    redirect_to contest_path(@contest.path)+'/control_problems',
-                notice: 'Problems count updated'
+    redirect_to contest_path(@contest.path)+'/control_problems', notice: 'Problems count updated'
  end
 
   # GET /contests/new

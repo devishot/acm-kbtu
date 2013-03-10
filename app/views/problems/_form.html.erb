@@ -64,11 +64,15 @@
 
   <%= label_tag 'tests_archive', "Upload archive of tests" %>
   <%= file_field_tag 'tests_archive' %>
-  <% if not @problem.tests_path.blank? then %>
-    <span class="label label-success"> 
+  <% if File.exist?( @problem.tests_dir ) then %>
+    <span class="label label-success">
       Tests uploaded
-      (<%= File.ctime(@problem.tests_path).to_s(:long) %>)
+      (<%= File.ctime( @problem.tests_dir ).to_s(:long) %>)
     </span>
+  <% else %>
+    <span class="label label-error">
+      Tests not uploaded
+    </span>  
   <% end %>
 
   <%= label_tag 'solution_file', "System test" %>
@@ -87,3 +91,5 @@
 
 <%= link_to '<i class="icon-pencil icon-white"></i> Edit statement'.html_safe, 
     contest_path(@contest.path)+"/#{@problem.order}/edit_statement", :class => 'btn btn-info' %>
+<br />
+<br />

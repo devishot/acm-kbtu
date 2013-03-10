@@ -18,7 +18,7 @@ class Tester
   def initialize(submit_id, system_path)
     @submit = Submit.find(submit_id)
     @work_dir = "#{system_path}/work/"
-    @tests_path = @submit.problem.tests_path
+    @tests_path = @submit.problem.tests_dir
     @src_ext = File.extname(@submit.file_sourcecode_path)
 
     self.put_sourcecode
@@ -34,11 +34,18 @@ class Tester
   end
 
   def check(tin, tout)
-    pid, stdin, stdout, stderr = 
-      Open4::popen4 "\'#{@work_dir}../checkers/#{@submit.problem.checker}\' " +
-                    "\'#{@tests_path}/#{tin}\' " +
-                    "\'#{@work_dir}output.txt\' " + 
-                    "\'#{@tests_path}/#{tout}\'"
+    if @submit.problem.checker_mode == 0 #system
+      checker = "\'#{@work_dir}../checkers/#{@submit.problem.checker}\' "
+    elsif @submit.problem.checker_mode == 2 #own
+      checker = "\'#{@submit.problem.checker_dir}/checker\' "
+    elsif @submit.problem.checker_mode == 1 #template
+      checker = "\'#{@submit.problem.contest.problems.find_by(order: 0).checker_dir}/checker\' "      
+    end
+    command = checker + " \'#{@tests_path}/#{tin}\' " +
+              "\'#{@work_dir}output.txt\' " + "\'#{@tests_path}/#{tout}\'"
+
+    #puts command
+    pid, stdin, stdout, stderr = Open4::popen4 command
     ignored, status = Process::waitpid2 pid
 
     std_out = stdout.gets
@@ -63,6 +70,9 @@ class Tester
       @submit.save
       return
     end
+
+    #puts "Compiled\n"
+
     #//get every test(pair of 'file' and 'file.ans')
     Dir.entries(@tests_path).sort.each_slice(2) do |t|
       next if t[0] == '.'
@@ -74,10 +84,17 @@ class Tester
                       "--time-limit=#{@submit.problem.time_limit} " +
                       "--stdin=\'#{@work_dir}input.txt\' " +
                       "--stdout=\'#{@work_dir}output.txt\' " +
-                      "\'#{@work_dir}1.exe\'"
+                      "\'#{@work_dir}1.exe\'"                      
       verdict = stderr.gets
       verdict = verdict[8,9].strip
-      puts "#{t[0]} #{t[1]} #{verdict}"
+
+      # puts "#{t[0]} #{t[1]} #{verdict}"
+      # puts "\'#{@work_dir}../ejudge-execute\' " +
+      #                 "--time-limit=#{@submit.problem.time_limit} " +
+      #                 "--stdin=\'#{@work_dir}input.txt\' " +
+      #                 "--stdout=\'#{@work_dir}output.txt\' " +
+      #                 "\'#{@work_dir}1.exe\'"      
+
       if verdict == 'OK'
         #//CHECK(COMPARE)
         if self.check(t[0], t[1]) == 0
