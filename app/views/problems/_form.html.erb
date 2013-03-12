@@ -9,6 +9,26 @@
 
   <%= f.label :memory_limit , "Memory limit" %>
   <%= f.number_field :memory_limit, :in => 16..512, :step => 16, :class => 'span1'  %>
+  <br/>
+  <br/>
+
+
+  <%= label_tag 'tests_archive', "Upload archive of tests" %>
+  <%= file_field_tag 'tests_archive' %>
+  <% if @problem.tests_uploaded? then %>
+    <span class="label label-success">
+      Tests uploaded
+      (<%= File.ctime( @problem.tests_dir ).to_s(:long) %>)
+    </span>
+  <% else %>
+    <span class="label label-error">
+      Tests not uploaded
+    </span>  
+  <% end %>
+  <br/>
+  <br/>
+
+
 
   <p>Checker</p>
   <table class="table table-bordered" style="widht:100;">
@@ -52,37 +72,27 @@
         <td>
           <p>Own checker</p>
           <%= f.file_field 'uploaded_checker' %>
+
           <% if not @problem.checker_path.blank? then %>
             <span class="label label-success"> 
               <%= File.basename(@problem.checker_path) %> 
               (<%= File.ctime(@problem.checker_path).to_s(:long) %>)
             </span>
           <% end %>
+
         </td>
     </tbody>
   </table>
 
-  <%= label_tag 'tests_archive', "Upload archive of tests" %>
-  <%= file_field_tag 'tests_archive' %>
-  <% if File.exist?( @problem.tests_dir ) then %>
-    <span class="label label-success">
-      Tests uploaded
-      (<%= File.ctime( @problem.tests_dir ).to_s(:long) %>)
-    </span>
-  <% else %>
-    <span class="label label-error">
-      Tests not uploaded
-    </span>  
+  <% if not @problem.order==0 %>
+    <%= label_tag 'solution_file', "System test" %>
+    <%= file_field_tag 'solution_file' %>
+    <%= session["solution_#{@problem.order}_status"] %>
+    <%= session["solution_#{@problem.order}_status_full"] %>
+    <br />
+    <br />    
   <% end %>
 
-  <%= label_tag 'solution_file', "System test" %>
-  <%= file_field_tag 'solution_file' %>
-  <%= session["solution_#{@problem.order}_status"] %>
-  <%= session["solution_#{@problem.order}_status_full"] %>
-  
-
-  <br />
-  <br />
   <div class="actions">
     <%= f.submit "Update", :class => "btn" %>
   </div>

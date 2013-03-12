@@ -62,6 +62,8 @@ class ProblemsController < ApplicationController
     flash[:alert]  = []    
     if not params[:problem][:uploaded_checker].nil?
       @checker_status = @problem.put_checker(params[:problem][:uploaded_checker])
+      puts @checker_status['status']
+      puts @checker_status['error']      
       if @checker_status['status'] == 'OK'
         flash[:notice].push('Checker compiled.')
         flash[:notice].push('')

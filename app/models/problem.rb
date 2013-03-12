@@ -47,6 +47,10 @@ class Problem
     self.problem_dir+"/tests"
   end
 
+  def tests_uploaded?
+    File.exist?( self.tests_dir )
+  end
+
   def checker_dir
     self.problem_dir+"/checker"
   end
@@ -100,6 +104,7 @@ class Problem
     checker_dir = self.checker_dir
     #clear & create new & write ufile(.cpp) in checker_dir
     FileUtils.rm_rf checker_dir
+    self.checker_path = ''
     FileUtils.mkdir_p checker_dir
     File.open(Rails.root.join(checker_dir, ufile.original_filename), 'w') do |file|
       file.write(ufile.read.force_encoding('utf-8'))
@@ -110,6 +115,34 @@ class Problem
       self.checker_path = checker_dir+'/'+ufile.original_filename
     else
       FileUtils.rm_rf checker_dir
+      return status;
+    end
+    #check on tests
+    if self.tests_uploaded? then
+      Dir.entries(self.tests_dir).sort.each_slice(2) do |t|
+        next if t[0] == '.'
+        command = "\'#{self.checker_dir}/checker\' #{self.tests_dir+'/'+t[0]} #{self.tests_dir+'/'+t[1]} #{self.tests_dir+'/'+t[1]}"
+#        puts command
+        pid, stdin, stdout, stderr = Open4::popen4 command
+        ignored, open4_status = Process::waitpid2 pid
+        std_out = stdout.gets
+        std_err = stderr.gets
+        if open4_status.exitstatus > 0 then #OK is 0
+#          puts ')_))))))))))))))))))))))))))))))))))'
+          status['status'] = 'NW'
+          status['error'] = []
+          status['error'] << case open4_status.exitstatus
+            when 4, 2; "PE"
+            when 5, 1; "WA"
+            else "SE"
+          end
+          status['error'] << std_err
+
+          self.checker_path = ''
+          FileUtils.rm_rf checker_dir
+          return status;
+        end
+      end
     end
 
     return status

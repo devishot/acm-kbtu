@@ -12,7 +12,7 @@ class Tester
     FileUtils.remove_dir @work_dir if File.exist? @work_dir
     FileUtils.mkdir_p @work_dir
     #copy sourcecode in 1.cpp
-    FileUtils.cp @submit.file_sourcecode_path, "#{@work_dir}1#{@src_ext}"
+    FileUtils.cp @submit.file_sourcecode_path, "#{@work_dir}solution#{@src_ext}"
   end
 
   def initialize(submit_id, system_path)
@@ -26,7 +26,7 @@ class Tester
 
   def compile()
     #compile
-    status = Compiler.compile("#{@work_dir}1#{@src_ext}")
+    status = Compiler.compile("#{@work_dir}solution#{@src_ext}")
     #raise "#{status['status']} || #{status['error']}"
     @submit.status = status['status']
     @submit.status_full = status['error']
@@ -84,16 +84,12 @@ class Tester
                       "--time-limit=#{@submit.problem.time_limit} " +
                       "--stdin=\'#{@work_dir}input.txt\' " +
                       "--stdout=\'#{@work_dir}output.txt\' " +
-                      "\'#{@work_dir}1.exe\'"                      
+                      "\'#{@work_dir}solution\'"                      
       verdict = stderr.gets
       verdict = verdict[8,9].strip
 
-      # puts "#{t[0]} #{t[1]} #{verdict}"
-      # puts "\'#{@work_dir}../ejudge-execute\' " +
-      #                 "--time-limit=#{@submit.problem.time_limit} " +
-      #                 "--stdin=\'#{@work_dir}input.txt\' " +
-      #                 "--stdout=\'#{@work_dir}output.txt\' " +
-      #                 "\'#{@work_dir}1.exe\'"      
+      #puts "#{t[0]} #{t[1]} #{verdict}"
+    
 
       if verdict == 'OK'
         #//CHECK(COMPARE)
