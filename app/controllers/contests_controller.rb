@@ -1,10 +1,10 @@
 class ContestsController < ApplicationController
   before_filter :load_contest,
                 :except => [:index, :kill_participant, :new, :create]
-  #load_and_authorize_resource
+  load_and_authorize_resource :except => [:index]
 
   rescue_from CanCan::AccessDenied do |exception|
-    redirect_to root_url, :alert => exception.message
+    redirect_to contests_url, :alert => exception.message
   end
 
   # GET /contests
@@ -108,15 +108,22 @@ class ContestsController < ApplicationController
   def control_update
     #@contest = Contest.find_by(path: params[:id])
     if params[:commit] == "Update"
-      @contest.time_start = Contest.new(params[:contest]).time_start
-      @contest.duration = Contest.new(params[:contest]).duration
-        ok = 'Start time successfully updated'
-        err = 'Error: Start time was not updated'
+      @contest.start( params[:contest] )
+      ok = 'Start time successfully updated'
+      err = 'Error: Start time was not updated'
+
     elsif params[:commit] == "Start"
-      @contest.time_start = DateTime.now
-      @contest.duration = Contest.new(params[:contest]).duration
-        ok = 'Contest started'
-        err = 'Error: Contest was not started'
+      @contest.start( params[:contest], true )
+      ok = 'Contest started'
+      err = 'Error: Contest was not started'
+
+    elsif params[:commit] == "Restart"
+      @contest.restart( params[:contest] )
+      ok = 'Contest REstarted'      
+
+    elsif params[:commit] == "Stop"
+      @contest.stop()
+      ok = 'Contest stopped'
     end
 
     respond_to do |format|

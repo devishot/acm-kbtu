@@ -34,10 +34,10 @@ class Participant
   end
 
   def clear
+    FileUtils.rm_rf self.participant_dir    
     self.user.participants.delete(self)    
     self.contest.participants.delete(self)
     self.submits.destroy_all
-    FileUtils.rm_rf self.participant_dir
   end
 
   def participant_dir

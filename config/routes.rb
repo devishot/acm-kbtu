@@ -4,16 +4,15 @@ AcmKbtu::Application.routes.draw do
 
   resources :problems
 
-  resources :contests
   match '/contests/:id/upload' => 'contests#upload'
   post  '/contests/:id/unpack' => 'contests#unpack'
   post  '/contests/:id/participate' => 'contests#participate'
   delete 'kill_participant' => 'contests#kill_participant'
 
-  match '/contests/:id/control' => 'contests#control'
+  get   '/contests/:id/control' => 'contests#control'
   put   '/contests/:id/control' => 'contests#control_update'
   match '/contests/:id/control_problems' => 'contests#control_problems', as: :contest_control_problems
-  put  '/contests/:id/control_problems_count' => 'contests#control_problems_count'  
+  put   '/contests/:id/control_problems_count' => 'contests#control_problems_count'  
   match '/contests/:id/control_participants' => 'contests#control_participants'
 
   match '/contests/:id/problems' => 'problems#index'
@@ -31,6 +30,8 @@ AcmKbtu::Application.routes.draw do
   put   '/contests/:id/:problem' => 'problems#update'
   match '/contests/:id/:problem/edit_statement' => 'problems#edit_statement'  
   put   '/contests/:id/:problem/update_statement' => 'problems#update_statement'
+
+  resources :contests  
 
   match '/submits/:contest/:participant' => 'submits#index'
   match '/submits/:contest/:participant/:submit' => 'submits#show_sourcecode'

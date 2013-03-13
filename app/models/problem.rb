@@ -128,7 +128,6 @@ class Problem
         std_out = stdout.gets
         std_err = stderr.gets
         if open4_status.exitstatus > 0 then #OK is 0
-#          puts ')_))))))))))))))))))))))))))))))))))'
           status['status'] = 'NW'
           status['error'] = []
           status['error'] << case open4_status.exitstatus

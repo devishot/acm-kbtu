@@ -20,22 +20,20 @@
     </li>
 
     <% for i in 1..@contest.problems_count %>
-      <li class="<%='active'if params[:tab]==i.to_s %>" ><a href="#tab<%= i %>" data-toggle="tab"> <%= i %> </a></li>
+      <li class="<%='active'if params[:tab]==i.to_s %>" ><a href="#tab<%= i %>" data-toggle="tab"> <%= (@contest.problems_count>26) ? i : (i+64).chr %> </a></li>
     <% end %>
   </ul>
 
   <div class="tab-content" id="articles">
       <div class="tab-pane <%='active' if params[:tab]=='0' || params[:tab].nil? %>" id="tab0">
-        <p>I'm Template</p>
         <% @problem = @contest.problems.find_by(order: 0) %>
         <%= render 'problems/form' %>      
       </div>
 
       <% for i in 1..@contest.problems_count %>
         <div class="tab-pane <%='active' if params[:tab]==i.to_s %>" id="tab<%= i %>" >
-            <p>Howdy, I'm in Section "tab<%= i %>".</p>
-            <% @problem = @contest.problems.find_by(order: i) %>
-            <%= render 'problems/form' %>
+          <% @problem = @contest.problems.find_by(order: i) %>
+          <%= render 'problems/form' %>
         </div>
       <% end %>
       

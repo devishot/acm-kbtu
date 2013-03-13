@@ -55,6 +55,21 @@ class Contest
     (self.started? && Time.now > self.time_start+self.duration.minutes) ? true : false
   end
 
+  def start(params, now = false)
+    self.time_start = (now==true) ? DateTime.now : Contest.new(params).time_start
+    self.duration = Contest.new(params).duration
+  end
+
+  def restart(params)
+    self.participants.destroy_all
+    #delete standings
+    self.start(params, true)
+  end
+
+  def stop
+    self.duration = 0
+  end
+
   # def unpack(archive)
   #   #create folder if not exist
   #   FileUtils.mkdir_p self.contest_dir

@@ -12,10 +12,15 @@ class SubmitsController < ApplicationController
       :participant => params[:participant]
     })
     contest = @submit.problem.contest
-    name = @submit.id.to_s()+params[:file].original_filename
-    directory = 
-      "#{Rails.root}/judge-files/contests/#{contest.path}/participants/"+
-      "#{@submit.participant.path}/#{@submit.problem.order}/"
+    if contest.problems_count > 26 
+      name_prefix = "#{@submit.problem.order}"+'#'
+    else
+      name_prefix = "#{(@submit.problem.order + 96).chr}"
+    end
+    name_prefix << "#{@submit.participant.submits.where(problem: @submit.problem).count + 1}"
+
+    name = name_prefix+File.extname( params[:file].original_filename )
+    directory = @submit.participant.participant_dir+"/#{@submit.problem.order}"
     path = File.join(directory, name)
     tmpfile = params[:file].tempfile
     @submit.file_sourcecode_path = path
@@ -75,8 +80,7 @@ class SubmitsController < ApplicationController
     #@participant = @contest.participants.find_by(path: params[:participant])
     #@submit = @participant.submits[params[:submit].to_i-1]
     link = @submit.file_sourcecode_path
-    send_file(link,
-              :filename => "mycode.cpp")
+    send_file(link)
   end
 
 private

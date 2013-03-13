@@ -1,0 +1,25 @@
+<p>
+  Type:
+  <b>
+    <%= (@contest.type==0) ? "ACM" : "IOI" %>
+  </b>
+
+  Start:
+  <b>
+    <%= (@contest.started?) ? @contest.time_start.strftime("%Y-%m-%d %H:%M") : 'Not started'%>
+  </b>
+  
+  Duration:
+  <b>
+    <%= @contest.duration %>min
+  </b>
+
+  Status:
+    <% if not @contest.started? %>
+      <b>NOT STARTED<b/>
+    <% elsif @contest.over? %>
+      <b>OVER<b/>
+    <% else %>
+      <b>RUN<b/>
+    <% end %>
+</p>

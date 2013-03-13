@@ -13,13 +13,13 @@
 <br />
 
 
-<%= form_for(@contest, :url => contest_path(@contest.path)+'/control', :method => 'put') do |f| %>
+<%= form_for(@contest, :url => contest_path(@contest.path)+'/control', :method => "PUT") do |f| %>
   <table class="table table-bordered" style="width: 500px">
     <tr>
       <td>
         <div style="position: relative; left: 150px;">
           <%= label_tag :duration, "Contest duration"%>
-          <%= f.number_field :duration, :in => 60..480, :step => 60 %>
+          <%= f.number_field :duration, :in => 5..480, :step => 60 %>
         </div>
         <br />
       </td>
@@ -36,11 +36,23 @@
         <br />
         <center>OR<center>
       </td>
-      <td  style="width: 200px">
-        <br />
-        <br />
-        <p>Start now</p>
-        <%= f.submit 'Start', :class => "btn" %>
+      <td style="width: 200px; text-align: center;">
+        <% if not @contest.started? then %>
+          <p>Start now</p>
+          <%= f.submit 'Start', :class => "btn" %>
+        <% elsif @contest.over? then %>
+          <p>Restart now</p>
+          <%= f.submit 'Restart', :class => "btn" %>          
+        <% else %>
+          <p>Stop it</p>
+          <%= f.submit 'Stop', :class => "btn btn-danger" %>
+        <% end %>        
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <%= render 'contest_info' %>
       </td>
     </tr>
 

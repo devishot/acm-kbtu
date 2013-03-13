@@ -23,31 +23,7 @@
       <%= @contest.description %>
     </p>
 
-    <p>
-      Type:
-      <b>
-        <%= (@contest.type==0) ? "ACM" : "IOI" %>
-      </b>
-
-      Start:
-      <b>
-        <%= (@contest.time_start.nil?) ? 'Not started' :  @contest.time_start.strftime("%Y-%m-%d %H:%M") %>
-      </b>
-      
-      Duration:
-      <b>
-        <%= @contest.duration %>min
-      </b>
-
-      Status:
-        <% if not @contest.started? %>
-          <b>NOT STARTED<b/>
-        <% elsif @contest.over? %>
-          <b>OVER<b/>
-        <% else %>
-          <b>RUN<b/>
-        <% end %>
-    </p>
+    <%= render 'contests/contest_info' %>
   </center>
 
 
@@ -62,14 +38,14 @@
 
   <ul class="nav nav-pills">
     <li <%= "class=active" if @navpill==1 %> > 
-      <%= link_to "Problems", "/contests/#{@contest.path}/problems" %>
+      <%= link_to "Problems",   "/contests/#{@contest.path}/problems" %>
     </li>
 
     <li <%= "class=active" if @navpill==2 %> > 
-      <%= link_to "Standings", "/contests/#{@contest.path}/standings" %>
+      <%= link_to "Standings",  "/contests/#{@contest.path}/standings" %>
     </li>
     <li <%= "class=active" if @navpill==4 %> > 
-      <%= link_to "Summary", "/contests/#{@contest.path}/summary" %>
+      <%= link_to "Summary",    "/contests/#{@contest.path}/summary" %>
     </li>
     <li class="dropdown" <% "class=dropdown active" if @navpill==3 %> >
       <a class="dropdown-toggle" data-toggle="dropdown" href="#">

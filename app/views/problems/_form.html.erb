@@ -63,10 +63,10 @@
         </td>
 
         <% if not @problem.order==0 then %>
-        <td>
-          <p>Template checker</p>
-          view code here..
-        </td>
+          <td>
+            <p>Template checker</p>
+            view code here..
+          </td>
         <% end %>
 
         <td>
@@ -79,7 +79,6 @@
               (<%= File.ctime(@problem.checker_path).to_s(:long) %>)
             </span>
           <% end %>
-
         </td>
     </tbody>
   </table>
