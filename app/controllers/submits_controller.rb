@@ -6,20 +6,21 @@ class SubmitsController < ApplicationController
   # POST /submits.json
   def create
     @submit = Submit.new({ 
-      :status => params[:status],
-      :status_full => params[:status_full],
       :problem => params[:problem],
       :participant => params[:participant]
     })
     contest = @submit.problem.contest
+    #return if contest OVER
+    redirect_to problem_path, error: 'Contest is over' if contest.over?
+
     if contest.problems_count > 26 
       name_prefix = "#{@submit.problem.order}"+'#'
     else
       name_prefix = "#{(@submit.problem.order + 96).chr}"
     end
     name_prefix << "#{@submit.participant.submits.where(problem: @submit.problem).count + 1}"
-
     name = name_prefix+File.extname( params[:file].original_filename )
+
     directory = @submit.participant.participant_dir+"/#{@submit.problem.order}"
     path = File.join(directory, name)
     tmpfile = params[:file].tempfile
@@ -30,7 +31,7 @@ class SubmitsController < ApplicationController
       problem_path = contest_path(contest.path)+"/#{@submit.problem.order}"
       if @submit.save
         #save sourcecode
-        FileUtils.mkdir_p directory unless File.directory? directory
+        FileUtils.mkdir_p directory
         File.open(path, "wb") { |f| f.write(tmpfile.read) }
 
         (@submit.problem).submits << @submit

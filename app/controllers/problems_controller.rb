@@ -9,7 +9,7 @@ class ProblemsController < ApplicationController
   # GET /contests/:id/problems
   def index
     @navpill = 1
-    redirect_to "/contests/#{params[:id]}/1"
+    redirect_to contest_path(params[:id])+'/1'
   end
 
   # GET /contests/:id/:problem
@@ -90,9 +90,7 @@ class ProblemsController < ApplicationController
 
     #//check solution file CHECK TESTS AND CHECKER
     if not params[:solution_file].nil?
-      session["solution_#{@problem.order}_id"] = @problem.check_problem(params[:solution_file])
-      session["solution_#{@problem.order}_status"] = nil
-      session["solution_#{@problem.order}_status_full"] = nil
+      @problem.check_problem(params[:solution_file])
     end
 
 

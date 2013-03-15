@@ -24,14 +24,6 @@ class Tester
     self.put_sourcecode
   end
 
-  def compile()
-    #compile
-    status = Compiler.compile("#{@work_dir}solution#{@src_ext}")
-    #raise "#{status['status']} || #{status['error']}"
-    @submit.status = status['status']
-    @submit.status_full = status['error']
-    return (status['status']=="OK") ? 1 : 0
-  end
 
   def check(tin, tout)
     if @submit.problem.checker_mode == 0 #system
@@ -48,75 +40,68 @@ class Tester
     pid, stdin, stdout, stderr = Open4::popen4 command
     ignored, status = Process::waitpid2 pid
 
-    std_out = stdout.gets
-    std_err = stderr.gets
+    std_out = stdout.readlines
+    std_err = stderr.readlines
 
-    #puts "#{std_err} \n #{std_out}"
+    puts "!2   #{std_err} | #{std_out}"
 
-    @submit.status = case status.exitstatus
+    @submit.status['status'] = case status.exitstatus
       when 0; "OK"
       when 4, 2; "PE"
       when 5, 1; "WA"
       else "SE" 
     end
-    @submit.status_full = (@submit.status=="SE") ? "#{status} | #{std_err} | #{std_out}" : ""
+    @submit.status['error'] = std_out
 
-    return (status.exitstatus==0) ? 1 : 0; #// @submit.status==0 <- "OK"
+    return (status.exitstatus==0) ? true : false;
   end
 
   def run()
     #//compile sourcecode
-    if self.compile == 0
+    @submit.status = Compiler.compile("#{@work_dir}solution#{@src_ext}")
+    if @submit.status['status'] == 'CE' then
       @submit.save
       return
     end
-
     #puts "Compiled\n"
 
     #//get every test(pair of 'file' and 'file.ans')
+    k = 0;
     Dir.entries(@tests_path).sort.each_slice(2) do |t|
-      next if t[0] == '.'
+      next unless File.basename(t[0], '.*') == File.basename(t[1], '.*')
+      k = k + 1
       #copy current test's input to work/input.txt file      
       FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}input.txt"
       #//RUN
       pid, stdin, stdout, stderr = 
         Open4::popen4 "\'#{@work_dir}../ejudge-execute\' " +
                       "--time-limit=#{@submit.problem.time_limit} " +
+                      "--max-vm-size=#{@submit.problem.memory_limit}M " +
+                      "--memory-limit " + 
                       "--stdin=\'#{@work_dir}input.txt\' " +
                       "--stdout=\'#{@work_dir}output.txt\' " +
                       "\'#{@work_dir}solution\'"                      
-      verdict = stderr.gets
-      verdict = verdict[8,9].strip
+      verdict = stderr.readlines
 
-      #puts "#{t[0]} #{t[1]} #{verdict}"
-    
-
-      if verdict == 'OK'
+      @submit.status['status'] = verdict[0][8,9].strip
+      @submit.status['error'] = verdict      
+      puts "!1  #{t[0]} | #{t[1]} | #{verdict}"      
+      if @submit.status['status'] == 'OK'
         #//CHECK(COMPARE)
-        if self.check(t[0], t[1]) == 0
+        if not self.check(t[0], t[1])
+          @submit.status['test'] = k
           @submit.save
           return
         end
       else
-        @submit.status = verdict  #// TL or other errors
-        @submit.status_full = []
         @submit.save
         return
       end
     end
 
-    @submit.status = "AC"
-    @submit.status_full = []
+    @submit.status = {"status" => 'AC'}
     @submit.save
     return
-  end
-
-  def get_status
-    return @submit.status
-  end
-
-  def get_status_full
-    return @submit.status_full
   end
 
   def self.perform(submit_id, hidden=false)
@@ -124,7 +109,6 @@ class Tester
 
     a = Tester.new(submit_id, system_path)
     a.run
-    #puts "#{a.get_status} #{a.get_status_full}"
     return if hidden==true
 
 
@@ -132,7 +116,7 @@ class Tester
     @participant = @submit.participant
     @problem = @submit.problem
 
-    if @submit.status == "AC"
+    if @submit.status['status'] == "AC"
       if @participant.a[@problem.order] <= 0
         #p "AC"
         @participant.a[@problem.order] = @participant.a[@problem.order].abs+1
@@ -141,7 +125,7 @@ class Tester
         #p @participant.penalties
         @participant.save!
       end
-    elsif @submit.status == "WA"
+    elsif @submit.status['status'] == "WA"
       if @participant.a[@problem.order] <= 0
         #p "WA"
         @participant.a[@problem.order] -= 1

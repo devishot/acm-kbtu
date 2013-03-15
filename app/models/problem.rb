@@ -1,4 +1,5 @@
 require 'zip/zipfilesystem'
+require 'fileutils'
 require "#{Rails.root}/judge-files/check-system/compiler"
 
 class Problem
@@ -6,14 +7,15 @@ class Problem
   include Mongoid::Timestamps
   include Compiler
   field :order, type: Integer
-  field :time_limit, type: Integer, :default => 2
-  field :memory_limit, type: Integer, :default => 256
+  field :global_path, type: String  
+  field :time_limit, type: Integer, :default => 2 #seconds
+  field :memory_limit, type: Integer, :default => 256 #Megabytes
+  field :checker_mode, type: Integer, :default => 0 # 0-standart 1-template 2-own  
   field :checker, type: String, :default => 'cmp_file'
   field :checker_path, type: String #path to checker sourcecode, executable it is 'checker' file
-  field :checker_mode, type: Integer, :default => 0 # 0-standart 1-template 2-own
-  field :global_path, type: String
   field :statement, type: Hash, :default =>
         {'title'=>'', 'text'=>'', 'inputs'=>[], 'outputs'=>[], 'file_link'=>''}
+  field :checked, type: String
 
   belongs_to :contest
   has_many :submits
@@ -96,7 +98,8 @@ class Problem
       pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\' -C \'#{tests_dir}\'"
     end
     #remove(delete) file
-    FileUtils.remove_file(tests_dir+"/#{archive.original_filename}")
+    #raise "#{tests_dir+'/'+archive.original_filename}"
+    Open4::popen4 "rm #{tests_dir+'/'+archive.original_filename}"
   end
 
   def put_checker(ufile)
@@ -113,35 +116,39 @@ class Problem
     status = Compiler.compile(checker_dir+'/'+ufile.original_filename, true)#compile(file_path, checker=true)
     if status['status'] == 'OK'
       self.checker_path = checker_dir+'/'+ufile.original_filename
-    else
-      FileUtils.rm_rf checker_dir
-      return status;
-    end
-    #check on tests
-    if self.tests_uploaded? then
-      Dir.entries(self.tests_dir).sort.each_slice(2) do |t|
-        next if t[0] == '.'
-        command = "\'#{self.checker_dir}/checker\' #{self.tests_dir+'/'+t[0]} #{self.tests_dir+'/'+t[1]} #{self.tests_dir+'/'+t[1]}"
-#        puts command
-        pid, stdin, stdout, stderr = Open4::popen4 command
-        ignored, open4_status = Process::waitpid2 pid
-        std_out = stdout.gets
-        std_err = stderr.gets
-        if open4_status.exitstatus > 0 then #OK is 0
-          status['status'] = 'NW'
-          status['error'] = []
-          status['error'] << case open4_status.exitstatus
-            when 4, 2; "PE"
-            when 5, 1; "WA"
-            else "SE"
-          end
-          status['error'] << std_err
+      #check on tests
+      if self.tests_uploaded? then
+        Dir.entries(self.tests_dir).sort.each_slice(2) do |t|
+          puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"
+          next if not File.basename(t[0], '.*') == File.basename(t[1], '.*') 
+          next if t[0] == '.'
+          puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"          
+          command = "\'#{self.checker_dir}/checker\' \'#{self.tests_dir+'/'+t[0]}\' \'#{self.tests_dir+'/'+t[1]}\' \'#{self.tests_dir+'/'+t[1]}\'"
+          puts command
+          pid, stdin, stdout, stderr = Open4::popen4 command
+          ignored, open4_status = Process::waitpid2 pid
+          std_out = stdout.gets
+          std_err = stderr.gets
+          if open4_status.exitstatus > 0 then #OK is 0
+            status['status'] = 'NW'
+            status['error'] = []
+            status['error'] << case open4_status.exitstatus
+              when 4, 2; "PE"
+              when 5, 1; "WA"
+              else "SE"
+            end
+            status['error'] << std_err
 
-          self.checker_path = ''
-          FileUtils.rm_rf checker_dir
-          return status;
+            self.checker_path = ''
+            FileUtils.rm_rf checker_dir
+            return status;
+          end
+
         end
       end
+
+    else
+      FileUtils.rm_rf checker_dir
     end
 
     return status
@@ -163,7 +170,13 @@ class Problem
     })
     submit.save
     Resque.enqueue(Tester, submit.id, true) #Tester(submit.id, hidden=true)
-    return submit.id
+    self.checked = submit.id
+  end
+
+  def get_checked_status
+    return nil if self.checked.nil?
+    submit = Submit.find( self.checked )
+    return submit.status
   end
 
 end

@@ -19,7 +19,7 @@
       <td>
         <div style="position: relative; left: 150px;">
           <%= label_tag :duration, "Contest duration"%>
-          <%= f.number_field :duration, :in => 5..480, :step => 60 %>
+          <%= f.number_field :duration, :in => 5..480 %>
         </div>
         <br />
       </td>
@@ -63,3 +63,8 @@
 <br />
 <br />
 <%= link_to "Edit Participants", contest_path(@contest.path)+'/control_participants', class: "btn" %>
+<br />
+<br />
+<%= link_to "Participants status", contest_path(@contest.path)+'/control_status', class: "btn" %>
+<br />
+<br />

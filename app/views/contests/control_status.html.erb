@@ -1,0 +1,55 @@
+<%= link_to '<i class="icon-arrow-left"></i> Back'.html_safe, contest_path(@contest.path)+'/control' %>
+<br />
+<br />
+
+<table class="table table-striped table-bordered table-hover table-condensed" >
+  <thead>
+    <tr>
+      <th>tested time</th>
+      <th>Participant</th>
+      <th>Problem</th>
+      <th>Status</th>
+      <th>Test</th>
+      <th>Error</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @submits.each do |submit| %>
+      <% next if submit.participant.nil? %>
+
+      <% contest = submit.problem.contest %>
+      <% problem = submit.problem %>
+      <% participant = submit.participant %>
+      <tr <%= case submit.status['status']
+              when "";"class=warning"
+              when "AC";"class=success"
+              when "PE";"class=info"
+              else "class=error"
+            end
+          %> >
+        <td > <%= submit.updated_at.to_s(:time_s) %> </td>
+
+        <td style="width: 120px;">
+          <%= link_to "#{participant.user.name}", "/submits/#{participant.contest.path}/#{participant.path}"%>           
+        </td>
+
+        <td style="width: 45px;"> 
+          <%= (contest.problems_count>26) ? problem.order : (problem.order+64).chr %> 
+        </td>
+
+        <td style="width: 40px;">
+          <%= submit.status['status'] %>
+        </td>
+
+        <td style="width: 35px;">
+          <%= submit.status['test'] %>
+        </td>
+
+        <td>
+          <%= submit.status['error'] %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,11 +1,12 @@
-<table class="table table-condensed well">
+<table class="table table-condensed well table-striped table-hover">
   <thead>
     <tr>
       <th>#</th>
       <th>Submitted</th>
       <th>Tested</th>
       <th>Status</th>
-      <th>Status full</th>
+      <th>Test</th>
+      <th>Compilation error</th>
       <th>Source</th>
     </tr>
   </thead>
@@ -13,7 +14,7 @@
   <tbody>
     <% order = @submissions.count+1 %>
     <% @submissions.sort_by { |obj| obj.updated_at }.reverse_each do |i| %>
-      <tr <%= case i.status
+      <tr <%= case i.status['status']
               when "";"class=warning"
               when "AC";"class=success"
               when "PE";"class=info"
@@ -22,11 +23,14 @@
           %>
       >
         <td>  <%= order -= 1 %>  </td>
-        <td>  <%= i.created_at.to_s(:time_s) %>  </td>
-        <td>  <%= i.updated_at.to_s(:time_s) %>  </td>
-        <td>  <%= i.status %>  </td>
-        <td>  <%= i.status_full %>  </td>
-        <td>  <%= link_to "view code", 
+        <td style="width: 80px;">  <%= i.created_at.to_s(:time_s) %>  </td>
+        <td style="width: 80px;">
+          <%= (i.updated_at.to_s(:time_s) == i.created_at.to_s(:time_s)) ? "pending" : i.updated_at.to_s(:time_s) %>
+        </td>
+        <td style="width: 50px;">  <%= i.status['status'] %>  </td>
+        <td style="width: 40px;">  <%= i.status['test'] %>  </td>
+        <td>  <%= i.status['error'] if i.status['status']=='CE' %>  </td>
+        <td style="width: 80px;">  <%= link_to "view code", 
               submit_path(i.participant.contest.path)+"/#{i.participant.path}/#{order}", 
               :target => '_blank' %> </td>
       </tr>

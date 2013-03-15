@@ -14,6 +14,7 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/control_problems' => 'contests#control_problems', as: :contest_control_problems
   put   '/contests/:id/control_problems_count' => 'contests#control_problems_count'  
   match '/contests/:id/control_participants' => 'contests#control_participants'
+  match '/contests/:id/control_status' => 'contests#control_status'
 
   match '/contests/:id/problems' => 'problems#index'
   match '/contests/:id/statement' => 'contests#download_statement'

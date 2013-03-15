@@ -139,14 +139,6 @@ class ContestsController < ApplicationController
   def control_problems
     #@contest = Contest.find_by(path: params[:id])
     #raise "#{session.inspect}"
-    @contest.problems.each do |problem| 
-      id = session["solution_#{problem.order}_id"]
-      next if id.nil?
-      next if not session["solution_#{problem.order}_status"].nil?
-      submit = Submit.find(id)
-      session["solution_#{problem.order}_status"] = submit.status
-      session["solution_#{problem.order}_status_full"] = submit.status_full
-    end
   end
 
   # PUT /contests/:id/control_problems
@@ -156,6 +148,11 @@ class ContestsController < ApplicationController
 
     redirect_to contest_path(@contest.path)+'/control_problems', notice: 'Problems count updated'
  end
+
+  def control_status
+    #@contest = Contest.find_by(path: params[:id])
+    @submits = Submit.where(problem_contest:  @contest_id).sort_by{ |submit| submit.updated_at}.reverse
+  end
 
   # GET /contests/new
   def new

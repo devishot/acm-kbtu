@@ -1,7 +1,7 @@
 <%= render "contests/contest" %>
 
 <% @contest.problems_count.times do |i| %>
-  <% problem = @contest.problems[i] %>
+  <% problem = @contest.problems.find_by(order: i+1) %>
   <% @submissions = @submits.where(problem: problem) %>
 
   <div class="well">
