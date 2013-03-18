@@ -6,7 +6,6 @@
       <th>Tested</th>
       <th>Status</th>
       <th>Test</th>
-      <th>Compilation error</th>
       <th>Source</th>
     </tr>
   </thead>
@@ -22,18 +21,53 @@
             end
           %>
       >
-        <td>  <%= order -= 1 %>  </td>
+        <td style="width: 20px;">  <%= order -= 1 %>  </td>
         <td style="width: 80px;">  <%= i.created_at.to_s(:time_s) %>  </td>
         <td style="width: 80px;">
           <%= (i.updated_at.to_s(:time_s) == i.created_at.to_s(:time_s)) ? "pending" : i.updated_at.to_s(:time_s) %>
         </td>
-        <td style="width: 50px;">  <%= i.status['status'] %>  </td>
+        <td style="width: 50px;">
+          <!-- Button to trigger modal IF status is CE -->
+          <% if not i.status['status']=='CE' %>
+            <%= i.status['status'] %>
+          <% else %>
+            <a href="#CE<%= i.id %>" role="button" class="btn" data-toggle="modal">CE</a> 
+          <% end %>
+        </td>
         <td style="width: 40px;">  <%= i.status['test'] %>  </td>
-        <td>  <%= i.status['error'] if i.status['status']=='CE' %>  </td>
         <td style="width: 80px;">  <%= link_to "view code", 
               submit_path(i.participant.contest.path)+"/#{i.participant.path}/#{order}", 
-              :target => '_blank' %> </td>
+              :target => '_blank' %> 
+        </td>
       </tr>
+
+      <!-- Modal -->
+      <% if i.status['status']=='CE' then %>
+        <div id="CE<%= i.id %>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Compilation Error</h3>
+          </div>
+
+          <div class="modal-body">
+            <% i.status['error'].each do |error| %>
+              <p>
+                <% if error.include? '/solution.cpp:' %>
+                  <% if error.include? '/solution.cpp: ' then %> <br /> <% end %>
+                  <%= error.partition('/solution.cpp:')[2] %>
+                <% else %>
+                  <%= error %>
+                <% end %>
+              </p>
+            <% end %>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+      <% end %>
+
     <% end %>
   </tbody>
 </table>

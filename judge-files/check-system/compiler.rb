@@ -1,3 +1,4 @@
+require 'open4'
 module Compiler
 
   def Compiler.compile(ufile, checker=false)
@@ -12,6 +13,7 @@ module Compiler
       end
       #puts command
       pid, stdin, stdout, stderr = Open4::popen4 command
+      ignored, status = Process::waitpid2 pid
       compile_err = stderr.readlines #we need to save, it will changed
 
     elsif File.extname(ufile) == ".pas" || File.extname(ufile) == ".dpr"
@@ -21,6 +23,7 @@ module Compiler
         command = "fpc \'#{File.path(ufile)}\' -o\'#{File.dirname(ufile)}/#{File.basename(ufile, '.*')}\'"
       end
       pid, stdin, stdout, stderr = Open4::popen4 command
+      ignored, status = Process::waitpid2 pid
       compile_err = stderr.readlines  #we need to save, it will changed
       compile_out = stdout.readlines  #there is only warnings, so stupid fpc
       #two example of fpc compilation errors: http://pastie.org/6222145

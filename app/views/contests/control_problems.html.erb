@@ -5,12 +5,11 @@
 <%= form_tag(contest_path(@contest.path)+'/control_problems_count', :method => :put) do %>
   <div class="control-group">
     <%= label_tag :problems_count, "Problems count", :class => 'control-label' %>
-    <div class="controls">
+    <div class="controls input-prepend">
+      <%= submit_tag 'Update', :class => "btn" %>      
       <%= number_field_tag :problems_count, @contest.problems_count, :in => 0..200, :class => 'span1'%>
     </div>
   </div>
-
-  <%= submit_tag 'Update', :class => "btn" %>
 <% end %>
 
 <div class="tabbable" style="background-color: white;">
@@ -35,9 +34,8 @@
           <% @problem = @contest.problems.find_by(order: i) %>
           <%= render 'problems/form' %>
         </div>
-      <% end %>
-      
+      <% end %>    
   </div>
 </div>
-
-<br />
+  <br />
+  <br />

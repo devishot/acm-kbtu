@@ -2,10 +2,12 @@
 <br />
 <br />
 
-<table class="table table-striped table-bordered table-hover table-condensed" >
+<table class="table table-striped table-bordered table-hover table-condensed" 
+       style="width: 600px;">
   <thead>
     <tr>
       <th>tested time</th>
+      <th>ID</th>
       <th>Participant</th>
       <th>Problem</th>
       <th>Status</th>
@@ -26,30 +28,55 @@
               when "AC";"class=success"
               when "PE";"class=info"
               else "class=error"
-            end
-          %> >
-        <td > <%= submit.updated_at.to_s(:time_s) %> </td>
+            end %> 
+      >
+        <td style="width: 80px;"> <%= submit.updated_at.to_s(:time_s) %> </td>
+
+        <td style="width: 25px;"> <%= submit.participant.path %> </td>
 
         <td style="width: 120px;">
-          <%= link_to "#{participant.user.name}", "/submits/#{participant.contest.path}/#{participant.path}"%>           
+          <%= link_to "#{participant.user.name}", "/submits/#{participant.contest.path}/#{participant.path}"%>
         </td>
 
         <td style="width: 45px;"> 
           <%= (contest.problems_count>26) ? problem.order : (problem.order+64).chr %> 
         </td>
 
-        <td style="width: 40px;">
+        <td style="width: 20px;">
           <%= submit.status['status'] %>
         </td>
 
-        <td style="width: 35px;">
+        <td style="width: 20px;">
           <%= submit.status['test'] %>
         </td>
 
-        <td>
-          <%= submit.status['error'] %>
+        <td style="width: 35px;">
+          <% if not submit.status['error'].blank? then %>
+            <a href="#myModal<%= submit.id %>" role="button" class="btn" data-toggle="modal">See</a>
+          <% end %>
         </td>
       </tr>
+
+      <!-- Modal -->
+      <% if not submit.status['error'].blank? then %>
+        <div class="modal hide fade"  id="myModal<%= submit.id %>"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Error</h3>
+          </div>
+
+          <div class="modal-body">
+            <% submit.status['error'].each do |error| %>
+              <p> <%= error %> </p>
+            <% end %>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+      <% end %>
+
     <% end %>
   </tbody>
 </table>

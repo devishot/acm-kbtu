@@ -1,65 +1,76 @@
+<%= link_to '<i class="icon-pencil icon-white"></i> Edit statement'.html_safe, 
+    contest_path(@contest.path)+"/#{@problem.order}/edit_statement", 
+    :class => 'btn btn-info',
+    :style => 'right: 0%; float: right; position: relative;' %>
+
 <%= form_for(@problem, :multipart => true) do |f| %>
   <%= hidden_field_tag :contest_id, @problem.contest.id %>
   <%= hidden_field_tag :problem_order, @problem.order %>
   <%= f.hidden_field :order %>
 
-  
-  <%= f.label :time_limit, "Time limit", :class => 'control-label' %>
-  <%= f.number_field :time_limit, :in => 1..5, :class => 'span1' %>
 
-  <%= f.label :memory_limit , "Memory limit" %>
-  <%= f.number_field :memory_limit, :in => 16..512, :step => 16, :class => 'span1'  %>
-  <br/>
-  <br/>
+  <div class="form-inline">
+    <%= f.label :time_limit, "Time limit", :class => 'control-label' %>
+    <%= f.number_field :time_limit, :in => 1..5, :class => 'span1' %>
+
+    <%= f.label :memory_limit , "Memory limit", :style => 'margin-left: 30px;' %>
+    <%= f.number_field :memory_limit, :in => 16..512, :step => 16, :class => 'span1'%>
+
+    <%= f.text_field :input_file, :placeholder => 'input file', :class => 'span2',
+        :style => 'margin-left: 30px;'%>
+
+    <%= f.text_field :output_file, :placeholder => 'output file', :class => 'span2', 
+        :style => 'margin-left: 30px;'%>
+  </div>
+  <br />
 
 
-  <%= label_tag 'tests_archive', "Upload archive of tests" %>
-  <%= file_field_tag 'tests_archive' %>
-  <% if @problem.tests_uploaded? then %>
-    <span class="label label-success">
-      Tests uploaded
-      (<%= File.ctime( @problem.tests_dir ).to_s(:long) %>)
-    </span>
-  <% else %>
-    <span class="label label-error">
-      Tests not uploaded
-    </span>  
-  <% end %>
-  <br/>
-  <br/>
-
+  <div class="form-inline">
+    <%= label_tag 'tests_archive', "Tests (.tgz .zip)" %>
+    <%= file_field_tag 'tests_archive' %>
+    <% if @problem.tests_uploaded? then %>
+      <span class="label label-success">
+        Tests uploaded
+        (<%= File.ctime( @problem.tests_dir ).to_s(:long) %>)
+      </span>
+    <% else %>
+      <span class="label label-error">
+        Tests not uploaded
+      </span>  
+    <% end %>
+  </div>
+  <br />
 
 
   <p>Checker</p>
   <table class="table table-bordered" style="widht:100;">
     <tbody>
       <tr>
-        <td>
-          <div>
-            <label class="checkbox">
-              <%= f.radio_button :checker_mode, 0 %>
-              System
-            </label>
+        <td style="width: 100px;">
+          <label class="checkbox">
+            <%= f.radio_button :checker_mode, 0 %>
+            System
+          </label>
 
-            <% if not @problem.order==0 then %>
+          <% if not @problem.order==0 then %>
             <label class="checkbox">
               <%= f.radio_button :checker_mode, 1, 
                   :disabled => (@problem.template.checker_path.blank?) ? true : false %>
               Template
             </label>
-            <% end %>
+          <% end %>
 
-            <label class="checkbox">
-              <%= f.radio_button :checker_mode, 2 %>
-              Own
-            </label>
-          </div>
+          <label class="checkbox">
+            <%= f.radio_button :checker_mode, 2 %>
+            Own
+          </label>
         </td>
 
         <td>
           <p>System checker</p>
-          <%= f.select :checker, ["cmp_file", "cmp_file_nospace", "cmp_long_long", "cmp_long_long_seq",
-                                  "cmp_long_double", "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
+          <%= f.select :checker, ["cmp_file", "cmp_file_nospace", "cmp_long_long", 
+                                  "cmp_long_long_seq", "cmp_long_double",
+                                  "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
         </td>
 
         <% if not @problem.order==0 then %>
@@ -83,42 +94,39 @@
     </tbody>
   </table>
 
+
   <% if not @problem.order==0 %>
-    <%= label_tag 'solution_file', "System test" %>
-    <%= file_field_tag 'solution_file' %>
+    <div class="form-inline">
+      <%= label_tag 'solution_file', "Verification (src)" %>
+      <%= file_field_tag 'solution_file' %>
 
-    <% status = @problem.get_checked_status %>
-    <% if not status.nil? then %>
-      <% if status['status'] == 'AC' %>
-        <span class="label label-success">
-          OK
-          (<%= File.ctime(@problem.checker_path).to_s(:long) %>)
-        </span>
+      <% status = @problem.get_checked_status %>
+      <% if not status.nil? then %>
+        <% if status['status'] == 'AC' %>
+          <span class="label label-success">
+            OK
+            (<%= File.ctime(@problem.checker_path).to_s(:long) %>)
+          </span>
 
-      <% else %>
-        <span class="label label-important">
-          <%= status['status'] %>
-        </span>
-        <br/>
-        <% if not status['error'].blank? %>
-          <% status['error'].each do |err| %>
-            <span class="label label-inverse"> <%= err %> </span>
-            <br />
+        <% else %>
+          <span class="label label-important">
+            <%= status['status'] %>
+          </span>
+          <br/>
+          <% if not status['error'].blank? %>
+            <% status['error'].each do |err| %>
+              <span class="label label-inverse"> <%= err %> </span>
+              <br />
+            <% end %>
           <% end %>
         <% end %>
-      <% end %>      
-    <% end %>
-    <br />
+      <% end %>
+    </div>
     <br />
   <% end %>
+
 
   <div class="actions">
     <%= f.submit "Update", :class => "btn" %>
   </div>
 <% end %>
-
-
-<%= link_to '<i class="icon-pencil icon-white"></i> Edit statement'.html_safe, 
-    contest_path(@contest.path)+"/#{@problem.order}/edit_statement", :class => 'btn btn-info' %>
-<br />
-<br />

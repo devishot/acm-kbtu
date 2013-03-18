@@ -70,6 +70,10 @@ class Contest
     self.duration = 0
   end
 
+  def continue(params)
+    self.duration = ((DateTime.now - self.time_start)* 24 * 60).to_i + Contest.new(params).duration.minutes
+  end
+
   # def unpack(archive)
   #   #create folder if not exist
   #   FileUtils.mkdir_p self.contest_dir

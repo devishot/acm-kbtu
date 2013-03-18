@@ -124,6 +124,11 @@ class ContestsController < ApplicationController
     elsif params[:commit] == "Stop"
       @contest.stop()
       ok = 'Contest stopped'
+
+    elsif params[:commit] == "Continue"
+      @contest.continue( params[:contest] )
+      ok = 'Contest continued'
+      err = 'Error: Contest was not started'
     end
 
     respond_to do |format|

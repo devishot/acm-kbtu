@@ -7,9 +7,11 @@ class Problem
   include Mongoid::Timestamps
   include Compiler
   field :order, type: Integer
-  field :global_path, type: String  
+  field :global_path, type: String
   field :time_limit, type: Integer, :default => 2 #seconds
   field :memory_limit, type: Integer, :default => 256 #Megabytes
+  field :input_file, type: String # nil || 'input.txt' || 'a.in'
+  field :output_file, type: String
   field :checker_mode, type: Integer, :default => 0 # 0-standart 1-template 2-own  
   field :checker, type: String, :default => 'cmp_file'
   field :checker_path, type: String #path to checker sourcecode, executable it is 'checker' file
@@ -96,10 +98,10 @@ class Problem
     elsif extention == '.tgz'
       puts "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\'"
       pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\' -C \'#{tests_dir}\'"
+      ignored, status = Process::waitpid2 pid
     end
     #remove(delete) file
-    #raise "#{tests_dir+'/'+archive.original_filename}"
-    Open4::popen4 "rm #{tests_dir+'/'+archive.original_filename}"
+    File.delete File.join(tests_dir, archive.original_filename)
   end
 
   def put_checker(ufile)
