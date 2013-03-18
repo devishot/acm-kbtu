@@ -71,9 +71,23 @@ class Contest
   end
 
   def continue(params)
-    self.duration = ((DateTime.now - self.time_start)* 24 * 60).to_i + Contest.new(params).duration.minutes
+    self.duration = self.get_left(true) + Contest.new(params).duration
   end
 
+  def get_left(without = false)
+    now = DateTime.now.to_time
+    h2 = now.hour
+    m2 = now.min
+    con = self.time_start.to_time
+    h1 = con.hour
+    m1 = con.min
+    left = ((h2 - h1)*60 + (m2 - m1))
+    if without==true
+      left
+    else
+      (self.duration > left && save) ? self.duration - left : 0
+    end
+  end
   # def unpack(archive)
   #   #create folder if not exist
   #   FileUtils.mkdir_p self.contest_dir

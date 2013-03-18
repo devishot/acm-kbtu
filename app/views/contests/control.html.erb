@@ -18,7 +18,11 @@
     <tr>
       <td>
         <div style="position: relative; left: 150px;">
-          <%= label_tag :duration, "Contest duration OR Continue for"%>
+          <% if @contest.over? then %>
+            <%= label_tag :duration, "Continue for" %>
+          <% else %>
+            <%= label_tag :duration, "Contest duration" %> 
+          <% end %>
           <%= f.number_field :duration, :in => 5..30000000 %>
         </div>
         <br />

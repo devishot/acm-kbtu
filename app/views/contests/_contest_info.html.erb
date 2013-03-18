@@ -16,10 +16,16 @@
 
   Status:
     <% if not @contest.started? %>
-      <b>NOT STARTED<b/>
+      <b>NOT STARTED</b>
     <% elsif @contest.over? %>
-      <b>OVER<b/>
+      <b>OVER</b>
     <% else %>
-      <b>RUN<b/>
+      <b>RUN</b>
     <% end %>
+
+  Left:
+  <b>
+    <%= @contest.get_left %>min
+  </b>  
+
 </p>
