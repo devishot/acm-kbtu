@@ -23,9 +23,11 @@
       <b>RUN</b>
     <% end %>
 
-  Left:
-  <b>
-    <%= @contest.get_left %>min
-  </b>  
+  <% if not @contest.get_left.nil? %>
+    Left:
+    <b>
+      <%= @contest.get_left %>min
+    </b>
+  <% end %>
 
 </p>

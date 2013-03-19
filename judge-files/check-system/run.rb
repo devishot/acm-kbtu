@@ -66,7 +66,7 @@ class Tester
 
     #//get every test(pair of 'file' and 'file.ans')
     k = 0;
-    Dir.entries(@tests_path).sort.each_slice(2) do |t|
+    Dir.entries(@tests_path).sort[2..-1].each_slice(2) do |t|
       next unless File.basename(t[0], '.*') == File.basename(t[1], '.*')
       k = k + 1
 

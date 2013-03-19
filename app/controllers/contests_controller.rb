@@ -1,7 +1,10 @@
 class ContestsController < ApplicationController
-  before_filter :load_contest,
-                :except => [:index, :kill_participant, :new, :create]
-  load_and_authorize_resource :except => [:index]
+  before_filter :load_contest, :except => [:index, :kill_participant, :new, :create]
+  load_and_authorize_resource  :except => [:index]
+
+  rescue_from Mongoid::Errors::DocumentNotFound do |exception|
+    redirect_to contests_url, :alert => "Contest ##{params[:id]} not found"
+  end
 
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to contests_url, :alert => exception.message

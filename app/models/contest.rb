@@ -75,6 +75,7 @@ class Contest
   end
 
   def get_left(without = false)
+    return if not self.started?
     now = DateTime.now.to_time
     h2 = now.hour
     m2 = now.min
@@ -85,7 +86,7 @@ class Contest
     if without==true
       left
     else
-      (self.duration > left && save) ? self.duration - left : 0
+      (self.duration > left) ? self.duration - left : 0
     end
   end
   # def unpack(archive)
@@ -143,6 +144,52 @@ class Contest
     self.problems_count = self.problems.size - 1
     self.save    
   end
+
+  def put_problems(archive)
+    #DON'T WORK
+    return
+
+    ret_status = {'error' => []}
+    extention = File.extname(archive.original_filename)
+    return if not (extention=='.zip' || extention=='.tgz')
+    problems_dir = self.contest_dir+'/problems'
+    #clear & create new & write archive_file(.zip) in tests_dir
+    FileUtils.rm_rf problems_dir
+    FileUtils.mkdir_p problems_dir
+    File.open(Rails.root.join(problems_dir, archive.original_filename), 'w') do |file|
+      file.write(archive.read.force_encoding('utf-8'))
+    end
+    #exctract files from file
+    if extention == '.zip'
+      Zip::ZipFile.open(problems_dir+"/#{archive.original_filename}"){ |zip_file|
+        zip_file.each { |f|
+          f_path=File.join(problems_dir, f.name)
+          FileUtils.mkdir_p(File.dirname(f_path))
+          zip_file.extract(f, f_path) unless File.exist?(f_path)
+        }
+      }
+    elsif extention == '.tgz'
+      puts "tar zxvf \'#{problems_dir+'/'+archive.original_filename}\'"
+      pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{problems_dir+'/'+archive.original_filename}\' -C \'#{problems_dir}\'"
+      ignored, status = Process::waitpid2 pid
+    end
+    #remove(delete) file
+    File.delete File.join(problems_dir, archive.original_filename)
+
+    #
+    Dir.entries(problems_dir).sort[2..-1].each do |t|
+      if File.directory? File.join(problems_dir, t)
+        if ( !(/[A-Za-z]/=~t).nil? && t.size==1 )
+          new_name = t.ord - (( !(/[A-Z]/=~t).nil? ) ? 64 : 96)
+          FileUtils.mv problems_dir+'/'+t, problems_dir+'/'+new_name.to_s
+          t = new_name.to_s
+        end
+      end
+      #next if not File.basename(t[0], '.*') == File.basename(t[1], '.*')
+    end
+  
+  end
+
 
   def upd_problems_template
     self.problems.each { |problem| problem.use_template }

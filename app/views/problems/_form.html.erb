@@ -83,7 +83,6 @@
         <td>
           <p>Own checker</p>
           <%= f.file_field 'uploaded_checker' %>
-
           <% if not @problem.checker_path.blank? then %>
             <span class="label label-success"> 
               <%= File.basename(@problem.checker_path) %> 

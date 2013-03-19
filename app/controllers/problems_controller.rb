@@ -5,6 +5,10 @@ class ProblemsController < ApplicationController
   before_filter :find_contest_problem, :only => [:update, :update_statement]
   load_and_authorize_resource
 
+  rescue_from Mongoid::Errors::DocumentNotFound do |exception|
+    redirect_to contest_path(params[:id]), :alert => "Problem ##{params[:problem]} not found"
+  end
+
 
   # GET /contests/:id/problems
   def index
@@ -16,6 +20,11 @@ class ProblemsController < ApplicationController
   def show
     #@contest = Contest.find_by(path: params[:id])
     #@problem = @contest.problems.find_by(order: params[:problem])
+    if @problem.order == 0
+      redirect_to contest_path(@contest.path)
+      return
+    end
+        
     @submit = Submit.new()
     @submit.problem = @problem
 
@@ -56,7 +65,13 @@ class ProblemsController < ApplicationController
     #@contest = Contest.find(params[:contest_id])
     #@problem = @contest.problems.find_by(order: params[:problem_order])
     #//put problem's tests if uploaded
-    @problem.put_tests(params[:tests_archive]) if not params[:tests_archive].nil?
+    if not params[:tests_archive].nil?
+      if @problem.order == 0
+        @contest.put_problems(params[:tests_archive])
+      else
+        @problem.put_tests(params[:tests_archive])
+      end
+    end
     #//put checker if uploaded
     flash[:notice] = []
     flash[:alert]  = []    

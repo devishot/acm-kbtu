@@ -64,6 +64,8 @@ class Problem
     self.update_attributes(
         :time_limit   => self.template.time_limit,
         :memory_limit => self.template.memory_limit,
+        :input_file => self.template.input_file,
+        :output_file => self.template.output_file,
         :checker      => self.template.checker,
 #       :checker_path => self.template.checker_path,
         :checker_mode => (self.template.checker_mode == 2) ? 1 : 0,        
@@ -75,7 +77,7 @@ class Problem
     return self.contest.problems.find_by(order: 0)
   end
 
-  def put_tests(archive) 
+  def put_tests(archive)
     return if self.order==0
     extention = File.extname(archive.original_filename)
     return if not (extention=='.zip' || extention=='.tgz')
@@ -120,10 +122,9 @@ class Problem
       self.checker_path = checker_dir+'/'+ufile.original_filename
       #check on tests
       if self.tests_uploaded? then
-        Dir.entries(self.tests_dir).sort.each_slice(2) do |t|
+        Dir.entries(self.tests_dir).sort[2..-1].each_slice(2) do |t|
           puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"
           next if not File.basename(t[0], '.*') == File.basename(t[1], '.*') 
-          next if t[0] == '.'
           puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"          
           command = "\'#{self.checker_dir}/checker\' \'#{self.tests_dir+'/'+t[0]}\' \'#{self.tests_dir+'/'+t[1]}\' \'#{self.tests_dir+'/'+t[1]}\'"
           puts command
