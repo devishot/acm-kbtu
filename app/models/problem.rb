@@ -77,6 +77,27 @@ class Problem
     return self.contest.problems.find_by(order: 0)
   end
 
+  def put_statement(ufile, template=false)
+    dir = (template) ? self.contest.contest_dir : self.problem_dir
+    #delete previous file IF exist
+    if not self.statement['file_link'].blank?
+      File.delete File.join(dir, self.statement['file_link'])
+      statement['file_link'] = nil
+    end
+
+    File.open(Rails.root.join(dir, ufile.original_filename), 'w') do |file|
+      file.write(ufile.read.force_encoding('utf-8'))
+    end
+    self.statement[:file_link] = dir+'/'+ufile.original_filename
+  end
+
+  def get_statement
+    statement = self.statement['file_link']
+    return if statement.blank?
+
+  end
+
+
   def put_tests(archive)
     return if self.order==0
     extention = File.extname(archive.original_filename)

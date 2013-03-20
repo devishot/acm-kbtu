@@ -1,7 +1,7 @@
 class ProblemsController < ApplicationController
   include ActionView::Helpers::TextHelper
   before_filter :find_contest, :except => [:index, :update, :update_statement]
-  before_filter :find_problem, :only => [:show, :edit, :edit_statement]
+  before_filter :find_problem, :only => [:show, :edit, :edit_statement, :download_statement]
   before_filter :find_contest_problem, :only => [:update, :update_statement]
   load_and_authorize_resource
 
@@ -12,7 +12,7 @@ class ProblemsController < ApplicationController
 
   # GET /contests/:id/problems
   def index
-    @navpill = 1
+    @navpill = 2
     redirect_to contest_path(params[:id])+'/1'
   end
 
@@ -24,7 +24,7 @@ class ProblemsController < ApplicationController
       redirect_to contest_path(@contest.path)
       return
     end
-        
+
     @submit = Submit.new()
     @submit.problem = @problem
 
@@ -42,7 +42,7 @@ class ProblemsController < ApplicationController
       @submissions = participant.submits.where(problem: @problem)
     end
 
-    @navpill = 1
+    @navpill = 2
     respond_to do |format|
       format.html # show.html.erb
     end
@@ -58,12 +58,19 @@ class ProblemsController < ApplicationController
   def edit_statement
     #@contest = Contest.find_by(path: params[:id])
     #@problem = @contest.problems.find_by(order: params[:problem])
+    
+    redirect_to contest_control_problems_path(@contest.path) if @problem.order==0
   end
 
   # PUT /contests/:id/:problem
   def update
     #@contest = Contest.find(params[:contest_id])
     #@problem = @contest.problems.find_by(order: params[:problem_order])
+
+    if not params[:statement].nil?
+      @problem.put_statement(params[:statement])
+    end
+
     #//put problem's tests if uploaded
     if not params[:tests_archive].nil?
       if @problem.order == 0
@@ -135,15 +142,34 @@ class ProblemsController < ApplicationController
     @problem.statement = {:title => params[:title], 
                           :text => params[:text], 
                           :inputs => inputs, 
-                          :outputs => outputs }    
+                          :outputs => outputs }
+
+    #put statement file
+    if not params[:statement].nil?
+      @problem.put_statement(params[:statement])
+    end                          
+
     respond_to do |format|
       if @problem.save
-        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}", 
+        format.html { redirect_to contest_problem_path(@contest.path, @problem.order), 
           notice: 'Problem\'s statement was successfully updated.' }
       else
-        format.html { redirect_to contest_path(@contest.path)+"/#{@problem.order}", 
-          alert: 'ERROR: Problem\'s statement was not updated.' }
+        format.html { redirect_to contest_problem_path(@contest.path, @problem.order), 
+          alert:  'ERROR: Problem\'s statement was not updated.' }
       end
+    end
+  end
+
+  # GET /contests/:id/:problem/statement
+  def download_statement
+    #@contest = Contest.find(params[:contest_id])
+    #@problem = @contest.problems.find_by(order: params[:problem_order])
+    statement = @problem.statement['file_link']
+    if statement.blank?
+      redirect_to contest_problem_path(@contest.path, @problem.order),
+                  alert: 'not uploaded yet'
+    else    
+      send_file(statement)
     end
   end
 

@@ -33,20 +33,20 @@ class ContestsController < ApplicationController
 
   def summary
     #@contest = Contest.find_by(path: params[:id])
-    @navpill = 4
+    @navpill = 5
   end
 
 # messages
   def messages
     #@contest = Contest.find_by(path: params[:id])
-    @navpill = 3
+    @navpill = 4
     @messages = Message.all
   end
 
   def new_message
     @contest = Contest.find_by(path: params[:id])
     @message = Message.new
-    @navpill = 3
+    @navpill = 4
   end
 
   def create_message
@@ -64,7 +64,7 @@ class ContestsController < ApplicationController
     @last_success = Submit.where(status: "AC").last
     @last_success = nil if @last_success.to_a == nil
 
-    @navpill = 2
+    @navpill = 3
   end
 
   # post /contests/:id/participate
@@ -88,19 +88,6 @@ class ContestsController < ApplicationController
     participant.destroy
     redirect_to contest_path(contest.path)+"/control"
   end  
-
-  # # GET /contests/:id/statement
-  # def download_statement
-  #   #@contest = Contest.find_by(path: params[:id])
-  #   if @contest.statement_link.nil?
-  #     redirect_to contest_path(@contest.path), 
-  #                 alert: 'not uploaded yet'
-  #   else    
-  #     send_file(@contest.statement_link,
-  #               :filename => "statement.pdf",
-  #               :type => "application/pdf")
-  #   end
-  # end
 
   # GET /contests/:id/control
   def control
@@ -155,11 +142,22 @@ class ContestsController < ApplicationController
     @contest.upd_problems_count(params[:problems_count].to_i)
 
     redirect_to contest_path(@contest.path)+'/control_problems', notice: 'Problems count updated'
- end
+  end
 
   def control_status
     #@contest = Contest.find_by(path: params[:id])
     @submits = Submit.where(problem_contest:  @contest_id).sort_by{ |submit| submit.updated_at}.reverse
+  end
+
+  # GET /contests/:id/statement
+  def download_statement
+    #@contest = Contest.find_by(path: params[:id])
+    statement = @contest.problems.find_by(order: 0).statement['file_link']
+    if statement.blank?
+      redirect_to contest_path(@contest.path), alert: 'not uploaded yet'
+    else    
+      send_file(statement, :filename => @contest.title+File.extname(statement))
+    end
   end
 
   # GET /contests/new
@@ -200,28 +198,6 @@ class ContestsController < ApplicationController
     end
   end
 
-  # # PUT /contests/1/update_mode
-  # def update_mode
-  #   #@contest = Contest.find_by(path: params[:id])
-  #   if params[:contest][:problems_upload] != @contest.problems_upload
-  #     @contest.clear
-  #   end
-
-  #   respond_to do |format|
-  #     if @contest.update_attributes(params[:contest])
-  #       #create new problem
-  #       @contest.problems_create
-
-  #       format.html { redirect_to contest_path(@contest.path)+'/control' }
-  #     else
-  #       format.html { redirect_to contest_path(@contest.path)+'/control',
-  #         alert: "ERROR: Was not updated"
-  #       }
-  #     end
-  #   end
-  # end
-
-
   # DELETE /contests/1
   def destroy
     #@contest = Contest.find_by(path: params[:id])
@@ -229,24 +205,6 @@ class ContestsController < ApplicationController
 
     redirect_to contests_url  
   end
-
-  # # GET /contests/:id/upload
-  # def upload
-  #   #@contest = Contest.find_by(path: params[:id])
-  # end
-
-  # # POST /contests/:id/unpack
-  # def unpack
-  #   #@contest = Contest.find_by(path: params[:id])
-
-  #   @contest.unpack(params[:archive])
-  #   @contest.problems.destroy_all #destroy perviouse problems!!!
-  #   @contest.problems_create(params[:statement])
-
-  #   respond_to do |format|
-  #     format.html { redirect_to contest_path(@contest.path)+'/control' }
-  #   end    
-  # end
 
 
 private

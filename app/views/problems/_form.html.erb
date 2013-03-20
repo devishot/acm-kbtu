@@ -8,6 +8,17 @@
   <%= hidden_field_tag :problem_order, @problem.order %>
   <%= f.hidden_field :order %>
 
+  <% if @problem.order==0 %>
+    <%= label_tag 'statement', "Contest's statement" %>
+    <%= file_field_tag 'statement' %>
+    <% if not @problem.statement['file_link'].blank? %>
+      <span class="label label-success"> 
+        <%= File.basename(@problem.statement['file_link']) %>
+      </span>
+    <% end %>
+    <br />
+    <br />
+  <% end %>
 
   <div class="form-inline">
     <%= f.label :time_limit, "Time limit", :class => 'control-label' %>
@@ -36,7 +47,7 @@
     <% else %>
       <span class="label label-error">
         Tests not uploaded
-      </span>  
+      </span>
     <% end %>
   </div>
   <br />

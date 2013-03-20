@@ -22,11 +22,21 @@
 
 
   <div id="articles">
-
     <% if can? :edit, @submit.problem %>
-      <%= link_to '<i class="icon-pencil icon-white"></i> Edit'.html_safe, 
-          contest_path(@contest.path)+"/#{@submit.problem.order}/edit", 
-          :class => 'btn btn-info' %>
+      <div class="btn-group" style="right: 0%; float: right; position: relative;" >
+        <a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+          <i class="icon-pencil icon-white"></i> Edit
+          <span class="caret"></span>
+        </a>
+        <!-- dropdown menu links -->
+        <ul class="dropdown-menu">
+          <%= link_to 'Edit Problem'.html_safe,
+            contest_problem_path(@contest.path, @submit.problem.order)+'/edit'%>
+
+          <%= link_to 'Edit Statement'.html_safe,
+              contest_problem_path(@contest.path, @submit.problem.order)+'/edit_statement'%>
+        </ul>            
+      </div>
     <% end %>
 
     <center>
@@ -47,14 +57,18 @@
 
 
     <% if not @problem.statement["file_link"].blank? %>
-      <%= link_to '<i class="icon-download-alt"></i> Contest\'s statement'.html_safe, 
-          contest_path(@contest.path)+'/statement', :class => 'btn' %>
+      <%= link_to '<i class="icon-download-alt"></i> Statement'.html_safe, 
+            contest_problem_path(@contest.path, @problem.order)+'/statement', 
+            :class => 'btn' %>
+      <br />
+      <br />
     <% end %>
+
     <% if not @problem.statement["text"].blank? %>
       <%= render 'statement' %>
+      <br />
+      <br />
     <% end %>
-    <br />
-    <br />
 
 
     <% #if NOT author and admin then he can send submit %>

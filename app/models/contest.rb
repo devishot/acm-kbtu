@@ -89,24 +89,6 @@ class Contest
       (self.duration > left) ? self.duration - left : 0
     end
   end
-  # def unpack(archive)
-  #   #create folder if not exist
-  #   FileUtils.mkdir_p self.contest_dir
-  #   #write archive_file(.zip) in contest_dir
-  #   File.open(Rails.root.join(self.contest_dir, archive.original_filename), 'w') do |file|
-  #     file.write(archive.read.force_encoding('utf-8'))
-  #   end
-  #   #exctract files(folders) from archive_file(.zip)
-  #   Zip::ZipFile.open(self.contest_dir+"/#{archive.original_filename}"){ |zip_file|
-  #     zip_file.each { |f|
-  #       f_path=File.join(self.contest_dir, f.name)
-  #       FileUtils.mkdir_p(File.dirname(f_path))
-  #       zip_file.extract(f, f_path) unless File.exist?(f_path)
-  #     }
-  #   }
-  #   #delete archive_file(.zip)
-  #   FileUtils.remove_file(self.contest_dir+"/#{archive.original_filename}")
-  # end
 
   def upd_problems_count(number)
     if self.problems_count > number
@@ -176,7 +158,7 @@ class Contest
     #remove(delete) file
     File.delete File.join(problems_dir, archive.original_filename)
 
-    #
+    #Rename problems folders
     Dir.entries(problems_dir).sort[2..-1].each do |t|
       if File.directory? File.join(problems_dir, t)
         if ( !(/[A-Za-z]/=~t).nil? && t.size==1 )
@@ -195,15 +177,4 @@ class Contest
     self.problems.each { |problem| problem.use_template }
   end
 
-  # def put_statement(ufile)
-  #   return if ufile.nil?
-
-  #   statement_dir = self.contest_dir+'/statement'
-  #   FileUtils.mkdir_p statement_dir
-  #   File.open(Rails.root.join(statement_dir, ufile.original_filename), 'w') do |file|
-  #     file.write(ufile.read.force_encoding('utf-8'))
-  #   end
-  #   self.statement_link = statement_dir+"/#{ufile.original_filename}"
-  #   self.save
-  # end
 end

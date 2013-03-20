@@ -1,9 +1,5 @@
 AcmKbtu::Application.routes.draw do
 
-  resources :submits
-
-  resources :problems
-
   match '/contests/:id/upload' => 'contests#upload'
   post  '/contests/:id/unpack' => 'contests#unpack'
   post  '/contests/:id/participate' => 'contests#participate'
@@ -26,13 +22,18 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/new_message' => 'contests#new_message', as: :contest_new_message
   match '/contests/:id/create_message' => 'contests#create_message', as: :contest_create_message
   
-  match '/contests/:id/:problem' => 'problems#show'
+  match '/contests/:id/:problem' => 'problems#show', as: :contest_problem
   match '/contests/:id/:problem/edit' => 'problems#edit'
   put   '/contests/:id/:problem' => 'problems#update'
   match '/contests/:id/:problem/edit_statement' => 'problems#edit_statement'  
   put   '/contests/:id/:problem/update_statement' => 'problems#update_statement'
+  match '/contests/:id/:problem/statement' => 'problems#download_statement'
 
-  resources :contests  
+  resources :contests
+
+  resources :submits
+
+  resources :problems
 
   match '/submits/:contest/:participant' => 'submits#index'
   match '/submits/:contest/:participant/:submit' => 'submits#show_sourcecode'
