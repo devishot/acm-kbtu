@@ -120,56 +120,139 @@ class Contest
     to = from if to.nil?
 
     for i in from..to do
-      #destory array's cell and object 
-      self.problems.delete(self.problems.find_by(order: i)).destroy
+      #destory array's cell and object
+      problem = self.problems.find_by(order: i)
+      problem.destroy
+      self.problems.delete(problem)
     end
     self.problems_count = self.problems.size - 1
     self.save    
   end
 
   def put_problems(archive)
-    #DON'T WORK
-    return
+    ret_status = {'status' => '', 'error' => []}
 
-    ret_status = {'error' => []}
-    extention = File.extname(archive.original_filename)
-    return if not (extention=='.zip' || extention=='.tgz')
-    problems_dir = self.contest_dir+'/problems'
-    #clear & create new & write archive_file(.zip) in tests_dir
-    FileUtils.rm_rf problems_dir
-    FileUtils.mkdir_p problems_dir
-    File.open(Rails.root.join(problems_dir, archive.original_filename), 'w') do |file|
+    exts_archive  = ['.zip', '.tgz']
+    exts_code     = ['.pas', '.dpr', '.cpp']
+    exts_doc      = ['.pdf', '.doc', '.docx']
+    archive_ext  = File.extname(archive.original_filename)
+    if not exts_archive.include? archive_ext
+      ret_status['error'] << "archiv not supported(only #{exts_archive.join("','")})"
+      ret_status['status'] = nil
+      return ret_status
+    end
+    #clear & write archive_file(.zip) in tests_dir
+    self.clear
+    self.create_template_problem
+    tmp_dir = self.contest_dir+'/tmp'
+    FileUtils.mkdir_p tmp_dir
+    File.open(Rails.root.join(tmp_dir, archive.original_filename), 'w') do |file|
       file.write(archive.read.force_encoding('utf-8'))
     end
     #exctract files from file
-    if extention == '.zip'
-      Zip::ZipFile.open(problems_dir+"/#{archive.original_filename}"){ |zip_file|
+    if archive_ext == '.zip'
+      Zip::ZipFile.open(tmp_dir+"/#{archive.original_filename}"){ |zip_file|
         zip_file.each { |f|
-          f_path=File.join(problems_dir, f.name)
+          f_path=File.join(tmp_dir, f.name)
           FileUtils.mkdir_p(File.dirname(f_path))
           zip_file.extract(f, f_path) unless File.exist?(f_path)
         }
       }
-    elsif extention == '.tgz'
-      puts "tar zxvf \'#{problems_dir+'/'+archive.original_filename}\'"
-      pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{problems_dir+'/'+archive.original_filename}\' -C \'#{problems_dir}\'"
+    elsif archive_ext == '.tgz'
+      pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{tmp_dir+'/'+archive.original_filename}\' -C \'#{tmp_dir}\'"
       ignored, status = Process::waitpid2 pid
     end
-    #remove(delete) file
-    File.delete File.join(problems_dir, archive.original_filename)
+    #remove(delete) archive file
+    File.delete File.join(tmp_dir, archive.original_filename)
 
-    #Rename problems folders
-    Dir.entries(problems_dir).sort[2..-1].each do |t|
-      if File.directory? File.join(problems_dir, t)
-        if ( !(/[A-Za-z]/=~t).nil? && t.size==1 )
-          new_name = t.ord - (( !(/[A-Z]/=~t).nil? ) ? 64 : 96)
-          FileUtils.mv problems_dir+'/'+t, problems_dir+'/'+new_name.to_s
-          t = new_name.to_s
-        end
+    #put problems with order
+    files = Dir.entries(tmp_dir).sort[2..-1]
+      ##separate problems files
+    problems_files = [{}]
+    files.each do |t|
+      next if not t.include? "_"
+      if (/[0-9]+_/ =~ t) == 0
+        m = /[0-9]+_/.match t
+        k = m[0][0..-2].to_i
+      elsif (/([a-z]|[A-Z])_+/ =~ t) == 0
+        m = /([a-z]|[A-Z])_+/.match t
+        k = 1 + m[0][0..-2].ord - ((m[0][0..-2].downcase == m[0][0..-2]) ? 'a'.ord : 'A'.ord)
+      else
+        next
       end
-      #next if not File.basename(t[0], '.*') == File.basename(t[1], '.*')
+      problems_files[k] = {} if problems_files[k].nil?
+      ext = File.extname(t)
+
+      if t[ m[0].size ].downcase=='c' && exts_code.include?(ext) then
+        #checker:   a_[c]..[.cpp]
+        problems_files[k].merge!(:checker => t)
+
+      elsif t[ m[0].size ].downcase=='s' && exts_code.include?(ext) then
+        #solution:  a_[s]..[.cpp]
+        problems_files[k].merge!(:solution => t)
+
+      elsif exts_archive.include? ext
+        #tests:     a_..[.zip]
+        problems_files[k].merge!(:tests => t)
+
+      elsif exts_doc.include? ext 
+        #statement: a_..[.pdf]
+        problems_files[k].merge!(:statement => t)
+      end
     end
-  
+    files = files - problems_files.map(&:values).flatten
+
+    problems_files.each_with_index do |h, i|
+      next if i == 0
+      self.upd_problems_count(i)
+      problem = self.problems.find_by(order: i)
+      ret_status['error'] << "Problem#{i}:"
+      ##put tests
+      if h[:tests].nil?
+        ret_status['error'] << "-Tests Error: there is no 'tests'"
+        break
+      else
+        tests_archive = ActionDispatch::Http::UploadedFile.new({
+          :filename => "#{h[:tests]}",
+          :tempfile => File.new("#{tmp_dir+'/'+h[:tests]}")
+        })
+        problem.put_tests( tests_archive )
+        ret_status['error'] << '-Tests OK'
+      end
+      ##put checker
+      if not h[:checker].nil?
+        checker = ActionDispatch::Http::UploadedFile.new({
+          :filename => "#{h[:checker]}",
+          :tempfile => File.new("#{tmp_dir+'/'+h[:checker]}")
+        })
+        @checker_status = problem.put_checker(checker)
+        ret_status['error'] << '-Checker ' + @checker_status['status']
+        ret_status['error'] << @checker_status['error'] if not @checker_status['error'].nil?
+      end
+      ##put statement
+      if not h[:statement].nil?
+        statement = ActionDispatch::Http::UploadedFile.new({
+          :filename => "#{h[:statement]}",
+          :tempfile => File.new("#{tmp_dir}/#{h[:statement]}")
+        })
+        problem.put_statement( statement )
+        ret_status['error'] << '-Statement OK'
+      end
+      ##put solution
+      if not h[:solution].nil?
+        solution = ActionDispatch::Http::UploadedFile.new({
+          :filename => "#{h[:solution]}",
+          :tempfile => File.new("#{tmp_dir}/#{h[:solution]}")
+        })
+        problem.check_problem( solution )
+        ret_status['error'] << '-Solution OK'
+      end
+      problem.save      
+      ret_status['error'] << ''
+    end
+    #delete tmp
+    FileUtils.rm_rf tmp_dir
+    return ret_status    
   end
 
 

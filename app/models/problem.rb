@@ -39,11 +39,13 @@ class Problem
   end  
 
   def clear
+    #raise self.inspect
+    FileUtils.rm_rf self.problem_dir    
     self.submits.destroy_all
-    FileUtils.rm_rf self.problem_dir
   end
 
   def problem_dir
+    #raise self.contest.inspect
     self.contest.contest_dir+"/problems/#{self.order}"
   end
 
@@ -57,6 +59,10 @@ class Problem
 
   def checker_dir
     self.problem_dir+"/checker"
+  end
+
+  def solution_dir
+    self.problem_dir+"/solution"    
   end
 
   def use_template
@@ -97,7 +103,6 @@ class Problem
 
   end
 
-
   def put_tests(archive)
     return if self.order==0
     extention = File.extname(archive.original_filename)
@@ -119,12 +124,18 @@ class Problem
         }
       }
     elsif extention == '.tgz'
-      puts "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\'"
       pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\' -C \'#{tests_dir}\'"
       ignored, status = Process::waitpid2 pid
     end
     #remove(delete) file
     File.delete File.join(tests_dir, archive.original_filename)
+            # #check count of tests
+            # tests_count = Dir.entries(problems_dir).count - 2
+            # if tests_count<2 || tests_count.modulo(2)==1
+            #   ret_status['error'] << "  Error: There is only #{tests_count}"
+            #   next
+            # end
+            # #tests checked, ok    
   end
 
   def put_checker(ufile)
@@ -141,14 +152,15 @@ class Problem
     status = Compiler.compile(checker_dir+'/'+ufile.original_filename, true)#compile(file_path, checker=true)
     if status['status'] == 'OK'
       self.checker_path = checker_dir+'/'+ufile.original_filename
+      self.checker_mode = 2
       #check on tests
       if self.tests_uploaded? then
         Dir.entries(self.tests_dir).sort[2..-1].each_slice(2) do |t|
-          puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"
+          #puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"
           next if not File.basename(t[0], '.*') == File.basename(t[1], '.*') 
-          puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"          
+          #puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"          
           command = "\'#{self.checker_dir}/checker\' \'#{self.tests_dir+'/'+t[0]}\' \'#{self.tests_dir+'/'+t[1]}\' \'#{self.tests_dir+'/'+t[1]}\'"
-          puts command
+          #puts command
           pid, stdin, stdout, stderr = Open4::popen4 command
           ignored, open4_status = Process::waitpid2 pid
           std_out = stdout.gets
@@ -164,13 +176,14 @@ class Problem
             status['error'] << std_err
 
             self.checker_path = ''
+            self.checker_mode = 0
             FileUtils.rm_rf checker_dir
             return status;
           end
-
         end
       end
-
+      self.checker_path = checker_dir+'/'+ufile.original_filename
+      self.checker_mode = 2
     else
       FileUtils.rm_rf checker_dir
     end
@@ -178,10 +191,11 @@ class Problem
     return status
   end
 
-  def check_problem(ufile)
+  #put_solution
+  def check_problem(ufile) 
     return if self.order==0
     #clear & create new & write ufile in solution_dir
-    solution_dir = self.problem_dir+"/solution"
+    solution_dir = self.solution_dir
     FileUtils.rm_rf solution_dir
     FileUtils.mkdir_p solution_dir    
     File.open(Rails.root.join(solution_dir, ufile.original_filename), 'w') do |file|

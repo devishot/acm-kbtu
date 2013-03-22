@@ -9,14 +9,15 @@
   <%= f.hidden_field :order %>
 
   <% if @problem.order==0 %>
-    <%= label_tag 'statement', "Contest's statement" %>
-    <%= file_field_tag 'statement' %>
-    <% if not @problem.statement['file_link'].blank? %>
-      <span class="label label-success"> 
-        <%= File.basename(@problem.statement['file_link']) %>
-      </span>
-    <% end %>
-    <br />
+    <div class="form-inline">
+      <%= label_tag 'statement', "Contest's statement" %>
+      <%= file_field_tag 'statement' %>
+      <% if not @problem.statement['file_link'].blank? %>
+        <span class="label label-success"> 
+          <%= File.basename(@problem.statement['file_link']) %>
+        </span>
+      <% end %>
+    </div>
     <br />
   <% end %>
 
@@ -37,17 +38,22 @@
 
 
   <div class="form-inline">
-    <%= label_tag 'tests_archive', "Tests (.tgz .zip)" %>
-    <%= file_field_tag 'tests_archive' %>
-    <% if @problem.tests_uploaded? then %>
-      <span class="label label-success">
-        Tests uploaded
-        (<%= File.ctime( @problem.tests_dir ).to_s(:long) %>)
-      </span>
+    <% if @problem.order == 0 %>
+      <%= label_tag 'problems', "Problems" %>
+      <%= file_field_tag 'problems' %>      
     <% else %>
-      <span class="label label-error">
-        Tests not uploaded
-      </span>
+      <%= label_tag 'tests_archive', "Tests (.tgz .zip)" %>
+      <%= file_field_tag 'tests_archive' %>
+      <% if @problem.tests_uploaded? then %>
+        <span class="label label-success">
+          Tests uploaded
+          (<%= File.ctime( @problem.tests_dir ).to_s(:long) %>)
+        </span>
+      <% else %>
+        <span class="label label-error">
+          Tests not uploaded
+        </span>
+      <% end %>
     <% end %>
   </div>
   <br />
@@ -103,7 +109,6 @@
         </td>
     </tbody>
   </table>
-
 
   <% if not @problem.order==0 %>
     <div class="form-inline">

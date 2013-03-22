@@ -66,22 +66,21 @@ class ProblemsController < ApplicationController
   def update
     #@contest = Contest.find(params[:contest_id])
     #@problem = @contest.problems.find_by(order: params[:problem_order])
+    flash[:notice] = []
+    flash[:alert]  = []    
 
     if not params[:statement].nil?
       @problem.put_statement(params[:statement])
     end
 
-    #//put problem's tests if uploaded
-    if not params[:tests_archive].nil?
-      if @problem.order == 0
-        @contest.put_problems(params[:tests_archive])
-      else
-        @problem.put_tests(params[:tests_archive])
-      end
+    #//put problems if upload && @problem.order==0
+    if not params[:problems].nil?
+      @problems_status = @contest.put_problems(params[:problems]) 
+      flash[:alert] = flash[:alert] + @problems_status['error']
     end
+    #//put problem's tests if uploaded
+    @problem.put_tests(params[:tests_archive]) if not params[:tests_archive].nil?
     #//put checker if uploaded
-    flash[:notice] = []
-    flash[:alert]  = []    
     if not params[:problem][:uploaded_checker].nil?
       @checker_status = @problem.put_checker(params[:problem][:uploaded_checker])
       puts @checker_status['status']
@@ -109,12 +108,10 @@ class ProblemsController < ApplicationController
         params[:problem][:checker_mode] = (@problem.template.checker_mode==2) ? '1' : '0'
       end
     end
-
     #//check solution file CHECK TESTS AND CHECKER
     if not params[:solution_file].nil?
       @problem.check_problem(params[:solution_file])
     end
-
 
     respond_to do |format|
       if @problem.update_attributes(params[:problem])
@@ -124,7 +121,7 @@ class ProblemsController < ApplicationController
         format.html { redirect_to contest_control_problems_path(@contest.path, tab:@problem.order)}
         flash[:alert].push('Problem properties was not updated.')
       end
-      #@problem is template(@problem.order=0)
+      #update problems if template(@problem.order==0) updated
       @contest.upd_problems_template if @problem.order==0 
     end
   end    

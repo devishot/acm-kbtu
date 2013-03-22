@@ -15,9 +15,9 @@ class Tester
     FileUtils.cp @submit.file_sourcecode_path, "#{@work_dir}solution#{@src_ext}"
   end
 
-  def initialize(submit_id, system_path)
+  def initialize(submit_id, system_path, hidden=false)
     @submit = Submit.find(submit_id)
-    @work_dir = "#{system_path}/work/participant_#{@submit.participant.path}/"
+    @work_dir = "#{system_path}/work/" + ((hidden==true) ? "contest_#{@submit.problem.contest.path}/" : "participant_#{@submit.participant.path}/")
     @tests_path = @submit.problem.tests_dir
     @src_ext = File.extname(@submit.file_sourcecode_path)
 
@@ -111,7 +111,7 @@ class Tester
   def self.perform(submit_id, hidden=false)
     system_path = "#{Rails.root}/judge-files/check-system"
 
-    a = Tester.new(submit_id, system_path)
+    a = Tester.new(submit_id, system_path, hidden)
     a.run
     return if hidden==true
 
