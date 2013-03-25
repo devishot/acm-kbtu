@@ -211,6 +211,23 @@ class Problem
     self.checked = submit.id
   end
 
+  def check_problem_again
+    solution_file = nil
+    Dir.entries(self.solution_dir).sort[2..-1].each do |t|
+      if ['.pas', '.dpr', '.cpp'].include? t
+        solution_file = self.solution_dir+'/'+solution_file
+        break
+      end
+    end
+    return if solution_file.nil?
+
+    solution = ActionDispatch::Http::UploadedFile.new({
+      :filename => "#{File.basename(solution_file)}",
+      :tempfile => File.new(solution_file)
+    })
+    self.check_problem( solution )      
+  end
+
   def get_checked_status
     return nil if self.checked.nil?
     submit = Submit.find( self.checked )

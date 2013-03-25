@@ -32,6 +32,7 @@ gem 'rubyzip'
 gem "moped"#, "~> 1.1.1"
 
 gem "open4"
+gem "json"
 
 gem 'redis-rails'
 gem 'resque'

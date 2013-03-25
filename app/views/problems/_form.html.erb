@@ -39,7 +39,7 @@
 
   <div class="form-inline">
     <% if @problem.order == 0 %>
-      <%= label_tag 'problems', "Problems" %>
+      <%= label_tag 'problems', "Problems"%>
       <%= file_field_tag 'problems' %>      
     <% else %>
       <%= label_tag 'tests_archive', "Tests (.tgz .zip)" %>
@@ -112,7 +112,7 @@
 
   <% if not @problem.order==0 %>
     <div class="form-inline">
-      <%= label_tag 'solution_file', "Verification (src)" %>
+      <%= label_tag 'solution_file', "Verification" %>
       <%= file_field_tag 'solution_file' %>
 
       <% status = @problem.get_checked_status %>
@@ -122,7 +122,6 @@
             OK
             (<%= File.ctime(@problem.checker_path).to_s(:long) %>)
           </span>
-
         <% else %>
           <span class="label label-important">
             <%= status['status'] %>

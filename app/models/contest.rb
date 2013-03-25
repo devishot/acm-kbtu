@@ -1,4 +1,5 @@
 require 'zip/zipfilesystem'
+require 'json'
 
 class Contest
   include Mongoid::Document
@@ -195,18 +196,128 @@ class Contest
         #tests:     a_..[.zip]
         problems_files[k].merge!(:tests => t)
 
-      elsif exts_doc.include? ext 
+      elsif exts_doc.include? ext
         #statement: a_..[.pdf]
         problems_files[k].merge!(:statement => t)
       end
     end
-    files = files - problems_files.map(&:values).flatten
-
+    #create problems
     problems_files.each_with_index do |h, i|
       next if i == 0
       self.upd_problems_count(i)
+    end
+    files = files - problems_files.map(&:values).flatten
+
+    #put template's & problem's settings
+    ret_status['error'] << 'Settings:'
+    files.each do |t|
+      ext = File.extname(t)
+      if exts_doc.include? ext
+        ##put statement
+        template = self.problems.find_by(order: 0)
+        FileUtils.cp tmp_dir+'/'+t, template.problem_dir+'/'+t
+        template.statement['file_link'] = template.problem_dir+'/'+t
+        template.save
+        ret_status['error'] << '-Contest\'s Statement OK'        
+
+      elsif ext == '.json'
+        ret_status['error'] << '-Settings.json:'
+        ##put problem's settings
+        ###parse json to hash  'set'
+        begin
+          set = JSON.parse(IO.read(tmp_dir+'/'+t))
+        rescue JSON::ParserError => e
+          ret_status['error'] << "---ERROR: #{e.message}"
+          set = nil
+        end
+        break if set.nil?
+        ##work with settings
+        set.each do |problem_name, sets|
+          #find problem
+          if problem_name.downcase == 'template'
+            k = 0
+          elsif (/^-?(\d+(\.\d+)?|\.\d+)$/ =~ problem_name) == 0 #only digits
+            k = problem_name.to_i
+          elsif (/([a-z]|[A-Z])/ =~ problem_name) == 0 && problem_name.size == 1 then #only letter
+            k = 1 + problem_name.ord - ((problem_name.downcase == problem_name) ? 'a'.ord : 'A'.ord)
+          else
+            ret_status['error'] <<"---ERROR: Problem \"#{problem_name}\" not identified"
+            break
+          end
+          problem = self.problems.find_by(order: k)
+          ret_status['error'] << ((problem.order == 0) ? "---Template:" : "---Problem #{problem.order}:")
+#ret_status['error'].last.insert(-1, ' not identified')
+          #set settings
+          if not sets.class == Hash
+            ret_status['error'].last.insert(-1, 'ERROR: there is no hash with settings.')
+            break;
+          end
+          sets.each do |key, value|
+            key = key.downcase
+            if key == 'tl' || key == 'ml'
+              value = value.to_i
+              if value > 0
+                if key == 'tl'
+                  problem.time_limit   = value
+                else
+                  problem.memory_limit = value
+                end
+                ret_status['error'].last.insert(-1, "#{key.upcase}=#{value};")
+              else
+                ret_status['error'].last.insert(-1, "ERROR: #{key.upcase}=#{value} is incorrect;")
+              end
+            elsif key == 'in' || key == 'out'
+              #just skip
+            else
+              ret_status['error'].last.insert(-1, "ERROR: \'#{key}\' not identified;")
+            end
+          end
+          #set up input_file and output_file
+          begin
+            input  = sets['in']
+            output = sets['out']
+            input_ext  = (input.nil?)  ? '' : File.extname(input)
+            output_ext = (output.nil?) ? '' : File.extname(output)
+            ##set input file with output.nil?
+            if input.nil? || input.size == 0 then# '' -> nil (as standart input)              
+              problem.input_file  = nil
+              problem.output_file = nil if output.nil?
+            elsif input.size > 0 && input_ext.size == 0 # 'sort' -> 'sort.in'
+              problem.input_file  = input+'.in'
+              problem.output_file  = input+'.out' if output.nil?
+            elsif input_ext == '.in' # 'sort.in' -> 'sort.in'
+              problem.input_file  = input
+              problem.output_file  = input[0..-4]+'.out' if output.nil?
+            else
+              problem.input_file  = input
+              problem.output_file  = nil if output.nil?
+              ret_status['error'].last.insert(-1, 'output_file not declared')
+            end
+            ##set output file
+            if output.nil?
+              #nothing
+            elsif output.size == 0 # '' -> nil (as standart output)
+              problem.output_file  = nil
+            elsif output.size > 0 && output_ext.size == 0 # 'sort' -> 'sort.out'
+              problem.output_file  = output+'.out'
+            else # 'sort.out' -> 'sort.out'
+              problem.output_file  = output
+            end
+            ret_status['error'].last.insert(-1, "input_file=\'#{(problem.input_file.nil?) ? 'standart_input' : problem.input_file}\', output_file=\'#{(problem.output_file.nil?) ? 'standart_output' : problem.output_file}\';")
+          end
+
+          problem.save
+        end
+      end
+      ret_status['error'] <<''
+    end
+
+
+    #put problem's files
+    problems_files.each_with_index do |h, i|
+      next if i == 0
       problem = self.problems.find_by(order: i)
-      ret_status['error'] << "Problem#{i}:"
+      ret_status['error'] << "Problem #{i}:"
       ##put tests
       if h[:tests].nil?
         ret_status['error'] << "-Tests Error: there is no 'tests'"
@@ -250,6 +361,8 @@ class Contest
       problem.save      
       ret_status['error'] << ''
     end
+
+
     #delete tmp
     FileUtils.rm_rf tmp_dir
     return ret_status    

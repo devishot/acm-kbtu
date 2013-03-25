@@ -111,6 +111,8 @@ class ProblemsController < ApplicationController
     #//check solution file CHECK TESTS AND CHECKER
     if not params[:solution_file].nil?
       @problem.check_problem(params[:solution_file])
+    elsif not @problem.checked.nil? #test again
+      @problem.check_problem_again
     end
 
     respond_to do |format|
