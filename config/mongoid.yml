@@ -1,7 +1,7 @@
 production:
   sessions:
     default:
-      database: acm_kbtu_development
+      database: acm_kbtu_production
       hosts:
         - localhost:27017
       options:
