@@ -77,6 +77,7 @@ class Contest
 
   def get_left(without = false)
     return if not self.started?
+    return 0 if self.over?
     now = DateTime.now.to_time
     h2 = now.hour
     m2 = now.min

@@ -5,65 +5,84 @@
 #include<string>
 #include<cstring>
 #include<cstdlib>
+#include<vector>
 using namespace std;
 #define fname1 ""//."
 #define fname2 ""//put.txt"
-#define sz 100*1000*5
+#define maxn 100*1000*2
 #define inf 1000*1000*1000
-int i, n, m, x, y, k, a[sz], e[sz];
-int prev[sz], f[sz], len, t, to, q, tin[sz], fup[sz];
-bool was[sz], w[sz];
 
-void add(int x, int y){
-        len++;
-        e[len] = y;
-        prev[len] = f[x];
-        f[x] = len;
+vector <vector <int> > g, gr, g1;
+vector <bool> used;
+vector <int> ord;
+int n, m;
+
+
+void dfs1(int v){
+    used[v] = true;
+    for (size_t i = 0; i < g[v].size(); i++)
+        if (!used[g[v][i]])
+            dfs1(g[v][i]);
+    ord.push_back(v);
 }
 
-
-void its_cutpoint (int v){
-        w[v] = true;
-}
-
-
-
-void dfs(int v, int p){
-        was[v] = true;
-        tin[v] = fup[v] = t++;
-        int q = f[v];
-        int child = 0;
-        while (q){
-          int to = e[q];
-                if (to != p){
-                        if (was[to])
-                                fup[v] = min (fup[v], tin[to]);
-                        else{
-                                dfs(to , v);
-                                fup[v] = min (fup[v] , fup[to]);
-                                if (fup[to] >= tin[v] && p != -1) its_cutpoint(v);
-                                ++child;
-                        }
-                }
-        q = prev[q];
-        }
-        if (p == -1 && child > 1) its_cutpoint(v);
+void dfs2(int v, vector <int>& c){
+    c.push_back(v);
+    used[v] = true;
+    for (size_t i = 0; i < gr[v].size(); i++)
+        if (!used[gr[v][i]])
+            dfs2(gr[v][i], c);
 }
 
 
 int main(){
-        scanf("%d%d",&n,&m);
-        for (i = 1; i <= m; i++){
-                scanf("%d%d",&x,&y);
-                add(x,y);
-                add(y,x);
+    freopen("o.in", "r", stdin);
+    freopen("o.out", "w", stdout);
+    scanf("%d%d", &n, &m);
+    g.resize(n);
+    gr.resize(n);
+	ord.reserve(n);
+    for (int i = 0, x, y; i < m; i++){
+        scanf("%d%d", &x, &y);
+        x--; 
+        y--;
+        g[x].push_back(y);
+        gr[y].push_back(x);
+    }
+    used.assign(n, false);    
+    
+    for (int i = 0; i < n; i++)
+        if (!used[i])
+            dfs1(i);
+
+    used.assign(n, false);
+
+    vector <int> ccc;
+    vector <int> nmb(n, -1);
+    int cnt = 0;
+    for (int i = n - 1; i >= 0; i--){
+        if (!used[ord[i]]){
+            dfs2(ord[i], ccc);
+            for (size_t j = 0; j < ccc.size(); j++)
+                    nmb[ccc[j]] = cnt;
+            cnt++;
+            ccc.clear();
         }
-        for (i = 1; i <= n ; i++)
-                if ( !was[i]) dfs(i , -1);
-        for (i = 1; i <= n; i++)
-                if (w[i]) {k++; a[k] = i;}
-        printf("%d\n",k);
-        for (i = 1; i <= k; i++)
-                printf("%d\n",a[i]);
-        return 0;
+    }
+
+    vector <vector <bool> > is(cnt, vector <bool> (cnt, 0));
+    int ans = 0;
+    for (int i = 0; i < n; i++){
+        for (size_t j = 0; j < g[i].size(); j++){
+            int to = g[i][j];
+            if (nmb[i] != nmb[to]){
+                ans += (is[nmb[i]][nmb[to]] ^ 1);
+                is[nmb[i]][nmb[to]] = true;
+            }
+        }
+    }
+
+    printf("%d", ans);
+
+    return 0;
 }

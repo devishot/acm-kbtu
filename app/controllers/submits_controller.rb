@@ -1,6 +1,15 @@
 class SubmitsController < ApplicationController
-  before_filter :load_contest_participant, :except => [:create]
+  before_filter :load_contest, :except => :create
+  before_filter :load_participant, :except => :create
   before_filter :load_submit, :only => [:show_sourcecode, :download_sourcecode]
+
+  load_and_authorize_resource
+
+  # rescue_from Mongoid::Errors::DocumentNotFound do |exception|
+  #   raise exception.inspect
+  #   redirect_to contests_url, :alert => "Contest ##{params[:id]} not found"
+  # end
+
 
   # POST /submits
   # POST /submits.json
@@ -63,9 +72,7 @@ class SubmitsController < ApplicationController
   # GET /submits/:contest/:participant/:submit
   def show_sourcecode
     #@contest = Contest.find_by(path: params[:contest])
-    #@participant = @contest.participants.find_by(path: params[:participant])
-    #@submit = @participant.submits[params[:submit].to_i-1]
-    @order = params[:submit].to_i
+    #@submit = Submit.find(params[:submit])
 
     @navpill
 
@@ -78,20 +85,26 @@ class SubmitsController < ApplicationController
   # GET /submits/:contest/:participant/:submit/download
   def download_sourcecode
     #@contest = Contest.find_by(path: params[:contest])
-    #@participant = @contest.participants.find_by(path: params[:participant])
-    #@submit = @participant.submits[params[:submit].to_i-1]
+    #@submit = Submit.find(params[:submit])
+
     link = @submit.file_sourcecode_path
     send_file(link)
   end
 
 private
-  def load_contest_participant
-    @contest = Contest.find_by(path: params[:contest])
-    @participant = @contest.participants.find_by(path: params[:participant]) 
+  def load_contest
+    @contest = Contest.where(path: params[:contest]).first
+    redirect_to contests_path, :alert => "Contest not found" unless @contest
+  end
+
+  def load_participant
+    @participant = @contest.participants.where(path: params[:participant]).first
+    redirect_to contests_path, :alert => "Participant not found" unless @participant
   end
 
   def load_submit
-    @submit = @participant.submits[params[:submit].to_i-1]
+    @submit = @participant.submits.where(id: params[:submit]).first
+    redirect_to contest_problem_path(@contest.path, 1), :alert => "Submit not found" unless @submit
   end
 
   # # GET /submits/1

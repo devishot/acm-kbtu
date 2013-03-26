@@ -2,7 +2,7 @@
 
 
 <%= link_to '<i class="icon-download-alt"></i> Sourcecode'.html_safe, 
-    submit_path(@participant.contest.path)+"/#{@submit.problem.order}/#{@order}/download",
+    submit_download_path(@participant.contest.path, @participant.path, @submit.id),
     :class => 'btn' %> 
 <br />
 <br />

@@ -35,9 +35,8 @@
           <% end %>
         </td>
         <td style="width: 40px;">  <%= i.status['test'] %>  </td>
-        <td style="width: 80px;">  <%= link_to "view code", 
-              submit_path(i.participant.contest.path)+"/#{i.participant.path}/#{order}", 
-              :target => '_blank' %> 
+        <td style="width: 80px;">  
+          <%= link_to "view code", submit_view_path(i.participant.contest.path, i.participant.path, i.id), :target => '_blank' %> 
         </td>
       </tr>
 

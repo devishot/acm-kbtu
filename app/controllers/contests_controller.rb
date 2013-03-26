@@ -34,6 +34,15 @@ class ContestsController < ApplicationController
   def summary
     #@contest = Contest.find_by(path: params[:id])
     @navpill = 5
+
+    participant = current_user.participants.where(contest: @contest).first
+    return if participant.nil?
+
+    @summary = [[]]
+    @contest.problems_count.times do |i|
+      problem = @contest.problems.find_by(order: i+1)
+      @summary[i+1] = participant.submits.where(problem: problem)
+    end
   end
 
 # messages
@@ -152,6 +161,16 @@ class ContestsController < ApplicationController
   # GET /contests/:id/statement
   def download_statement
     #@contest = Contest.find_by(path: params[:id])
+    if current_user == @contest.user || current_user.admin?
+      #nothing
+    elsif not current_user.participate?(@contest)  then
+      redirect_to contest_path(@contest.path), alert: 'Please, register to participate.'
+      return
+    elsif not @contest.started?
+      redirect_to contest_path(@contest.path), alert: 'Contest does not start'
+      return
+    end
+
     statement = @contest.problems.find_by(order: 0).statement['file_link']
     if statement.blank?
       redirect_to contest_path(@contest.path), alert: 'not uploaded yet'

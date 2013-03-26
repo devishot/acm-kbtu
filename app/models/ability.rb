@@ -11,7 +11,7 @@ class Ability
        return
     end
 
-    can :read, Problem
+    can [:read, :download_statement], Problem
     can [:read, :participate, :download_statement, :standings, :messages, :summary], Contest
 
     if user.admin?

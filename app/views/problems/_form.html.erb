@@ -1,7 +1,9 @@
-<%= link_to '<i class="icon-pencil icon-white"></i> Edit statement'.html_safe, 
-    contest_path(@contest.path)+"/#{@problem.order}/edit_statement", 
-    :class => 'btn btn-info',
-    :style => 'right: 0%; float: right; position: relative;' %>
+<% if @problem.order!=0 %>
+  <%= link_to '<i class="icon-pencil icon-white"></i> Edit statement'.html_safe, 
+      contest_path(@contest.path)+"/#{@problem.order}/edit_statement", 
+      :class => 'btn btn-info',
+      :style => 'right: 0%; float: right; position: relative;' %>
+<% end %>
 
 <%= form_for(@problem, :multipart => true) do |f| %>
   <%= hidden_field_tag :contest_id, @problem.contest.id %>
@@ -117,7 +119,11 @@
 
       <% status = @problem.get_checked_status %>
       <% if not status.nil? then %>
-        <% if status['status'] == 'AC' %>
+        <% if status.empty? %>
+          <span class="badge">
+            checking..
+          </span>        
+        <% elsif status['status'] == 'AC' %>
           <span class="label label-success">
             OK
             (<%= File.ctime(@problem.checker_path).to_s(:long) %>)

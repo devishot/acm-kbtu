@@ -75,7 +75,7 @@ class Problem
         :checker      => self.template.checker,
 #       :checker_path => self.template.checker_path,
         :checker_mode => (self.template.checker_mode == 2) ? 1 : 0,        
-        :statement    => {'file_link'=> self.template.statement['file_link']}
+#       :statement    => {'file_link'=> self.template.statement['file_link']}
     )
   end
 

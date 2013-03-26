@@ -47,8 +47,8 @@ void dfs(int v, int pr, int h){
 
 
 int main(){
-//        freopen("k.in", "r", stdin);
-//        freopen("k.out", "w", stdout);
+        freopen("k.in", "r", stdin);
+        freopen("k.out", "w", stdout);
         scanf("%d%d", &n, &m);
         for (i = 0; i < m; i++){
 	        scanf("%d%d", &x, &y);

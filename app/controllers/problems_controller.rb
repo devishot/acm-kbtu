@@ -9,6 +9,9 @@ class ProblemsController < ApplicationController
     redirect_to contest_path(params[:id]), :alert => "Problem ##{params[:problem]} not found"
   end
 
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to contest_problem_path(params[:id], params[:problem]), :alert => exception.message
+  end
 
   # GET /contests/:id/problems
   def index
