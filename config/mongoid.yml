@@ -1,3 +1,14 @@
+production:
+  sessions:
+    default:
+      database: acm_kbtu_development
+      hosts:
+        - localhost:27017
+      options:
+        consistency: :strong
+  options:
+
+
 development:
   # Configure available database sessions. (required)
   sessions:
