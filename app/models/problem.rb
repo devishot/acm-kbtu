@@ -100,7 +100,6 @@ class Problem
   def get_statement
     statement = self.statement['file_link']
     return if statement.blank?
-
   end
 
   def put_tests(archive)
@@ -108,13 +107,13 @@ class Problem
     extention = File.extname(archive.original_filename)
     return if not (extention=='.zip' || extention=='.tgz')
     tests_dir = self.tests_dir
-    #clear & create new & write archive_file(.zip) in tests_dir
+    #clear & create new & write archive in tests_dir
     FileUtils.rm_rf tests_dir
     FileUtils.mkdir_p tests_dir
     File.open(Rails.root.join(tests_dir, archive.original_filename), 'w') do |file|
       file.write(archive.read.force_encoding('utf-8'))
     end
-    #exctract files from file
+    #exctract files from archive
     if extention == '.zip'
       Zip::ZipFile.open(tests_dir+"/#{archive.original_filename}"){ |zip_file|
         zip_file.each { |f|
@@ -127,7 +126,7 @@ class Problem
       pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\' -C \'#{tests_dir}\'"
       ignored, status = Process::waitpid2 pid
     end
-    #remove(delete) file
+    #remove(delete) archive
     File.delete File.join(tests_dir, archive.original_filename)
             # #check count of tests
             # tests_count = Dir.entries(problems_dir).count - 2
@@ -148,8 +147,8 @@ class Problem
     File.open(Rails.root.join(checker_dir, ufile.original_filename), 'w') do |file|
       file.write(ufile.read.force_encoding('utf-8'))
     end
-    #compile
-    status = Compiler.compile(checker_dir+'/'+ufile.original_filename, true)#compile(file_path, checker=true)
+    #compile checker |compile(source file path, destination folder, destination name, checker=false)
+    status = Compiler.compile(checker_dir+'/'+ufile.original_filename, checker_dir, 'checker', true)
     if status['status'] == 'OK'
       self.checker_path = checker_dir+'/'+ufile.original_filename
       self.checker_mode = 2
@@ -166,8 +165,8 @@ class Problem
           std_out = stdout.gets
           std_err = stderr.gets
           if open4_status.exitstatus > 0 then #OK is 0
-            status['status'] = 'NW'
-            status['error'] = []
+            status['status'] = 'SE'
+            status['error'] = ["checker on test #{t[0]} | #{t[1]} get:"]
             status['error'] << case open4_status.exitstatus
               when 4, 2; "PE"
               when 5, 1; "WA"
@@ -175,6 +174,7 @@ class Problem
             end
             status['error'] << std_err
 
+            #delete checker
             self.checker_path = ''
             self.checker_mode = 0
             FileUtils.rm_rf checker_dir
