@@ -37,6 +37,7 @@ gem 'resque'
 
 group :test, :development do
 	gem "rspec-rails", "~> 2.0"
+  gem "mongoid-rspec", "~> 1.7.0"
   gem "spork"
 	gem 'database_cleaner'
 end

@@ -13,7 +13,7 @@ class Problem
   field :input_file, type: String # nil || 'input.txt' || 'a.in'
   field :output_file, type: String
   field :checker_mode, type: Integer, :default => 0 # 0-standart 1-template 2-own  
-  field :checker, type: String, :default => 'cmp_file'
+  field :checker, type: String, :default => 'fcmp'
   field :checker_path, type: String #path to checker sourcecode, executable it is 'checker' file
   field :statement, type: Hash, :default =>
         {'title'=>'', 'text'=>'', 'inputs'=>[], 'outputs'=>[], 'file_link'=>''}
@@ -54,7 +54,7 @@ class Problem
   end
 
   def tests_uploaded?
-    File.exist?( self.tests_dir )
+    not Dir.entries(self.tests_dir).empty?
   end
 
   def checker_dir

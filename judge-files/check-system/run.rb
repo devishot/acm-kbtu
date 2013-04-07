@@ -17,11 +17,50 @@ class Tester
 
   def initialize(submit_id, system_path, hidden=false)
     @submit = Submit.find(submit_id)
-    @work_dir = "#{system_path}/work/" + ((hidden==true) ? "contest_#{@submit.problem.contest.path}/" : "participant_#{@submit.participant.path}/")
-    @tests_path = @submit.problem.tests_dir
-    @src_ext = File.extname(@submit.file_sourcecode_path)
+    @source_code = @submit.file_sourcecode_path
+    @source_code_ext = File.extname(@source_code)    
+    #check source_code
+    if not File.file? @source_code
+      @submit.status = {"status" => 'SE', "error" => "source code not found, #{@source_code}"}
+      @submit.save
+      return false
+    end
 
-    self.put_sourcecode
+    @problem = @submit.problem
+    @tests_path = @problem.tests_dir
+    #check tests
+    if not @problem.tests_uploaded?
+      @submit.status = {"status" => 'SE', "error" => "tests not found"}
+      @submit.save      
+      return false
+    end
+
+    #get work_dir
+    @contest = @problem.contest
+    if hidden==false
+      @participant = @submit.participant
+      @work_dir = "#{Rails.root}/contests/#{@contest.path}/submits/participant#{@participant.path}/submit#{@submit.order}"
+    else
+      @work_dir = "#{system_path}/tmp"
+      FileUtils.rm_r @work_dir
+    end
+    FileUtils.mkdir_p @work_dir
+    
+    if @problem.checker_mode==0
+      @checker = "#{system_path}/checkers/#{@problem.checker}"
+    elsif @problem.checker_mode==1
+      @checker = "#{@problem.template.checker_dir}/checker"
+    else @problem.checker_mode==2
+      @checker = "#{@problem.checker_dir}/checker"
+    end
+    #check checker
+    if not File.executable? @checker
+      @submit.status = {"status" => 'SE', "error" => "checker not found, #{@checker}"}
+      @submit.save      
+      return false
+    end
+
+    return true
   end
 
 
@@ -111,8 +150,16 @@ class Tester
   def self.perform(submit_id, hidden=false)
     system_path = "#{Rails.root}/judge-files/check-system"
 
-    a = Tester.new(submit_id, system_path, hidden)
-    a.run
+    @submit = Submit.find(submit_id)
+    @submit.status['status'] = 'SE'
+    @submit.save!
+    puts @submit.inspect
+    return
+    raise @submit.inspect
+
+    if (a = Tester.new(submit_id, system_path, hidden))==true
+      a.run 
+    end
     return if hidden==true
 
     #//standings

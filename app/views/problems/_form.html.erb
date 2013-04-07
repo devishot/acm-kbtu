@@ -86,10 +86,14 @@
         </td>
 
         <td>
-          <p>System checker</p>
-          <%= f.select :checker, ["cmp_file", "cmp_file_nospace", "cmp_long_long", 
-                                  "cmp_long_long_seq", "cmp_long_double",
-                                  "cmp_long_double_seq", "cmp_sexpr", "cmp_yesno"] %>
+          <p>System checker( 
+            <%= link_to 'info'.html_safe, 'http://db.tt/ipoUBMPg', target: "_blank" %> |
+            <%= link_to 'files'.html_safe, 'http://db.tt/Gi5Grioq', target: "_blank" %>)
+          </p>
+          <% checkers = Dir.entries("#{Rails.root}/judge-files/check-system/checkers").sort[2..-1] %>
+          <%= f.select :checker, checkers %>
+          
+          
         </td>
 
         <% if not @problem.order==0 then %>
