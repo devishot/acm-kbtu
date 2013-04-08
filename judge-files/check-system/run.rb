@@ -5,41 +5,36 @@ require 'resque'
 require "#{Rails.root}/judge-files/check-system/compiler"
 
 class Tester
+  attr_accessor :init_status
   @queue = :simple
 
-  def put_sourcecode
-    #delete and create new work directory
-    FileUtils.remove_dir @work_dir if File.exist? @work_dir
-    FileUtils.mkdir_p @work_dir
-    #copy sourcecode in 1.cpp
-    FileUtils.cp @submit.file_sourcecode_path, "#{@work_dir}solution#{@src_ext}"
-  end
-
   def initialize(submit_id, system_path, hidden=false)
+    @init_status = false
+
     @submit = Submit.find(submit_id)
     @source_code = @submit.file_sourcecode_path
     @source_code_ext = File.extname(@source_code)    
     #check source_code
     if not File.file? @source_code
-      @submit.status = {"status" => 'SE', "error" => "source code not found, #{@source_code}"}
+      @submit.status = {"status" => 'SE', "error" => ["source code not found", @source_code]}
       @submit.save
-      return false
+      return
     end
 
     @problem = @submit.problem
     @tests_path = @problem.tests_dir
     #check tests
     if not @problem.tests_uploaded?
-      @submit.status = {"status" => 'SE', "error" => "tests not found"}
-      @submit.save      
-      return false
+      @submit.status = {"status" => 'SE', "error" => ["tests not found"]}
+      @submit.save
+      return
     end
 
     #get work_dir
     @contest = @problem.contest
     if hidden==false
       @participant = @submit.participant
-      @work_dir = "#{Rails.root}/contests/#{@contest.path}/submits/participant#{@participant.path}/submit#{@submit.order}"
+      @work_dir = "#{system_path}/../contests/#{@contest.path}/submits/participant#{@participant.path}/submit#{@submit.order}"
     else
       @work_dir = "#{system_path}/tmp"
       FileUtils.rm_r @work_dir
@@ -55,12 +50,13 @@ class Tester
     end
     #check checker
     if not File.executable? @checker
-      @submit.status = {"status" => 'SE', "error" => "checker not found, #{@checker}"}
+      @submit.status = {"status" => 'SE', "error" => ["checker not found, #{@checker}"]}
       @submit.save      
-      return false
+      return
     end
 
-    return true
+    @submit.save
+    @init_status = true
   end
 
 
@@ -95,10 +91,12 @@ class Tester
     return (status.exitstatus==0) ? true : false;
   end
 
+
   def run()
-    #//compile sourcecode
-    @submit.status = Compiler.compile("#{@work_dir}solution#{@src_ext}")
-    if @submit.status['status'] == 'CE' then
+    #compile sourcecode
+    compile_status = Compiler.compile(@source_code, "#{@work_dir}/solution")
+    if compile_status['status'] == 'CE' then
+      @submit.status = compile_status
       @submit.save
       return
     end
@@ -147,20 +145,20 @@ class Tester
     return
   end
 
+
   def self.perform(submit_id, hidden=false)
     system_path = "#{Rails.root}/judge-files/check-system"
 
-    @submit = Submit.find(submit_id)
-    @submit.status['status'] = 'SE'
-    @submit.save!
-    puts @submit.inspect
-    return
-    raise @submit.inspect
-
-    if (a = Tester.new(submit_id, system_path, hidden))==true
-      a.run 
+    a = Tester.new(submit_id, system_path, hidden)
+    if( a.init_status==true )
+      a.run
+    else
+      return
     end
+
+    #skip set standing
     return if hidden==true
+
 
     #//standings
     @submit = Submit.find(submit_id)

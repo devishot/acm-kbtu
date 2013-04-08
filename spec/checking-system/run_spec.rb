@@ -7,7 +7,7 @@ describe Tester do
   before do
     @contest = Contest.new()
     @contest.save
-    #create problem with tests
+    #create problem and put tests
     @contest.upd_problems_count(1)
     @problem = @contest.problems.find_by(order: 1)
     @problem.checker_mode = 0
@@ -22,50 +22,59 @@ describe Tester do
 
   xit 'should return AC' do
     Tester.perform(@submit.id, true)
-    @submit.status['status'].should eq 'AC'
+    @submit.reload
+    @submit.status['status'].should == 'AC'
   end  
 
-  xit 'should return SE, if source code not found' do
+  it 'should return SE, if source code not found' do
     @submit.file_sourcecode_path = "#{tmp_dir}/not.found"
     @submit.save
     Tester.perform(@submit.id, true)
-    @submit.status['status'].should eq 'SE'
+    @submit.reload
+    @submit.status['status'].should == 'SE'
     @submit.status['error'][0].should match 'source code not found'
   end
 
-  xit 'should return SE, if tests not found' do
-    FileUtils.rmdir @problem.tests_dir
+  it 'should return SE, if tests not found' do
+    FileUtils.remove_dir @problem.tests_dir
     Tester.perform(@submit.id, true)
-    @submit.status['status'].should eq 'SE'
+    @submit.reload
+    @submit.status['status'].should == 'SE'
     @submit.status['error'][0].should match 'tests not found'
   end
 
+  it 'should return CE' do
+    @submit.file_sourcecode_path = "#{tmp_dir}/ce.cpp"
+    @submit.save
+    Tester.perform(@submit.id, true)
+    @submit.reload
+    @submit.status['status'].should == 'CE'
+  end
+
   describe 'check checkers' do
-    xit 'should return SE, if own checker not found' do
+    it 'should return SE, if own checker not found' do
       #set to own checker which doesn't exist
       @problem.checker_mode = 2
       @problem.save
       Tester.perform(@submit.id, true)
-      @submit.status["status"].should eq 'SE'
+      @submit.reload      
+      @submit.status["status"].should == 'SE'
       @submit.status['error'][0].should match 'checker not found'
     end
-    it 'should return AC' do
+    xit 'should return AC' do
       #put other tests
       FileUtils.rmdir @problem.tests_dir
       FileUtils.cp_r  "#{tmp_dir}/tests2/.", @problem.tests_dir
       #put source code
       @submit.file_sourcecode_path = "#{tmp_dir}/ok2.cpp"
       @submit.save
-
-      puts '[', @submit.inspect
       Tester.perform(@submit.id, true)
-#      puts @submit.status.inspect
-      puts @submit.inspect, ']'
-      @submit.status['status'].should eq 'AC'
+      @submit.reload
+      @submit.status['status'].should == 'AC'
     end
   end
 
   after do
-    #@contest.destroy
+    @contest.destroy
   end
 end

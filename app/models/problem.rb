@@ -54,7 +54,7 @@ class Problem
   end
 
   def tests_uploaded?
-    not Dir.entries(self.tests_dir).empty?
+    return (File.directory?(self.tests_dir) && Dir.entries(self.tests_dir).size>2) ? true : false
   end
 
   def checker_dir
