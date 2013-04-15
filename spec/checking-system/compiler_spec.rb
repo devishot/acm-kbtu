@@ -27,7 +27,7 @@ describe Compiler do
       status['error'][0].should match "is directory"
     end
     it 'return CE, if #source_code not supported' do
-      src  = "#{tmp_dir}/empty.py"
+      src  = "#{tmp_dir}/unsupported.py"
       dest = "#{tmp_dir}/solution"
       status = Compiler.compile(src, dest)
       status['status'].should eq 'CE'

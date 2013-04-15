@@ -8,7 +8,7 @@ class Tester
   attr_accessor :init_status
   @queue = :simple
 
-  def initialize(submit_id, system_path, hidden=false)
+  def initialize(submit_id, hidden=false)
     @init_status = false
 
     @submit = Submit.find(submit_id)
@@ -34,15 +34,15 @@ class Tester
     @contest = @problem.contest
     if hidden==false
       @participant = @submit.participant
-      @work_dir = "#{system_path}/../contests/#{@contest.path}/submits/participant#{@participant.path}/submit#{@submit.order}"
+      @work_dir = "#{@@system_path}/../contests/#{@contest.path}/submits/participant#{@participant.path}/submit#{@submit.order}"
     else
-      @work_dir = "#{system_path}/tmp"
+      @work_dir = "#{@@system_path}/tmp"
       FileUtils.rm_r @work_dir
     end
     FileUtils.mkdir_p @work_dir
     
     if @problem.checker_mode==0
-      @checker = "#{system_path}/checkers/#{@problem.checker}"
+      @checker = "#{@@system_path}/checkers/#{@problem.checker}"
     elsif @problem.checker_mode==1
       @checker = "#{@problem.template.checker_dir}/checker"
     else @problem.checker_mode==2
@@ -62,81 +62,83 @@ class Tester
 
   def check(tin, tout, output_file)
     if @submit.problem.checker_mode == 0 #system
-      checker = "\'#{@work_dir}../../checkers/#{@submit.problem.checker}\' "
+      checker = "\'#{@@system_path}/checkers/#{@problem.checker}\' "
     elsif @submit.problem.checker_mode == 2 #own
-      checker = "\'#{@submit.problem.checker_dir}/checker\' "
+      checker = "\'#{@problem.checker_dir}/checker\' "
     elsif @submit.problem.checker_mode == 1 #template
-      checker = "\'#{@submit.problem.contest.problems.find_by(order: 0).checker_dir}/checker\' "
+      checker = "\'#{@problem.template.checker_dir}/checker\' "
     end
     command = checker + "\'#{@tests_path}/#{tin}\' " +
-                        "\'#{@work_dir}#{output_file}\' " +
+                        "\'#{@work_dir}/#{output_file}\' " +
                         "\'#{@tests_path}/#{tout}\'"
-    #puts command
     pid, stdin, stdout, stderr = Open4::popen4 command
-    ignored, status = Process::waitpid2 pid
+    ignored, open4_status = Process::waitpid2 pid
 
     std_out = stdout.readlines
     std_err = stderr.readlines
-
     #puts "!2   #{std_err} | #{std_out}"
-
-    @submit.status['status'] = case status.exitstatus
+    @submit.status['status'] = case open4_status.exitstatus
       when 0; "OK"
       when 4, 2; "PE"
       when 5, 1; "WA"
       else "SE" 
     end
-    @submit.status['error'] = std_out
+    begin
+      @submit.status['error'] = ['OUT:']
+      std_out.each { |x| @submit.status['error'] << x }
+      @submit.status['error'] << 'ERR:'
+      std_err.each { |x| @submit.status['error'] << x }
+    end
 
-    return (status.exitstatus==0) ? true : false;
+    return (open4_status.exitstatus==0) ? true : false;
   end
 
 
   def run()
     #compile sourcecode
     compile_status = Compiler.compile(@source_code, "#{@work_dir}/solution")
-    if compile_status['status'] == 'CE' then
+    if not compile_status['status'] == 'OK' then
       @submit.status = compile_status
       @submit.save
       return
     end
 
-    #//get every test(pair of 'file' and 'file.ans')
-    k = 0;
+    #get every test(pair of 'file' and 'file.ans', or 'file.in' and 'file.out')
+    k = 0 #number of test's pairs
     Dir.entries(@tests_path).sort[2..-1].each_slice(2) do |t|
-      next unless File.basename(t[0], '.*') == File.basename(t[1], '.*')
+      next if not File.basename(t[0], '.*') == File.basename(t[1], '.*')
       k = k + 1
 
-      input_file  = @submit.problem.input_file
-      output_file = @submit.problem.output_file
-      #copy current test's input to work/input.txt file      
-      FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}#{(input_file.blank?) ? 'input.txt' : input_file}"
-      #//RUN
-      command = "\'#{@work_dir}../../ejudge-execute\' " +
+      input_file  = @problem.input_file
+      output_file = @problem.output_file
+      #copy current test's input to input for solution
+      FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}/#{(input_file.blank?) ? 'input.txt' : input_file}"
+      #RUN solution
+      command = "\'#{@@system_path}/ejudge-execute\' " +
                 "--workdir=#{@work_dir} " + 
-                "--time-limit=#{@submit.problem.time_limit} " +
-                "--max-vm-size=#{@submit.problem.memory_limit}M " +
+                "--time-limit=#{@problem.time_limit} " +
+                "--max-vm-size=#{@problem.memory_limit}M " +
                 "--memory-limit " +
-                "#{(input_file.blank?) ? "--stdin=\'#{@work_dir}input.txt\'" : nil} " +
-                "#{(output_file.blank?) ? "--stdout=\'#{@work_dir}output.txt\'" : nil} " +
-                "\'#{@work_dir}solution\'"
+                "#{(input_file.blank?)  ? "--stdin=\'#{@work_dir}/input.txt\'"   : nil} " +
+                "#{(output_file.blank?) ? "--stdout=\'#{@work_dir}/output.txt\'" : nil} " +
+                "\'#{@work_dir}/solution\'"
       pid, stdin, stdout, stderr = Open4::popen4 command
-      ignored, status = Process::waitpid2 pid
+      ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
-
-      @submit.status['status'] = verdict[0][8,9].strip
-      @submit.status['error'] = verdict      
-      #puts "!1  #{t[0]} | #{t[1]} | #{verdict}"
-      if @submit.status['status'] == 'OK'
-        #//CHECK(COMPARE)
-        if not self.check(t[0], t[1], (output_file.blank?) ? 'output.txt' : output_file)
+      if not verdict[0][8,9].strip == 'OK'
+        @submit.status['status'] = verdict[0][8,9].strip
+        @submit.status['error']  = verdict
+        @submit.save
+        return
+      else
+        #puts "!1  #{t[0]} | #{t[1]} | #{verdict}"
+        #CHECK(COMPARE answer and test's answer)
+        f = self.check(t[0], t[1], (output_file.blank?) ? 'output.txt' : output_file)
+        if not f
           @submit.status['test'] = k
           @submit.save
           return
         end
-      else
-        @submit.save
-        return
       end
     end
 
@@ -147,9 +149,9 @@ class Tester
 
 
   def self.perform(submit_id, hidden=false)
-    system_path = "#{Rails.root}/judge-files/check-system"
+    @@system_path = "#{Rails.root}/judge-files/check-system"
 
-    a = Tester.new(submit_id, system_path, hidden)
+    a = Tester.new(submit_id, hidden)
     if( a.init_status==true )
       a.run
     else

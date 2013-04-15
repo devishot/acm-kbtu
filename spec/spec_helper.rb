@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'spork'
+
+require 'database_cleaner'
 #uncomment the following line to use spork with the debugger
 #require 'spork/ext/ruby-debug'
 
@@ -13,12 +15,23 @@ Spork.prefork do
   require 'rspec/rails'
   require 'rspec/autorun'
   require File.expand_path("../../config/environment", __FILE__)
-  Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
  
   RSpec.configure do |config|
     #config.fixture_path = "#{::Rails.root}/spec/fixtures"
     #config.use_transactional_fixtures = true
     config.infer_base_class_for_anonymous_controllers = false
+
+    #Database Cleaner
+    config.before(:suite) do
+      DatabaseCleaner.strategy = :truncation
+      DatabaseCleaner.clean_with(:truncation)
+    end
+    config.before(:each) do
+      DatabaseCleaner.start
+    end
+    config.after(:each) do
+      DatabaseCleaner.clean
+    end    
   end
 end
 
@@ -27,6 +40,8 @@ Spork.each_run do
 
   #Подгружаем каждый раз все файлы из директории app/
   Dir["#{Rails.root}/app/**/*.rb"].each {|file| load file }
+
+  Dir["#{Rails.root}/judge-files/**/*.rb"].each {|file| load file }
   #Подгружаем файл с описанием маршрутизации
   load "#{Rails.root}/config/routes.rb"
 end
