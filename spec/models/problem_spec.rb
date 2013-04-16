@@ -72,9 +72,9 @@ describe Problem do
       end
     end
 
-    describe "put statement" do
-      it "should be putted" do
-        params = {:problem => {}, :tests_archive => '', :uploaded_checker => ''}
+    describe "put solution" do
+      it "should got CE" do
+        params = {:problem => {}, :tests_archive => ''}
         params[:tests_archive] = ActionDispatch::Http::UploadedFile.new({
             :filename => "tests_for_ok_cpp.tgz", 
             :tempfile => File.new(tmp_dir+'/tests.tgz')})
@@ -84,14 +84,67 @@ describe Problem do
             :tempfile => File.new(tmp_dir+'/checker.dpr')})
 
         params[:solution_file] = ActionDispatch::Http::UploadedFile.new({
-            :filename => "ok.cpp", 
-            :tempfile => File.new(tmp_dir+'/ok.cpp')})
+            :filename => "ce.cpp", 
+            :tempfile => File.new(tmp_dir+'/ce.cpp')})
 
         status = @problem.put_problem(params)
         status[:notice].should include("Tests uploaded")
         status[:notice].should include("Checker compiled")
+        status[:alert].should  include("solution is incorrect, got a CE")
 
-        status[:alert].should include("solution is incorect, got a SE")
+        status[:notice].should include("Problem updated")
+      end
+      it "should be putted" do
+        params = {:problem => {}, :tests_archive => ''}
+        params[:tests_archive] = ActionDispatch::Http::UploadedFile.new({
+            :filename => "tests_for_ok_cpp.tgz",
+            :tempfile => File.new(tmp_dir+'/tests.tgz')})
+
+        params[:problem][:uploaded_checker] = ActionDispatch::Http::UploadedFile.new({
+            :filename => "checker_for_ok_cpp.dpr", 
+            :tempfile => File.new(tmp_dir+'/checker.dpr')})
+
+        params[:solution_file] = ActionDispatch::Http::UploadedFile.new({
+            :filename => "ok.cpp",
+            :tempfile => File.new(tmp_dir+'/ok.cpp')})
+
+        @problem.input_file  = 'o.in'
+        @problem.output_file = 'o.out'
+        @problem.save
+        status = @problem.put_problem(params)
+        status[:notice].should include("Tests uploaded")
+        status[:notice].should include("Checker compiled")
+        status[:notice].should include("solution added, problem checked")
+        status[:notice].should include("Problem updated")
+      end
+      it "should be REchecked" do
+        params = {:problem => {}, :tests_archive => ''}
+        params[:tests_archive] = ActionDispatch::Http::UploadedFile.new({
+            :filename => "tests_for_ok_cpp.tgz",
+            :tempfile => File.new(tmp_dir+'/tests.tgz')})
+
+        params[:problem][:uploaded_checker] = ActionDispatch::Http::UploadedFile.new({
+            :filename => "checker_for_ok_cpp.dpr", 
+            :tempfile => File.new(tmp_dir+'/checker.dpr')})
+
+        params[:solution_file] = ActionDispatch::Http::UploadedFile.new({
+            :filename => "ok.cpp",
+            :tempfile => File.new(tmp_dir+'/ok.cpp')})
+
+        params[:sex] = 'SEX'
+
+        @problem.input_file  = 'o.in'
+        @problem.output_file = 'o.out'
+        @problem.save
+        status = @problem.put_problem(params)
+        status[:notice].should include("Tests uploaded")
+        status[:notice].should include("Checker compiled")
+        status[:notice].should include("solution added, problem checked")
+        ##REcheck solution
+        params.delete(:solution_file)
+        params.delete(:tests_archive)
+        status = @problem.put_problem(params)
+        status[:notice].should include("problem REchecked")
 
         status[:notice].should include("Problem updated")
       end

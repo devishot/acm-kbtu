@@ -71,70 +71,10 @@ class ProblemsController < ApplicationController
     #@problem = @contest.problems.find_by(order: params[:problem_order])
 
     status = @problem.put_problem(params)
-    ############################
 
-    # flash[:notice] = []
-    # flash[:alert]  = []
-
-    # if not params[:statement].nil?
-    #   @problem.put_statement(params[:statement])
-    # end
-
-    # #//put problems if upload && @problem.order==0
-    # if not params[:problems].nil?
-    #   @problems_status = @contest.put_problems(params[:problems]) 
-    #   flash[:alert] = flash[:alert] + @problems_status['error']
-    # end
-    # #//put problem's tests if uploaded
-    # @problem.put_tests(params[:tests_archive]) if not params[:tests_archive].nil?
-    # #//put checker if uploaded
-    # if not params[:problem][:uploaded_checker].nil?
-    #   @checker_status = @problem.put_checker(params[:problem][:uploaded_checker])
-    #   puts @checker_status['status']
-    #   puts @checker_status['error']      
-    #   if @checker_status['status'] == 'OK'
-    #     flash[:notice].push('Checker compiled.')
-    #     flash[:notice].push('')
-    #     params[:problem][:checker_mode] = '2'
-
-    #   elsif @checker_status['status'] == 'CE'
-    #     flash[:alert].push('Checker was not compiled.')
-    #     flash[:alert].concat(@checker_status['error']) #it is array
-    #     flash[:alert].push('')
-
-    #   elsif @checker_status['status'] == 'NW'
-    #     flash[:alert].push('Checker was not work.')
-    #     flash[:alert].concat(@checker_status['error']) #it is array
-    #     flash[:alert].push('')        
-    #   end
-    #   params[:problem].delete(:uploaded_checker)
-    # end
-    # #//set template's checker if used
-    # if not params[:problem][:checker_mode]==@problem.checker_mode
-    #   if params[:problem][:checker_mode]=='2' && @problem.checker_path.blank?
-    #     params[:problem][:checker_mode] = (@problem.template.checker_mode==2) ? '1' : '0'
-    #   end
-    # end
-    # #//check solution file CHECK TESTS AND CHECKER
-    # if not params[:solution_file].nil?
-    #   @problem.check_problem(params[:solution_file])
-    # elsif not @problem.checked.nil? #test again
-    #   @problem.check_problem_again
-    # end
-
-    # respond_to do |format|
-    #   if @problem.update_attributes(params[:problem])
-    #     format.html { redirect_to contest_control_problems_path(@contest.path, tab:@problem.order)}
-    #     flash[:notice].push('Problem properties was successfully updated.');
-    #   else
-    #     format.html { redirect_to contest_control_problems_path(@contest.path, tab:@problem.order)}
-    #     flash[:alert].push('Problem properties was not updated.')
-    #   end
-    #   #update problems if template(@problem.order==0) updated
-    #   @contest.upd_problems_template if @problem.order==0 
-    # end
     respond_to do |format|
-      format.html { redirect_to contest_control_problems_path(@contest.path, tab:@problem.order) }
+      format.html { 
+          redirect_to contest_control_problems_path(@contest.path, tab:@problem.order) }
       flash[:notice] = status[:notice]
       flash[:alert]  = status[:alert]
     end    

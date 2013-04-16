@@ -15,9 +15,10 @@ class Problem
   field :checker_mode, type: Integer, :default => 0 # 0-standart 1-template 2-own  
   field :checker, type: String, :default => 'fcmp'
   field :checker_path, type: String #path to checker sourcecode, executable it is 'checker' file
+  field :solution_file, type: String
+  field :checked, type: String
   field :statement, type: Hash, :default =>
         {'title'=>'', 'text'=>'', 'inputs'=>[], 'outputs'=>[], 'file_link'=>''}
-  field :checked, type: String
 
   belongs_to :contest
   has_many :submits
@@ -93,11 +94,6 @@ class Problem
 
   def put_problem(params)
     @status = {:notice => [], :alert => []}
-    #put statement
-    if not params[:statement].nil?
-      self.put_statement(params[:statement])
-      @status[:notice] << 'Statement added'
-    end
 
     #Contest: put 'archive of problems' IF @problem.order==0 && 'problems' uploaded
     if not params[:problems].nil?
@@ -105,6 +101,13 @@ class Problem
 #!      #
       @status[:alert] << 'Contest: arhcive of problems'
       problems_status[:error].each {|x| @status[:alert] << x }
+    end
+
+
+    #put statement
+    if not params[:statement].nil?
+      self.put_statement(params[:statement])
+      @status[:notice] << 'Statement added'
     end
 
     #put tests if uploaded
@@ -148,12 +151,18 @@ class Problem
       if solutions_status[:status] == 'OK'
         @status[:notice] << 'solution added, problem checked'
       else
-        @status[:alert]  << "solution is incorect, got a #{solutions_status[:status]}"
+        @status[:alert]  << "solution is incorrect, got a #{solutions_status[:status]}"
         solutions_status[:error].each {|x| @status[:alert] << '---'+x }
       end
-    elsif not self.checked.nil? #test again
-      self.check_problem_again
-      @status[:notice] << 'problem REchecked'
+    #check again IF was uploaded
+    elsif not self.checked.nil?
+      solutions_status = self.put_solution() #REcheck with uploaded solution
+      if solutions_status[:status] == 'OK'
+        @status[:notice] << 'problem REchecked'
+      else
+        @status[:alert]  << "solution is incorrect, got a #{solutions_status[:status]}"
+        solutions_status[:error].each {|x| @status[:alert] << '---'+x }
+      end
     end
 
     #update
@@ -294,23 +303,26 @@ class Problem
     return status
   end
 
-
-  def put_solution(ufile)
+  def put_solution(ufile='recheck')
     return if self.order==0
 
     require "#{Rails.root}/judge-files/check-system/run"
     status = {:status => '', :error => []}
     solution_dir = self.solution_dir
-    #clear & create new & write ufile in solution_dir
-    FileUtils.remove_dir solution_dir, true
-    FileUtils.mkdir_p    solution_dir
-    File.open(Rails.root.join(solution_dir, ufile.original_filename), 'w') do |file|
-      file.write(ufile.read.force_encoding('utf-8'))
+
+    if not ufile == 'recheck'
+      #clear & create new & write ufile in solution_dir
+      FileUtils.remove_dir solution_dir, true
+      FileUtils.mkdir_p    solution_dir
+      File.open(Rails.root.join(solution_dir, ufile.original_filename), 'w') do |file|
+        file.write(ufile.read.force_encoding('utf-8'))
+      end
+      self.solution_file = solution_dir+'/'+ufile.original_filename
     end
     #send to check
     submit = Submit.new({
       :problem => self,
-      :file_sourcecode_path => solution_dir+'/'+ufile.original_filename
+      :file_sourcecode_path => self.solution_file
     })
     submit.save
     self.checked = submit.id
@@ -320,28 +332,15 @@ class Problem
       submit.reload
       break if not submit.status.empty?
     end
-#    raise submit.inspect
-    status[:status] = (submit.status['status'] == 'AC') ? 'OK' : 'SE'
-    submit.status['error'].each {|x| status[:error] << x }
+    if submit.status['status'] == 'AC'
+      status[:status] = 'OK'
+    else
+      status[:status] = submit.status['status']
+      submit.status['error'].each {|x| status[:error] << x }
+    end
     return status
   end
 
-  def check_problem_again
-    solution_file = nil
-    Dir.entries(self.solution_dir).sort[2..-1].each do |t|
-      if ['.pas', '.dpr', '.cpp'].include? t
-        solution_file = self.solution_dir+'/'+solution_file
-        break
-      end
-    end
-    return if solution_file.nil?
-
-    solution = ActionDispatch::Http::UploadedFile.new({
-      :filename => "#{File.basename(solution_file)}",
-      :tempfile => File.new(solution_file)
-    })
-    self.check_problem( solution )      
-  end
 
   def get_checked_status
     return nil if self.checked.nil?
