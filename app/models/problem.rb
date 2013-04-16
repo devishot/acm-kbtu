@@ -44,6 +44,7 @@ class Problem
     self.submits.destroy_all
   end
 
+
   def problem_dir
     #raise self.contest.inspect
     self.contest.contest_dir+"/problems/#{self.order}"
@@ -54,7 +55,7 @@ class Problem
   end
 
   def tests_uploaded?
-    return (File.directory?(self.tests_dir) && Dir.entries(self.tests_dir).size>2) ? true : false
+    (File.directory?(self.tests_dir) && Dir.entries(self.tests_dir).size>2)
   end
 
   def checker_dir
@@ -63,6 +64,11 @@ class Problem
 
   def solution_dir
     self.problem_dir+"/solution"    
+  end
+
+
+  def template
+    return self.contest.problems.find_by(order: 0)
   end
 
   def use_template
@@ -79,8 +85,90 @@ class Problem
     )
   end
 
-  def template
-    return self.contest.problems.find_by(order: 0)
+
+  def get_statement
+    statement = self.statement['file_link']
+    return if statement.blank?
+  end
+
+  def put_problem(params)
+    status = {:notice => [], :alert => []}
+    #put statement
+    if not params[:statement].nil?
+      self.put_statement(params[:statement])
+      status[:notice] << 'Statement added'
+    end
+
+    #Contest: put 'archive of problems' IF @problem.order==0 && 'problems' uploaded
+    if not params[:problems].nil?
+      problems_status = self.contest.put_problems(params[:problems]) 
+#!      #
+      status[:alert] << 'Contest: arhcive of problems'
+      problems_status['error'].each {|x| status[:alert] << x }
+    end
+
+    #put tests if uploaded
+    if not params[:tests_archive].nil?
+      self.put_tests(params[:tests_archive])
+
+      if self.tests_uploaded?
+        status[:notice] << 'Tests uploaded'
+      else
+        status[:alert]  << 'Tests not uploaded'
+      end
+    end
+
+    #put checker if uploaded
+    if not params[:problem][:uploaded_checker].nil?
+      checker_status = self.put_checker(params[:problem][:uploaded_checker])
+
+      if checker_status['status'] == 'OK'
+        status[:notice] << 'Checker compiled'
+        status[:notice] << ''
+        self.checker_mode = 2
+
+      elsif checker_status['status'] == 'CE'
+        status[:alert] << 'Checker was not compiled:'
+        checker_status['error'].each {|x| status[:alert] << '--'+x }
+        status[:alert] << ''
+
+      elsif @checker_status['status'] == 'NW'
+        status[:alert] << 'Checker was not work:'
+        checker_status['error'].each {|x| status[:alert] << '--'+x }
+        status[:alert] << ''
+      end
+      params[:problem].delete(:uploaded_checker)
+    end
+
+    #set template's Checker if own checker not uploaded
+    if self.checker_path.blank? && self.checker_mode==2
+      self.checker_mode = (self.template.checker_mode==2) ? 1 : 0
+    end
+
+    #put solution and CHECK TESTS AND CHECKER
+    if not params[:solution_file].nil?
+      self.put_solution(params[:solution_file])
+      status[:notice] << 'Solution added, problem checked'
+    elsif not self.checked.nil? #test again
+      self.check_problem_again
+      status[:notice] << 'problem REchecked'
+    end
+
+    #update
+    r = self.update_attributes(params[:problem])
+    if r == true
+      status[:notice] << 'Problem updated'
+    else
+      status[:alert] << 'Problem not updated'
+    end
+
+    #Contest: push new template for all problems
+    if self.order==0
+      self.contest.upd_problems_template
+      status[:notice] << 'Contest: '
+    end
+
+    return status
   end
 
   def put_statement(ufile, template=false)
@@ -95,11 +183,6 @@ class Problem
       file.write(ufile.read.force_encoding('utf-8'))
     end
     self.statement[:file_link] = dir+'/'+ufile.original_filename
-  end
-
-  def get_statement
-    statement = self.statement['file_link']
-    return if statement.blank?
   end
 
   def put_tests(archive)
@@ -191,8 +274,8 @@ class Problem
     return status
   end
 
-  #put_solution
-  def check_problem(ufile) 
+
+  def put_solution(ufile) 
     return if self.order==0
     #clear & create new & write ufile in solution_dir
     solution_dir = self.solution_dir

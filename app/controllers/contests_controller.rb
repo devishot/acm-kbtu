@@ -142,7 +142,6 @@ class ContestsController < ApplicationController
   # GET /contests/:id/control_problems
   def control_problems
     #@contest = Contest.find_by(path: params[:id])
-    #raise "#{session.inspect}"
   end
 
   # PUT /contests/:id/control_problems

@@ -13,7 +13,6 @@ class Contest
   field :duration, type: Integer, :default => 300#minutes
   field :type, type: Integer, :default => 0 #"ACM", "IOI"
   field :problems_count, type: Integer, :default => 0 #problems[0] <- it is template for other problem
-# field :statement_link, type: String
 
   belongs_to :user
   has_many :problems
@@ -43,6 +42,7 @@ class Contest
     #delete contest folder
     FileUtils.rm_rf self.contest_dir
   end
+
 
   def contest_dir
     "#{Rails.root}/judge-files/contests/#{self.path}"
