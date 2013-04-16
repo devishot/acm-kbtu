@@ -10,11 +10,11 @@ module Compiler
     src_code = File.expand_path(src_code)
     src_code_ext = File.extname(src_code)
     if not File.exist?(src_code)
-      return {'status' => 'SE', 
-              'error' => ["there is no \"#{src_code}\""]}
+      return {:status => 'SE', 
+              :error => ["there is no \"#{src_code}\""]}
     elsif File.directory?(src_code)
-      return {'status' => 'SE', 
-              'error' => ["\"#{src_code}\" is not file, it is directory"]}
+      return {:status => 'SE', 
+              :error => ["\"#{src_code}\" is not file, it is directory"]}
     end
 
     #check destination directory
@@ -22,8 +22,8 @@ module Compiler
     dest_dir = File.dirname(dest_file)
     FileUtils.mkdir_p dest_dir if not File.exist?(dest_dir)
     if File.directory?(dest_file)
-      return {'status' => 'SE', 
-              'error' => ["\"#{dest_file}\" is directory"]}
+      return {:status => 'SE', 
+              :error => ["\"#{dest_file}\" is directory"]}
     end
 
     #compile source in destination directory as dest_name
@@ -61,11 +61,11 @@ module Compiler
   
 
     if open4_status.nil?
-      return {'status' => 'SE'}
+      return {:status => 'SE'}
     elsif open4_status == 0
-      return {'status' => 'OK'}
+      return {:status => 'OK'}
     else
-      return {'status' => 'CE', 'error' => compile_err}
+      return {:status => 'CE', :error => compile_err}
     end
 
   end

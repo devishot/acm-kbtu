@@ -16,7 +16,7 @@ class Tester
     @source_code_ext = File.extname(@source_code)    
     #check source_code
     if not File.file? @source_code
-      @submit.status = {"status" => 'SE', "error" => ["source code not found", @source_code]}
+      @submit.status = {:status => 'SE', :error => ["source code not found", @source_code]}
       @submit.save
       return
     end
@@ -25,7 +25,7 @@ class Tester
     @tests_path = @problem.tests_dir
     #check tests
     if not @problem.tests_uploaded?
-      @submit.status = {"status" => 'SE', "error" => ["tests not found"]}
+      @submit.status = {:status => 'SE', :error => ["tests not found"]}
       @submit.save
       return
     end
@@ -50,7 +50,7 @@ class Tester
     end
     #check checker
     if not File.executable? @checker
-      @submit.status = {"status" => 'SE', "error" => ["checker not found, #{@checker}"]}
+      @submit.status = {:status => 'SE', :error => ["checker not found, #{@checker}"]}
       @submit.save      
       return
     end
@@ -77,17 +77,17 @@ class Tester
     std_out = stdout.readlines
     std_err = stderr.readlines
     #puts "!2   #{std_err} | #{std_out}"
-    @submit.status['status'] = case open4_status.exitstatus
+    @submit.status[:status] = case open4_status.exitstatus
       when 0; "OK"
       when 4, 2; "PE"
       when 5, 1; "WA"
       else "SE" 
     end
     begin
-      @submit.status['error'] = ['OUT:']
-      std_out.each { |x| @submit.status['error'] << x }
-      @submit.status['error'] << 'ERR:'
-      std_err.each { |x| @submit.status['error'] << x }
+      @submit.status[:error] = ['OUT:']
+      std_out.each { |x| @submit.status[:error] << x }
+      @submit.status[:error] << 'ERR:'
+      std_err.each { |x| @submit.status[:error] << x }
     end
 
     return (open4_status.exitstatus==0) ? true : false;
@@ -97,7 +97,7 @@ class Tester
   def run()
     #compile sourcecode
     compile_status = Compiler.compile(@source_code, "#{@work_dir}/solution")
-    if not compile_status['status'] == 'OK' then
+    if not compile_status[:status] == 'OK' then
       @submit.status = compile_status
       @submit.save
       return
@@ -126,8 +126,8 @@ class Tester
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
       if not verdict[0][8,9].strip == 'OK'
-        @submit.status['status'] = verdict[0][8,9].strip
-        @submit.status['error']  = verdict
+        @submit.status[:status] = verdict[0][8,9].strip
+        @submit.status[:error]  = verdict
         @submit.save
         return
       else
@@ -135,14 +135,14 @@ class Tester
         #CHECK(COMPARE answer and test's answer)
         f = self.check(t[0], t[1], (output_file.blank?) ? 'output.txt' : output_file)
         if not f
-          @submit.status['test'] = k
+          @submit.status[:test] = k
           @submit.save
           return
         end
       end
     end
 
-    @submit.status = {"status" => 'AC'}
+    @submit.status = {:status => 'AC'}
     @submit.save
     return
   end
@@ -167,7 +167,7 @@ class Tester
     @participant = @submit.participant
     @problem = @submit.problem
 
-    if @submit.status['status'] == "AC"
+    if @submit.status[:status] == "AC"
       if @participant.a[@problem.order] <= 0
         #p "AC"
         @participant.a[@problem.order] = @participant.a[@problem.order].abs+1
@@ -176,7 +176,7 @@ class Tester
         #p @participant.penalties
         @participant.save!
       end
-    elsif @submit.status['status'] == "WA"
+    elsif @submit.status[:status] == 'WA'
       if @participant.a[@problem.order] <= 0
         #p "WA"
         @participant.a[@problem.order] -= 1

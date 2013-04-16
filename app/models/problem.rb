@@ -92,83 +92,85 @@ class Problem
   end
 
   def put_problem(params)
-    status = {:notice => [], :alert => []}
+    @status = {:notice => [], :alert => []}
     #put statement
     if not params[:statement].nil?
       self.put_statement(params[:statement])
-      status[:notice] << 'Statement added'
+      @status[:notice] << 'Statement added'
     end
 
     #Contest: put 'archive of problems' IF @problem.order==0 && 'problems' uploaded
     if not params[:problems].nil?
       problems_status = self.contest.put_problems(params[:problems]) 
 #!      #
-      status[:alert] << 'Contest: arhcive of problems'
-      problems_status['error'].each {|x| status[:alert] << x }
+      @status[:alert] << 'Contest: arhcive of problems'
+      problems_status[:error].each {|x| @status[:alert] << x }
     end
 
     #put tests if uploaded
     if not params[:tests_archive].nil?
-      self.put_tests(params[:tests_archive])
+      tests_status = self.put_tests(params[:tests_archive])
 
-      if self.tests_uploaded?
-        status[:notice] << 'Tests uploaded'
+      if tests_status[:status] == 'OK'
+        @status[:notice] << 'Tests uploaded'
       else
-        status[:alert]  << 'Tests not uploaded'
+        @status[:alert]  << 'Tests not uploaded:'
+        tests_status[:error].each {|x| @status[:alert] << '---'+x }
       end
     end
 
     #put checker if uploaded
     if not params[:problem][:uploaded_checker].nil?
       checker_status = self.put_checker(params[:problem][:uploaded_checker])
-
-      if checker_status['status'] == 'OK'
-        status[:notice] << 'Checker compiled'
-        status[:notice] << ''
+      if checker_status[:status] == 'OK'
+        @status[:notice] << 'Checker compiled'
         self.checker_mode = 2
 
-      elsif checker_status['status'] == 'CE'
-        status[:alert] << 'Checker was not compiled:'
-        checker_status['error'].each {|x| status[:alert] << '--'+x }
-        status[:alert] << ''
+      elsif checker_status[:status] == 'CE'
+        @status[:alert] << 'Checker was not compiled(CE):'
+        checker_status[:error].each {|x| @status[:alert] << '---'+x }
 
-      elsif @checker_status['status'] == 'NW'
-        status[:alert] << 'Checker was not work:'
-        checker_status['error'].each {|x| status[:alert] << '--'+x }
-        status[:alert] << ''
+      elsif checker_status[:status] == 'SE'
+        @status[:alert] << 'Checker is incorect(SE):'
+        checker_status[:error].each {|x| @status[:alert] << '---'+x }
       end
       params[:problem].delete(:uploaded_checker)
     end
 
-    #set template's Checker if own checker not uploaded
+    #set template's Checker IF own checker not uploaded
     if self.checker_path.blank? && self.checker_mode==2
       self.checker_mode = (self.template.checker_mode==2) ? 1 : 0
     end
 
     #put solution and CHECK TESTS AND CHECKER
     if not params[:solution_file].nil?
-      self.put_solution(params[:solution_file])
-      status[:notice] << 'Solution added, problem checked'
+      solutions_status = self.put_solution(params[:solution_file])
+      if solutions_status[:status] == 'OK'
+        @status[:notice] << 'solution added, problem checked'
+      else
+        @status[:alert]  << "solution is incorect, got a #{solutions_status[:status]}"
+        solutions_status[:error].each {|x| @status[:alert] << '---'+x }
+      end
     elsif not self.checked.nil? #test again
       self.check_problem_again
-      status[:notice] << 'problem REchecked'
+      @status[:notice] << 'problem REchecked'
     end
 
     #update
     r = self.update_attributes(params[:problem])
     if r == true
-      status[:notice] << 'Problem updated'
+      @status[:notice] << 'Problem updated'
     else
-      status[:alert] << 'Problem not updated'
+      @status[:alert]  << 'Problem not updated'
     end
 
     #Contest: push new template for all problems
     if self.order==0
       self.contest.upd_problems_template
-      status[:notice] << 'Contest: '
+      @status[:notice] << 'Contest: template pushed'
     end
 
-    return status
+    return @status
   end
 
   def put_statement(ufile, template=false)
@@ -187,9 +189,15 @@ class Problem
 
   def put_tests(archive)
     return if self.order==0
-    extention = File.extname(archive.original_filename)
-    return if not (extention=='.zip' || extention=='.tgz')
+    status = {:status => '', :error => []}
     tests_dir = self.tests_dir
+    #check extantion
+    extention = File.extname(archive.original_filename)
+    if not (extention=='.zip' || extention=='.tgz')
+      status[:status] = 'SE'
+      status[:error] << "extention \'#{extention}\' not supported"
+      return status
+    end
     #clear & create new & write archive in tests_dir
     FileUtils.rm_rf tests_dir
     FileUtils.mkdir_p tests_dir
@@ -207,21 +215,34 @@ class Problem
       }
     elsif extention == '.tgz'
       pid, stdin, stdout, stderr = Open4::popen4 "tar zxvf \'#{tests_dir+'/'+archive.original_filename}\' -C \'#{tests_dir}\'"
-      ignored, status = Process::waitpid2 pid
+      ignored, open4_status = Process::waitpid2 pid
     end
     #remove(delete) archive
     File.delete File.join(tests_dir, archive.original_filename)
-            # #check count of tests
-            # tests_count = Dir.entries(problems_dir).count - 2
-            # if tests_count<2 || tests_count.modulo(2)==1
-            #   ret_status['error'] << "  Error: There is only #{tests_count}"
-            #   next
-            # end
-            # #tests checked, ok    
+    #check number of tests
+    tests_count = Dir.entries(tests_dir).count - 2
+    if tests_count<2 || tests_count.modulo(2)==1
+      status[:status] = 'SE'
+      status[:error] << "there is only #{tests_count} files"
+      FileUtils.rm_rf tests_dir
+      return status
+    end
+    #check pairs of tests
+    Dir.entries(tests_dir).sort[2..-1].each_slice(2) do |t|
+      if not File.basename(t[0], '.*') == File.basename(t[1], '.*')
+        status[:status] = 'SE'
+        status[:error] << "test | #{t[0]} : #{t[1]} | is incorrect"
+        FileUtils.rm_rf tests_dir        
+        return status
+      end
+    end
+    #tests checked, OK
+    status[:status] = 'OK'
+    return status
   end
 
   def put_checker(ufile)
-    #self.order==0 || self.global_path.nil? -> self problem is template for contests problems
+    status = {:status => '', :error => []}
     checker_dir = self.checker_dir
     #clear & create new & write ufile(.cpp) in checker_dir
     FileUtils.rm_rf checker_dir
@@ -230,9 +251,9 @@ class Problem
     File.open(Rails.root.join(checker_dir, ufile.original_filename), 'w') do |file|
       file.write(ufile.read.force_encoding('utf-8'))
     end
-    #compile checker |compile(source file path, destination folder, destination name, checker=false)
-    status = Compiler.compile(checker_dir+'/'+ufile.original_filename, checker_dir, 'checker', true)
-    if status['status'] == 'OK'
+    #compile checker |compile(source file path, destination file, checker=false)
+    compile_status = Compiler.compile(checker_dir+'/'+ufile.original_filename, checker_dir+'/checker', true)
+    if compile_status[:status] == 'OK'
       self.checker_path = checker_dir+'/'+ufile.original_filename
       self.checker_mode = 2
       #check on tests
@@ -248,14 +269,14 @@ class Problem
           std_out = stdout.gets
           std_err = stderr.gets
           if open4_status.exitstatus > 0 then #OK is 0
-            status['status'] = 'SE'
-            status['error'] = ["checker on test #{t[0]} | #{t[1]} get:"]
-            status['error'] << case open4_status.exitstatus
+            status[:status] = 'SE'
+            status[:error] << "checker on test | #{t[0]} : #{t[1]} | got:"
+            status[:error] << case open4_status.exitstatus
               when 4, 2; "PE"
               when 5, 1; "WA"
               else "SE"
             end
-            status['error'] << std_err
+            std_err.each {|x| status[:error] << x}
 
             #delete checker
             self.checker_path = ''
@@ -265,22 +286,24 @@ class Problem
           end
         end
       end
-      self.checker_path = checker_dir+'/'+ufile.original_filename
-      self.checker_mode = 2
+      status[:status] = 'OK'
     else
       FileUtils.rm_rf checker_dir
+      status = compile_status
     end
-
     return status
   end
 
 
-  def put_solution(ufile) 
+  def put_solution(ufile)
     return if self.order==0
-    #clear & create new & write ufile in solution_dir
+
+    require "#{Rails.root}/judge-files/check-system/run"
+    status = {:status => '', :error => []}
     solution_dir = self.solution_dir
-    FileUtils.rm_rf solution_dir
-    FileUtils.mkdir_p solution_dir    
+    #clear & create new & write ufile in solution_dir
+    FileUtils.remove_dir solution_dir, true
+    FileUtils.mkdir_p    solution_dir
     File.open(Rails.root.join(solution_dir, ufile.original_filename), 'w') do |file|
       file.write(ufile.read.force_encoding('utf-8'))
     end
@@ -290,8 +313,17 @@ class Problem
       :file_sourcecode_path => solution_dir+'/'+ufile.original_filename
     })
     submit.save
-    Resque.enqueue(Tester, submit.id, true) #Tester(submit.id, hidden=true)
     self.checked = submit.id
+    Tester.perform(submit.id, true) #Tester(submit.id, hidden=true)
+    #parse status
+    while true
+      submit.reload
+      break if not submit.status.empty?
+    end
+#    raise submit.inspect
+    status[:status] = (submit.status['status'] == 'AC') ? 'OK' : 'SE'
+    submit.status['error'].each {|x| status[:error] << x }
+    return status
   end
 
   def check_problem_again

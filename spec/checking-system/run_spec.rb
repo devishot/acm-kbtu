@@ -60,7 +60,7 @@ describe Tester do
       @problem.save
       Tester.perform(@submit.id, true)
       @submit.reload      
-      @submit.status["status"].should == 'SE'
+      @submit.status['status'].should == 'SE'
       @submit.status['error'][0].should match 'checker not found'
     end
     it 'should return AC' do
