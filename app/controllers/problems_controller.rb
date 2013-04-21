@@ -69,12 +69,12 @@ class ProblemsController < ApplicationController
   def update
     #@contest = Contest.find(params[:contest_id])
     #@problem = @contest.problems.find_by(order: params[:problem_order])
-
     status = @problem.put_problem(params)
 
     respond_to do |format|
       format.html { 
-          redirect_to contest_control_problems_path(@contest.path, tab:@problem.order) }
+          redirect_to contest_control_problems_path(@contest.path, tab:@problem.order) 
+      }
       flash[:notice] = status[:notice]
       flash[:alert]  = status[:alert]
     end    

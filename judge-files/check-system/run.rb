@@ -12,6 +12,7 @@ class Tester
     @init_status = false
 
     @submit = Submit.find(submit_id)
+    @submit.status = {:status => '', :error => [], :test => ''}
     @source_code = @submit.file_sourcecode_path
     @source_code_ext = File.extname(@source_code)    
     #check source_code
@@ -83,10 +84,13 @@ class Tester
       when 5, 1; "WA"
       else "SE" 
     end
-    begin
-      @submit.status[:error] = ['OUT:']
+
+    if not std_out.blank?
+      @submit.status[:error] << 'OutputStream:'
       std_out.each { |x| @submit.status[:error] << x }
-      @submit.status[:error] << 'ERR:'
+    end
+    if not std_err.blank?
+      @submit.status[:error] << 'ErrorStream:'
       std_err.each { |x| @submit.status[:error] << x }
     end
 
@@ -134,7 +138,7 @@ class Tester
         #puts "!1  #{t[0]} | #{t[1]} | #{verdict}"
         #CHECK(COMPARE answer and test's answer)
         f = self.check(t[0], t[1], (output_file.blank?) ? 'output.txt' : output_file)
-        if not f
+        if f == false
           @submit.status[:test] = k
           @submit.save
           return

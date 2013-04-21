@@ -6,13 +6,13 @@ class Contest
   include Mongoid::Timestamps
   include Mongoid::MultiParameterAttributes
 
-  field :title, type: String
-  field :description, type: String
-  field :path, type: String
-  field :time_start, type: DateTime
-  field :duration, type: Integer, :default => 300#minutes
-  field :type, type: Integer, :default => 0 #"ACM", "IOI"
-  field :problems_count, type: Integer, :default => 0 #problems[0] <- it is template for other problem
+  field :title,           type: String
+  field :description,     type: String
+  field :path,            type: String
+  field :time_start,      type: DateTime
+  field :duration,        type: Integer, :default => 300#minutes
+  field :type,            type: Integer, :default => 0  #"ACM", "IOI"
+  field :problems_count,  type: Integer, :default => 0  #problems[0] <- it is template for other problem
 
   belongs_to :user
   has_many :problems
@@ -132,15 +132,15 @@ class Contest
   end
 
   def put_problems(archive)
-    ret_status = {'status' => '', 'error' => []}
-
+    ret_status    = {:notice => [], :error => []}
     exts_archive  = ['.zip', '.tgz']
     exts_code     = ['.pas', '.dpr', '.cpp']
     exts_doc      = ['.pdf', '.doc', '.docx']
     archive_ext  = File.extname(archive.original_filename)
+
     if not exts_archive.include? archive_ext
-      ret_status['error'] << "archiv not supported(only #{exts_archive.join("','")})"
-      ret_status['status'] = nil
+      ret_status[:error] << 'archive not supported'
+      ret_status[:error] << "upload only #{exts_archive.join("','")} archives"
       return ret_status
     end
     #clear & write archive_file(.zip) in tests_dir
@@ -167,13 +167,15 @@ class Contest
     #remove(delete) archive file
     File.delete File.join(tmp_dir, archive.original_filename)
 
-    #put problems with order
+    #separate 'problems files' from other files
     files = Dir.entries(tmp_dir).sort[2..-1]
-      ##separate problems files
     problems_files = [{}]
     files.each do |t|
       next if not t.include? "_"
-      if (/[0-9]+_/ =~ t) == 0
+      if t[0..8].downcase == "template_"
+        m = [t[0..8]]
+        k = 0
+      elsif (/[0-9]+_/ =~ t) == 0
         m = /[0-9]+_/.match t
         k = m[0][0..-2].to_i
       elsif (/([a-z]|[A-Z])_+/ =~ t) == 0
@@ -189,50 +191,66 @@ class Contest
         #checker:   a_[c]..[.cpp]
         problems_files[k].merge!(:checker => t)
 
+      elsif exts_doc.include? ext
+        #statement: a_..[.pdf]
+        problems_files[k].merge!(:statement => t)
+
       elsif t[ m[0].size ].downcase=='s' && exts_code.include?(ext) then
+        next if k == 0 #skip for Template
         #solution:  a_[s]..[.cpp]
         problems_files[k].merge!(:solution => t)
 
       elsif exts_archive.include? ext
+        next if k == 0 #skip for Template
         #tests:     a_..[.zip]
         problems_files[k].merge!(:tests => t)
 
-      elsif exts_doc.include? ext
-        #statement: a_..[.pdf]
-        problems_files[k].merge!(:statement => t)
       end
     end
+    files = files - problems_files.map(&:values).flatten
+
+    #put problems with order
     #create problems
     problems_files.each_with_index do |h, i|
       next if i == 0
       self.upd_problems_count(i)
     end
-    files = files - problems_files.map(&:values).flatten
+    ret_status[:notice] << "#{self.problems_count} problems created"
 
-    #put template's & problem's settings
-    ret_status['error'] << 'Settings:'
+    #put problem's settings (and template's settings)
     files.each do |t|
       ext = File.extname(t)
+      
       if exts_doc.include? ext
-        ##put statement
-        template = self.problems.find_by(order: 0)
-        FileUtils.cp tmp_dir+'/'+t, template.problem_dir+'/'+t
-        template.statement['file_link'] = template.problem_dir+'/'+t
+        ##put Contest's statement
+        template  = self.problems.find_by(order: 0)
+        file = ActionDispatch::Http::UploadedFile.new({
+            :filename => t, 
+            :tempfile => File.new(tmp_dir+'/'+ t)})
+        template.put_statement(file)
         template.save
-        ret_status['error'] << '-Contest\'s Statement OK'        
+        ret_status[:notice] << 'Contest\'s Statement OK'
+        next
+      end
 
-      elsif ext == '.json'
-        ret_status['error'] << '-Settings.json:'
+      if ext == '.json'
         ##put problem's settings
-        ###parse json to hash  'set'
+        ###parse json to hash 'set'
         begin
           set = JSON.parse(IO.read(tmp_dir+'/'+t))
         rescue JSON::ParserError => e
-          ret_status['error'] << "---ERROR: #{e.message}"
+          ret_status[:error] << 'JSON Parsing error:'
+          ret_status[:error] << e.message
           set = nil
         end
-        break if set.nil?
-        ##work with settings
+        next if set.nil?
+        ###set the settings
+        ####Template must be first
+        template_sets = set.delete("template")
+        template_sets = set.delete("0") if template_sets.nil?
+        set = set.sort {|a1, a2| a1[0] <=> a2[0]}
+        set.unshift(["template", template_sets]) if not template_sets.nil?
+
         set.each do |problem_name, sets|
           #find problem
           if problem_name.downcase == 'template'
@@ -242,17 +260,24 @@ class Contest
           elsif (/([a-z]|[A-Z])/ =~ problem_name) == 0 && problem_name.size == 1 then #only letter
             k = 1 + problem_name.ord - ((problem_name.downcase == problem_name) ? 'a'.ord : 'A'.ord)
           else
-            ret_status['error'] <<"---ERROR: Problem \"#{problem_name}\" not identified"
-            break
+            ret_status[:error] << "JSON: Problem \"#{problem_name}\" not identified"
+            next
           end
-          problem = self.problems.find_by(order: k)
-          ret_status['error'] << ((problem.order == 0) ? "---Template:" : "---Problem #{problem.order}:")
-#ret_status['error'].last.insert(-1, ' not identified')
-          #set settings
+          problem = self.problems.where(order: k)
+          if problem.count == 0
+            ret_status[:error] << "JSON: Problem \'#{problem_name}\' as ##{k} not found"
+            next
+          end
+          problem = problem[0]
+
+          #setup settings
+          report_header = (problem.order == 0) ? "Template: " : "Problem #{problem.order}: "
+
           if not sets.class == Hash
-            ret_status['error'].last.insert(-1, 'ERROR: there is no hash with settings.')
-            break;
+            ret_status[:error] << report_header + 'there is no hash with settings'
+            next
           end
+          #setup time_limit and memory_limit
           sets.each do |key, value|
             key = key.downcase
             if key == 'tl' || key == 'ml'
@@ -263,17 +288,22 @@ class Contest
                 else
                   problem.memory_limit = value
                 end
-                ret_status['error'].last.insert(-1, "#{key.upcase}=#{value};")
+
+                ret_status[:notice] << report_header + "#{key.upcase}=#{value}"
+
               else
-                ret_status['error'].last.insert(-1, "ERROR: #{key.upcase}=#{value} is incorrect;")
+                ret_status[:error] << report_header + "#{key.upcase}=#{value} is incorrect"
+
               end
             elsif key == 'in' || key == 'out'
               #just skip
+
             else
-              ret_status['error'].last.insert(-1, "ERROR: \'#{key}\' not identified;")
+              ret_status[:error] << report_header + "\'#{key}\' not identified"
+
             end
           end
-          #set up input_file and output_file
+          #setup input_file and output_file
           begin
             input  = sets['in']
             output = sets['out']
@@ -283,63 +313,83 @@ class Contest
             if input.nil? || input.size == 0 then# '' -> nil (as standart input)              
               problem.input_file  = nil
               problem.output_file = nil if output.nil?
+
             elsif input.size > 0 && input_ext.size == 0 # 'sort' -> 'sort.in'
               problem.input_file  = input+'.in'
-              problem.output_file  = input+'.out' if output.nil?
+              problem.output_file = input+'.out' if output.nil?
+
             elsif input_ext == '.in' # 'sort.in' -> 'sort.in'
               problem.input_file  = input
-              problem.output_file  = input[0..-4]+'.out' if output.nil?
+              problem.output_file = input[0..-4]+'.out' if output.nil?
+
             else
               problem.input_file  = input
-              problem.output_file  = nil if output.nil?
-              ret_status['error'].last.insert(-1, 'output_file not declared')
+              problem.output_file = nil if output.nil?
+              ret_status[:error] << report_header + 'output_file not declared'
+
             end
+
             ##set output file
             if output.nil?
               #nothing
+
             elsif output.size == 0 # '' -> nil (as standart output)
               problem.output_file  = nil
+
             elsif output.size > 0 && output_ext.size == 0 # 'sort' -> 'sort.out'
               problem.output_file  = output+'.out'
+
             else # 'sort.out' -> 'sort.out'
               problem.output_file  = output
+
             end
-            ret_status['error'].last.insert(-1, "input_file=\'#{(problem.input_file.nil?) ? 'standart_input' : problem.input_file}\', output_file=\'#{(problem.output_file.nil?) ? 'standart_output' : problem.output_file}\';")
+            ret_status[:notice] << report_header + "input_file=\'#{(problem.input_file.nil?) ? 'standart_input' : problem.input_file}\', output_file=\'#{(problem.output_file.nil?) ? 'standart_output' : problem.output_file}\'"
           end
 
           problem.save
+          self.upd_problems_template if problem.order == 0
         end
       end
-      ret_status['error'] <<''
     end
 
 
     #put problem's files
     problems_files.each_with_index do |h, i|
-      next if i == 0
       problem = self.problems.find_by(order: i)
-      ret_status['error'] << "Problem #{i}:"
+      report_header = (problem.order==0) ? "Template: " : "Problem #{i}: "
       ##put tests
-      if h[:tests].nil?
-        ret_status['error'] << "-Tests Error: there is no 'tests'"
-        break
+      if problem.order == 0
+        #just skip, template doesn't have tests
+      elsif h[:tests].nil?
+        ret_status[:error] << report_header + "there is no Tests"
+        next
       else
         tests_archive = ActionDispatch::Http::UploadedFile.new({
           :filename => "#{h[:tests]}",
-          :tempfile => File.new("#{tmp_dir+'/'+h[:tests]}")
+          :tempfile => File.new("#{tmp_dir}/#{h[:tests]}")
         })
-        problem.put_tests( tests_archive )
-        ret_status['error'] << '-Tests OK'
+        tests_status = problem.put_tests( tests_archive )
+        if tests_status[:status] == 'OK'
+          ret_status[:notice] << report_header + 'Tests OK'
+        else
+          ret_status[:error] << report_header << '-' + tests_status[0]
+        end
       end
       ##put checker
       if not h[:checker].nil?
         checker = ActionDispatch::Http::UploadedFile.new({
           :filename => "#{h[:checker]}",
-          :tempfile => File.new("#{tmp_dir+'/'+h[:checker]}")
+          :tempfile => File.new("#{tmp_dir}/#{h[:checker]}")
         })
-        @checker_status = problem.put_checker(checker)
-        ret_status['error'] << '-Checker ' + @checker_status['status']
-        ret_status['error'] << @checker_status['error'] if not @checker_status['error'].nil?
+        checker_status = problem.put_checker(checker)
+        if checker_status[:status] == 'OK'
+          ret_status[:notice] << report_header + 'Checker OK'
+
+        else
+          ret_status[:error]  << report_header + 'Checker got ' + checker_status[:status]
+          checker_status[:error].each {|x| ret_status[:error] << '-' + x } if not checker_status[:error].nil?
+
+        end
       end
       ##put statement
       if not h[:statement].nil?
@@ -348,19 +398,26 @@ class Contest
           :tempfile => File.new("#{tmp_dir}/#{h[:statement]}")
         })
         problem.put_statement( statement )
-        ret_status['error'] << '-Statement OK'
+        ret_status[:notice] << report_header + 'Statement OK'
       end
       ##put solution
-      if not h[:solution].nil?
-        solution = ActionDispatch::Http::UploadedFile.new({
+      if problem.order == 0
+        #just skip, template doesn't have solution
+      elsif not h[:solution].nil?
+        sfile = ActionDispatch::Http::UploadedFile.new({
           :filename => "#{h[:solution]}",
           :tempfile => File.new("#{tmp_dir}/#{h[:solution]}")
         })
-        problem.check_problem( solution )
-        ret_status['error'] << '-Solution OK'
+        problem.save
+        solution_status = problem.put_solution( sfile )
+        if solution_status[:status] == 'OK'
+          ret_status[:notice] << report_header + 'Solution OK'
+        else
+          ret_status[:error]  << report_header + "Solution got #{solution_status[:status]} at #{solution_status[:test]}"
+          solution_status[:error].each {|x| ret_status[:error] << x }
+        end
       end
-      problem.save      
-      ret_status['error'] << ''
+      problem.save
     end
 
 

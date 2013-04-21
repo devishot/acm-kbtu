@@ -6,26 +6,26 @@ class Problem
   include Mongoid::Document
   include Mongoid::Timestamps
   include Compiler
-  field :order, type: Integer
-  field :global_path, type: String
-  field :time_limit, type: Integer, :default => 2 #seconds
-  field :memory_limit, type: Integer, :default => 256 #Megabytes
-  field :input_file, type: String # nil || 'input.txt' || 'a.in'
-  field :output_file, type: String
-  field :checker_mode, type: Integer, :default => 0 # 0-standart 1-template 2-own  
-  field :checker, type: String, :default => 'fcmp'
-  field :checker_path, type: String #path to checker sourcecode, executable it is 'checker' file
+  field :order,         type: Integer
+  field :global_path,   type: String
+  field :time_limit,    type: Integer,  :default => 2 #seconds
+  field :memory_limit,  type: Integer,  :default => 256 #Megabytes
+  field :input_file,    type: String    # nil || 'input.txt' || 'a.in'
+  field :output_file,   type: String
+  field :checker_mode,  type: Integer,  :default => 0 # 0-standart 1-template 2-own  
+  field :checker,       type: String,   :default => 'fcmp'
+  field :checker_path,  type: String    #path to checker sourcecode, executable file is 'checker'
   field :solution_file, type: String
-  field :checked, type: String
-  field :statement, type: Hash, :default =>
+  field :checked,       type: String
+  field :statement,     type: Hash,     :default =>
         {'title'=>'', 'text'=>'', 'inputs'=>[], 'outputs'=>[], 'file_link'=>''}
 
-  belongs_to :contest
-  has_many :submits
+  belongs_to  :contest
+  has_many    :submits
 
 
-  after_create :set_global_path, :create_folder
-  before_destroy :clear
+  after_create    :set_global_path, :create_folder
+  before_destroy  :clear
   
   def set_global_path
     return if self.order==0
@@ -64,7 +64,11 @@ class Problem
   end
 
   def solution_dir
-    self.problem_dir+"/solution"    
+    self.problem_dir+"/solution"
+  end
+
+  def statement_dir
+    self.problem_dir+"/statement"
   end
 
 
@@ -73,23 +77,20 @@ class Problem
   end
 
   def use_template
-    return if self.id == self.template.id
+    return if self.order == 0
     self.update_attributes(
         :time_limit   => self.template.time_limit,
         :memory_limit => self.template.memory_limit,
         :input_file => self.template.input_file,
         :output_file => self.template.output_file,
         :checker      => self.template.checker,
-#       :checker_path => self.template.checker_path,
-        :checker_mode => (self.template.checker_mode == 2) ? 1 : 0,        
-#       :statement    => {'file_link'=> self.template.statement['file_link']}
     )
-  end
-
-
-  def get_statement
-    statement = self.statement['file_link']
-    return if statement.blank?
+    if self.template.checker_mode == 2
+      self.update_attributes(
+        :checker_path => self.template.checker_path,
+        :checker_mode => 1,
+      )
+    end
   end
 
   def put_problem(params)
@@ -104,10 +105,10 @@ class Problem
     end
 
 
-    #put statement
+    #Contest: put statement
     if not params[:statement].nil?
       self.put_statement(params[:statement])
-      @status[:notice] << 'Statement added'
+      @status[:notice] << 'Contest: statement added'
     end
 
     #put tests if uploaded
@@ -180,20 +181,6 @@ class Problem
     end
 
     return @status
-  end
-
-  def put_statement(ufile, template=false)
-    dir = (template) ? self.contest.contest_dir : self.problem_dir
-    #delete previous file IF exist
-    if not self.statement['file_link'].blank?
-      File.delete File.join(dir, self.statement['file_link'])
-      statement['file_link'] = nil
-    end
-
-    File.open(Rails.root.join(dir, ufile.original_filename), 'w') do |file|
-      file.write(ufile.read.force_encoding('utf-8'))
-    end
-    self.statement[:file_link] = dir+'/'+ufile.original_filename
   end
 
   def put_tests(archive)
@@ -307,7 +294,7 @@ class Problem
     return if self.order==0
 
     require "#{Rails.root}/judge-files/check-system/run"
-    status = {:status => '', :error => []}
+    status = {:status => '', :error => [], :test => ''}
     solution_dir = self.solution_dir
 
     if not ufile == 'recheck'
@@ -337,10 +324,10 @@ class Problem
     else
       status[:status] = submit.status['status']
       submit.status['error'].each {|x| status[:error] << x }
+      status[:test] = submit.status['test']
     end
     return status
   end
-
 
   def get_checked_status
     return nil if self.checked.nil?
@@ -348,4 +335,19 @@ class Problem
     return submit.status
   end
 
+  def put_statement(ufile)
+    statement_dir = self.statement_dir
+    #delete previous statement file IF exist
+    if not self.statement['file_link'].blank?
+      File.delete File.join(statement_dir, self.statement['file_link'])
+      statement['file_link'] = nil
+    end
+    FileUtils.mkdir_p statement_dir
+    #raise Rails.root.join(statement_dir, ufile.original_filename).inspect
+    #write and save
+    File.open(Rails.root.join(statement_dir, ufile.original_filename), 'w') do |file|
+      file.write(ufile.read.force_encoding('utf-8'))
+    end
+    self.statement[:file_link] = statement_dir+'/'+ufile.original_filename
+  end
 end
