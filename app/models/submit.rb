@@ -3,8 +3,9 @@ class Submit
 	include Mongoid::Timestamps
   field :order,        type: Integer
 	field :sourcecode,   type: String
-	field :status,       type: Hash, default: {}
+	field :status,       type: Hash,      default: {}
   field :folder,       type: String
+  field :hidden,       type: Boolean,   default: false 
 
 	belongs_to :problem
 	belongs_to :participant
@@ -13,11 +14,16 @@ class Submit
   before_create :set_order, :set_folder
 
   def set_order
-    self.order = self.problem.submits.size + 1
+    self.order = (self.hidden==true) ? 0 : self.problem.submits.size + 1
   end
 
   def set_folder
-    self.folder = self.problem.contest.contest_dir+"/submits/participant #{self.participant.path}"
+    if self.hidden == true 
+      self.folder = "#{Rails.root}/judge-files/check-system/tmp/contest #{self.problem.contest.path}(hidden)"
+      FileUtils.mkdir_p self.folder
+    else
+      self.folder = self.problem.contest.contest_dir+"/submits/participant #{self.participant.path}"
+    end
   end
 
 end

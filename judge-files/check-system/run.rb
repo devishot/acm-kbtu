@@ -85,7 +85,6 @@ class Tester
       when 5, 1; "WA"
       else "SE" 
     end
-
     if not std_out.blank?
       @submit.status[:error] << 'OutputStream:'
       std_out.each { |x| @submit.status[:error] << x }
@@ -173,7 +172,7 @@ class Tester
     @participant = @submit.participant
     @problem = @submit.problem
 
-    if @submit.status[:status] == "AC"
+    if @submit.status['status'] == "AC"
       if @participant.a[@problem.order] <= 0
         #p "AC"
         @participant.a[@problem.order] = @participant.a[@problem.order].abs+1
@@ -182,7 +181,7 @@ class Tester
         #p @participant.penalties
         @participant.save!
       end
-    elsif @submit.status[:status] == 'WA'
+    elsif ['WA', 'TL', 'RT', 'PT', 'SE'].include? @submit.status['status'] 
       if @participant.a[@problem.order] <= 0
         #p "WA"
         @participant.a[@problem.order] -= 1

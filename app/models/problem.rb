@@ -99,11 +99,10 @@ class Problem
     #Contest: put 'archive of problems' IF @problem.order==0 && 'problems' uploaded
     if not params[:problems].nil?
       problems_status = self.contest.put_problems(params[:problems]) 
-#!      #
-      @status[:alert] << 'Contest: arhcive of problems'
+      @status[:notice] << 'Contest: archive of problems uploaded'
       problems_status[:error].each {|x| @status[:alert] << x }
+      return @status
     end
-
 
     #Contest: put statement
     if not params[:statement].nil?
@@ -307,11 +306,11 @@ class Problem
       self.solution_file = solution_dir+'/'+ufile.original_filename
     end
     #send to check
-    submit = Submit.new({
-      :problem => self,
-      :file_sourcecode_path => self.solution_file
+    submit = Submit.create({
+      :problem    => self,
+      :sourcecode => self.solution_file,
+      :hidden     => true
     })
-    submit.save
     self.checked = submit.id
     Tester.perform(submit.id, true) #Tester(submit.id, hidden=true)
     #parse status

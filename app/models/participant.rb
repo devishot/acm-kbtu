@@ -17,7 +17,7 @@ class Participant
   before_destroy :clear
   
   def set_path
-    participants = contest.participants
+    participants = self.contest.participants
     self.path = (participants.exists?) ? 
         ( participants.all.sort_by{|i| i.path.to_i}.last.path.to_i + 1 ).to_s : '1'
   end
