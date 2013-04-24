@@ -14,44 +14,42 @@ class SubmitsController < ApplicationController
   # POST /submits
   # POST /submits.json
   def create
-    @submit = Submit.new({ 
+    @submit = Submit.create({ 
       :problem => params[:problem],
       :participant => params[:participant]
     })
+
     contest = @submit.problem.contest
     #return if contest OVER
     redirect_to problem_path, error: 'Contest is over' if contest.over?
 
     if contest.problems_count > 26 
-      name_prefix = "#{@submit.problem.order}"+'#'
+      name_prefix = "#{@submit.problem.order}" + '#'
     else
       name_prefix = "#{(@submit.problem.order + 96).chr}"
     end
-    name_prefix << "#{@submit.participant.submits.where(problem: @submit.problem).count + 1}"
-    name = name_prefix+File.extname( params[:file].original_filename )
+    name_prefix << "#{@submit.order}"
+    name = name_prefix + File.extname( params[:file].original_filename )
 
-    directory = @submit.participant.participant_dir+"/#{@submit.problem.order}"
-    path = File.join(directory, name)
+    dir = @submit.folder
+    path = File.join(dir, name)
     tmpfile = params[:file].tempfile
-    @submit.file_sourcecode_path = path
-    
+
+    #save sourcecode
+    FileUtils.mkdir_p dir
+    File.open(path, "wb") { |f| f.write(tmpfile.read) }
+    @submit.sourcecode = path
+    @submit.problem.submits << @submit
+    @submit.participant.submits << @submit
+    @submit.save!
+
+    #raise @submit.inspect    
+    #send for run
+    Resque.enqueue(Tester, @submit.id)
 
     respond_to do |format|
       problem_path = contest_path(contest.path)+"/#{@submit.problem.order}"
-      if @submit.save
-        #save sourcecode
-        FileUtils.mkdir_p directory
-        File.open(path, "wb") { |f| f.write(tmpfile.read) }
-
-        (@submit.problem).submits << @submit
-        (@submit.participant).submits << @submit
-
-        Resque.enqueue(Tester, @submit.id)
-
-        format.html { redirect_to problem_path, notice: 'Successfully submited.' }
-      else
-        format.html { redirect_to problem_path, alarm: 'ERROR! Check and try again.' }
-      end
+      format.html { redirect_to problem_path, notice: 'Successfully submited.' }      
     end
   end
 

@@ -13,7 +13,7 @@ class Tester
 
     @submit = Submit.find(submit_id)
     @submit.status = {:status => '', :error => [], :test => ''}
-    @source_code = @submit.file_sourcecode_path
+    @source_code = @submit.sourcecode
     @source_code_ext = File.extname(@source_code)    
     #check source_code
     if not File.file? @source_code
@@ -35,13 +35,14 @@ class Tester
     @contest = @problem.contest
     if hidden==false
       @participant = @submit.participant
-      @work_dir = "#{@@system_path}/../contests/#{@contest.path}/submits/participant#{@participant.path}/submit#{@submit.order}"
+      @work_dir = "#{@@system_path}/tmp/contest #{@contest.path}/participant #{@participant.path}/submit #{@submit.order}"
     else
-      @work_dir = "#{@@system_path}/tmp"
+      @work_dir = "#{@@system_path}/tmp/contest #{@contest.path}(hidden)"
       FileUtils.rm_r @work_dir
     end
     FileUtils.mkdir_p @work_dir
     
+    #get checker
     if @problem.checker_mode==0
       @checker = "#{@@system_path}/checkers/#{@problem.checker}"
     elsif @problem.checker_mode==1
@@ -119,7 +120,7 @@ class Tester
       FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}/#{(input_file.blank?) ? 'input.txt' : input_file}"
       #RUN solution
       command = "\'#{@@system_path}/ejudge-execute\' " +
-                "--workdir=#{@work_dir} " + 
+                "--workdir=\'#{@work_dir}\' " + 
                 "--time-limit=#{@problem.time_limit} " +
                 "--max-vm-size=#{@problem.memory_limit}M " +
                 "--memory-limit " +
@@ -133,6 +134,7 @@ class Tester
         @submit.status[:status] = verdict[0][8,9].strip
         @submit.status[:error]  = verdict
         @submit.save
+        
         return
       else
         #puts "!1  #{t[0]} | #{t[1]} | #{verdict}"

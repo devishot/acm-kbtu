@@ -11,7 +11,6 @@
   </thead>
 
   <tbody>
-    <% order = @submissions.count+1 %>
     <% @submissions.sort_by { |obj| obj.updated_at }.reverse_each do |i| %>
       <tr <%= case i.status['status']
               when "";"class=warning"
@@ -21,7 +20,7 @@
             end
           %>
       >
-        <td style="width: 20px;">  <%= order -= 1 %>  </td>
+        <td style="width: 20px;">  <%= i.order %>  </td>
         <td style="width: 80px;">  <%= i.created_at.to_s(:time_s) %>  </td>
         <td style="width: 80px;">
           <%= (i.updated_at.to_s(:time_s) == i.created_at.to_s(:time_s)) ? "pending" : i.updated_at.to_s(:time_s) %>
