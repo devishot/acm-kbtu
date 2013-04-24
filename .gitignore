@@ -12,7 +12,7 @@ capybara-*.html
 /coverage/
 /spec/tmp/*
 /judge-files/contests/*
-/judge-files/check-system/work/*
+/judge-files/check-system/tmp/*
 **.orig
 rerun.txt
 pickle-email-*.html
