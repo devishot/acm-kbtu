@@ -18,12 +18,13 @@ describe Tester do
     #create submit
     @submit = Submit.new({
               :problem => @problem, 
-              :file_sourcecode_path => "#{tmp_dir}/ok2.cpp"})
+              :sourcecode => "#{tmp_dir}/ok2.cpp",
+              :hidden => true})
     @submit.save
   end
 
   it 'should return SE, if source code not found' do
-    @submit.file_sourcecode_path = "#{tmp_dir}/not.found"
+    @submit.sourcecode = "#{tmp_dir}/not.found"
     @submit.save
     Tester.perform(@submit.id, true)
     @submit.reload
@@ -40,7 +41,7 @@ describe Tester do
   end
 
   it 'should return CE' do
-    @submit.file_sourcecode_path = "#{tmp_dir}/ce.cpp"
+    @submit.sourcecode = "#{tmp_dir}/ce.cpp"
     @submit.save
     Tester.perform(@submit.id, true)
     @submit.reload
@@ -76,7 +77,7 @@ describe Tester do
       Compiler.compile("#{tmp_dir}/checker.dpr", "#{@problem.checker_dir}/checker", true)
       @problem.save
       #put source code
-      @submit.file_sourcecode_path = "#{tmp_dir}/ok.cpp"
+      @submit.sourcecode = "#{tmp_dir}/ok.cpp"
       @submit.save
       Tester.perform(@submit.id, true)
       @submit.reload

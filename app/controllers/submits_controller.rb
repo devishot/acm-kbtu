@@ -85,7 +85,7 @@ class SubmitsController < ApplicationController
     #@contest = Contest.find_by(path: params[:contest])
     #@submit = Submit.find(params[:submit])
 
-    link = @submit.file_sourcecode_path
+    link = @submit.sourcecode
     send_file(link)
   end
 

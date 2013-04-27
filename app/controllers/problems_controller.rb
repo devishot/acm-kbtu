@@ -28,8 +28,7 @@ class ProblemsController < ApplicationController
       return
     end
 
-    @submit = Submit.new()
-    @submit.problem = @problem
+    @submit = Submit.new({:problem => @problem, :hide => true})
 
     if current_user == @contest.user || current_user.admin?
       #nothing
