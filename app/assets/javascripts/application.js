@@ -12,5 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require_tree .
 //= require tinymce-jquery
+//= require bootstrap
+//= require jquery.ui.js
+//= require_self

@@ -86,14 +86,12 @@
         </td>
 
         <td>
-          <p>System checker( 
+          <p>System checker (
             <%= link_to 'info'.html_safe, 'http://db.tt/ipoUBMPg', target: "_blank" %> |
-            <%= link_to 'files'.html_safe, 'http://db.tt/Gi5Grioq', target: "_blank" %>)
+            <%= link_to 'files '.html_safe, 'http://db.tt/Gi5Grioq', target: "_blank" %>)
           </p>
           <% checkers = Dir.entries("#{Rails.root}/judge-files/check-system/checkers").sort[2..-1] %>
           <%= f.select :checker, checkers %>
-          
-          
         </td>
 
         <% if not @problem.order==0 then %>

@@ -10,7 +10,8 @@ class PagesController < ApplicationController
   # GET /pages.json
   def main
     @nodes = Node.all.sort { |a, b| a.order <=> b.order }
-    @node = Node.find_by(order: 1)
+    @node = Node.where(order: 1)[0]
+    @node = Node.create({:name => 'Main', :path => 'index', :order => 1}) if Node.where(order: 1).count == 0
     #@home_pages = Node.find_by(name: "Home").pages
   end
 

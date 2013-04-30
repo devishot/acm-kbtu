@@ -73,6 +73,14 @@ class ContestsController < ApplicationController
     @last_success = Submit.where(status: "AC").last
     @last_success = nil if @last_success.to_a == nil
 
+    @standings = @contest.participants.sort do |a, b|
+      if a.point == b.point then
+        a.penalty <=> b.penalty
+      else
+        b.point <=> a.point
+      end
+    end
+
     @navpill = 3
   end
 

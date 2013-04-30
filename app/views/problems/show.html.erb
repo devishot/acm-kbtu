@@ -44,25 +44,33 @@
         <%= @submit.problem.statement['title'] %>
       </h3>
 
-      <p>
-        <b>Time limit:</b>
-        <%= @submit.problem.time_limit %> s
-      </p>
+      <% if not @problem.statement["file_link"].blank? %>
+        <%= link_to '<i class="icon-download-alt"></i> Statement'.html_safe, 
+              contest_problem_path(@contest.path, @problem.order)+'/statement', 
+              :class => 'btn' %>
+        <br />
+        <br />        
+      <% end %>
 
-      <p>
-        <b>Memory limit:</b>
-        <%= @submit.problem.memory_limit %> Mb
-      </p>
+      <table class="table table-bordered"  style="width: 440px;">
+        <tr>
+          <td style="width: 100px;">Time limit:</td>
+          <td style="width: 120px; text-align:center"><%= @submit.problem.time_limit %> s </td>
+
+          <td style="width: 100px;">Input file:</td>
+          <td style="width: 120px; text-align:center"><%= (@submit.problem.input_file.blank?) ? 'standart input' : @submit.problem.input_file %> </td>
+        </tr>
+
+        <tr>
+          <td>Memory limit:</td>
+          <td style="text-align:center"><%= @submit.problem.memory_limit %> Mb </td>
+
+          <td>Output file:</td>
+          <td style="text-align:center"><%= (@submit.problem.output_file.blank?) ? 'standart output' : @submit.problem.output_file %> </td>
+        </tr>
+      </table>
+
     </center>
-
-
-    <% if not @problem.statement["file_link"].blank? %>
-      <%= link_to '<i class="icon-download-alt"></i> Statement'.html_safe, 
-            contest_problem_path(@contest.path, @problem.order)+'/statement', 
-            :class => 'btn' %>
-      <br />
-      <br />
-    <% end %>
 
     <% if not @problem.statement["text"].blank? %>
       <%= render 'statement' %>

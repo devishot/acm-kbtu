@@ -74,8 +74,8 @@ class ProblemsController < ApplicationController
       format.html { 
           redirect_to contest_control_problems_path(@contest.path, tab:@problem.order) 
       }
-      flash[:notice] = status[:notice]
       flash[:alert]  = status[:alert]
+      flash[:notice] = status[:notice]      
     end    
   end
 

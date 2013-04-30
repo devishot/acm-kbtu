@@ -8,7 +8,7 @@
   </p>
 <% end %>
 
-<table class="table table-striped table-bordered table-hover table-condensed" >
+<table class="table table-bordered table-hover table-condensed" >
   <thead>
     <tr>
       <th>Name</th>
@@ -21,8 +21,19 @@
   </thead>
 
   <tbody>
-    <% @contest.participants.each do |participant| participant.summarize %>
-      <tr>
+
+    <% paint = true %>
+    <% @standings.each_with_index do |participant, index| participant.summarize %>
+      <tr 
+        <% if participant.user == current_user then %>
+          class='info'
+        <% else %>
+          <% if index > 0 && participant.point != @standings[index-1].point then paint = paint ^ true end %>
+          <% if paint == true %>
+            style="background-color: #f9f9f9;"
+          <% end %>
+        <%end%> 
+      >
         <td> <%= participant.user.name %> </td>
         <% for i in 1..@contest.problems_count %>
         <td><%= 

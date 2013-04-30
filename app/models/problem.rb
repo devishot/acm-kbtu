@@ -90,6 +90,10 @@ class Problem
         :checker_path => self.template.checker_path,
         :checker_mode => 1,
       )
+    else
+      self.update_attributes(
+        :checker_mode => 0,
+      )      
     end
   end
 
@@ -100,6 +104,7 @@ class Problem
     if not params[:problems].nil?
       problems_status = self.contest.put_problems(params[:problems]) 
       @status[:notice] << 'Contest: archive of problems uploaded'
+      problems_status[:notice].each {|x| @status[:notice] << x }
       problems_status[:error].each {|x| @status[:alert] << x }
       return @status
     end
@@ -125,9 +130,9 @@ class Problem
     #put checker if uploaded
     if not params[:problem][:uploaded_checker].nil?
       checker_status = self.put_checker(params[:problem][:uploaded_checker])
+
       if checker_status[:status] == 'OK'
         @status[:notice] << 'Checker compiled'
-        self.checker_mode = 2
 
       elsif checker_status[:status] == 'CE'
         @status[:alert] << 'Checker was not compiled(CE):'
@@ -138,6 +143,7 @@ class Problem
         checker_status[:error].each {|x| @status[:alert] << '---'+x }
       end
       params[:problem].delete(:uploaded_checker)
+      params[:problem].delete(:checker_mode)
     end
 
     #set template's Checker IF own checker not uploaded
@@ -172,6 +178,7 @@ class Problem
     else
       @status[:alert]  << 'Problem not updated'
     end
+
 
     #Contest: push new template for all problems
     if self.order==0
@@ -242,6 +249,7 @@ class Problem
     #clear & create new & write ufile(.cpp) in checker_dir
     FileUtils.rm_rf checker_dir
     self.checker_path = ''
+    self.checker_mode = 0
     FileUtils.mkdir_p checker_dir
     File.open(Rails.root.join(checker_dir, ufile.original_filename), 'w') do |file|
       file.write(ufile.read.force_encoding('utf-8'))
@@ -250,7 +258,6 @@ class Problem
     compile_status = Compiler.compile(checker_dir+'/'+ufile.original_filename, checker_dir+'/checker', true)
     if compile_status[:status] == 'OK'
       self.checker_path = checker_dir+'/'+ufile.original_filename
-      self.checker_mode = 2
       #check on tests
       if self.tests_uploaded? then
         Dir.entries(self.tests_dir).sort[2..-1].each_slice(2) do |t|
@@ -272,21 +279,26 @@ class Problem
               else "SE"
             end
             std_err.each {|x| status[:error] << x}
-
-            #delete checker
-            self.checker_path = ''
-            self.checker_mode = 0
-            FileUtils.rm_rf checker_dir
-            return status;
+            break;
           end
         end
       end
-      status[:status] = 'OK'
+      status[:status] = 'OK' if status[:status].empty?        
     else
-      FileUtils.rm_rf checker_dir
       status = compile_status
     end
-    return status
+
+    if status[:status] == 'OK'
+      self.checker_mode = 2
+    else
+      #delete checker
+      self.checker_path = ''
+      self.checker_mode = 0
+      FileUtils.rm_rf checker_dir      
+    end
+    self.save
+
+    return status;
   end
 
   def put_solution(ufile='recheck')

@@ -77,7 +77,7 @@ class Contest
 
   def get_left(without = false)
     return if not self.started?
-    return 0 if self.over?
+    return 0 if ( self.over? && without==false )
     now = DateTime.now.to_time
     h2 = now.hour
     m2 = now.min
@@ -140,7 +140,7 @@ class Contest
 
     if not exts_archive.include? archive_ext
       ret_status[:error] << 'archive not supported'
-      ret_status[:error] << "upload only #{exts_archive.join("','")} archives"
+      ret_status[:error] << "upload only #{exts_archive.join(', ')} archives"
       return ret_status
     end
     #clear & write archive_file(.zip) in tests_dir

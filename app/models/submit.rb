@@ -14,7 +14,11 @@ class Submit
   before_create :set_order, :set_folder
 
   def set_order
-    self.order = (self.hidden==true) ? 0 : self.problem.submits.size + 1
+    if self.hidden==true
+      self.order = 0
+    else
+      self.order = self.problem.submits.where(participant: self.participant).size + 1
+    end
   end
 
   def set_folder
@@ -27,3 +31,4 @@ class Submit
   end
 
 end
+
