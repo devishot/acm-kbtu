@@ -118,7 +118,7 @@ class Tester
       #copy current test's input to input for solution
       FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}/#{(input_file.blank?) ? 'input.txt' : input_file}"
       #RUN solution
-      command = @@system_path+'/ejudge-execute ' +
+      command = "\'#{@@system_path+'/ejudge-execute '}\'" +
                 "--workdir=\'#{@work_dir}\' " + 
                 "--time-limit=#{@problem.time_limit} " +
                 "--max-vm-size=#{@problem.memory_limit}M " +
@@ -126,11 +126,11 @@ class Tester
                 "#{(input_file.blank?)  ? "--stdin=\'#{@work_dir}/input.txt\'"   : nil} " +
                 "#{(output_file.blank?) ? "--stdout=\'#{@work_dir}/output.txt\'" : nil} " +
                 "\'#{@work_dir}/solution\'"
-      pid, stdin, stdout, stderr = Open4::popen4 command      
+      pid, stdin, stdout, stderr = Open4::popen4 command
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
 
-      raise "#{File.exist?(@@system_path+'/ejudge-execute ')} #{File.exist?(@@system_path+'/ejudge-execute')} #{File.exist?(@@system_path+'/ejudge-execute')}"
+      #raise "#{File.exist?(@@system_path+'/ejudge-execute ')} #{File.exist?(@@system_path+'/ejudge-execute')} #{File.exist?(@@system_path+'/ejudge-execute')}"
 
       if not verdict[0][8,9].strip == 'OK'
         @submit.status[:status] = verdict[0][8,9].strip
