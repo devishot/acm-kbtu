@@ -118,8 +118,8 @@ class Tester
       #copy current test's input to input for solution
       FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}/#{(input_file.blank?) ? 'input.txt' : input_file}"
       #RUN solution
-      command = "\'#{@@system_path+'/ejudge-execute '}\'" +
-                "--workdir=\'#{@work_dir}\' " + 
+      command = "\'#{@@system_path}/ejudge-execute \'" +
+                "\'--workdir=#{@work_dir} \'" +
                 "--time-limit=#{@problem.time_limit} " +
                 "--max-vm-size=#{@problem.memory_limit}M " +
                 "--memory-limit " +
