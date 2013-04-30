@@ -130,7 +130,7 @@ class Tester
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
 
-      #raise "#{@@system_path} #{"\'#{@@system_path}/ejudge-execute\' "} #{File.exist?("#{@@system_path}/ejudge-execute\' ")} #{File.exist?(@@system_path+'/ejudge-execute')}"
+      raise "#{File.exist?(@@system_path+'/ejudge-execute ')} #{File.exist?(@@system_path+'/ejudge-execute')} #{File.exist?(@@system_path+'/ejudge-execute')}"
 
       if not verdict[0][8,9].strip == 'OK'
         @submit.status[:status] = verdict[0][8,9].strip
