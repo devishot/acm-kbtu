@@ -125,7 +125,10 @@ class Tester
                 "\'--memory-limit \'" +
                 "\'#{(input_file.blank?)  ? "\'--stdin=#{@work_dir}/input.txt\'"   : nil} \'" +
                 "\'#{(output_file.blank?) ? "\'--stdout=#{@work_dir}/output.txt\'" : nil} \'" +
-                ""#\'#{"\'#{@work_dir}/solution\'"}\'"
+                "\'#{@work_dir}/solution\'"
+
+      raise command.inspect                
+
       pid, stdin, stdout, stderr = Open4::popen4 command
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
