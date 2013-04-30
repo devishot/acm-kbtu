@@ -126,9 +126,12 @@ class Tester
                 "#{(input_file.blank?)  ? "--stdin=\'#{@work_dir}/input.txt\'"   : nil} " +
                 "#{(output_file.blank?) ? "--stdout=\'#{@work_dir}/output.txt\'" : nil} " +
                 "\'#{@work_dir}/solution\'"
-      pid, stdin, stdout, stderr = Open4::popen4 command
+      pid, stdin, stdout, stderr = Open4::popen4 command      
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
+
+      raise "#{@@system_path} #{File.exist?("\'#{@@system_path}/ejudge-execute\' ")}"
+
       if not verdict[0][8,9].strip == 'OK'
         @submit.status[:status] = verdict[0][8,9].strip
         @submit.status[:error]  = verdict

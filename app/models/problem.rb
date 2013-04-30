@@ -158,7 +158,7 @@ class Problem
         @status[:notice] << 'solution added, problem checked'
       else
         @status[:alert]  << "solution is incorrect, got a #{solutions_status[:status]}"
-        solutions_status[:error].each {|x| @status[:alert] << '---'+x }
+        solutions_status[:error].each {|x| @status[:alert] << '|   '+x }
       end
     #check again IF was uploaded
     elsif not self.checked.nil?
@@ -167,7 +167,7 @@ class Problem
         @status[:notice] << 'problem REchecked'
       else
         @status[:alert]  << "solution is incorrect, got a #{solutions_status[:status]}"
-        solutions_status[:error].each {|x| @status[:alert] << '---'+x }
+        solutions_status[:error].each {|x| @status[:alert] << '|   '+x }
       end
     end
 
