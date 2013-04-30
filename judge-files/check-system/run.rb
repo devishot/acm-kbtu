@@ -122,7 +122,7 @@ class Tester
                 "\'--workdir=#{@work_dir} \'" +
                 "\'--time-limit=#{@problem.time_limit} \'" +
                 "\'--max-vm-size=#{@problem.memory_limit}M \'" +
-                "--memory-limit " +
+                "\'--memory-limit \'" +
                 "\'#{(input_file.blank?)  ? "--stdin=\'#{@work_dir}/input.txt\'"   : nil} \'" +
                 "\'#{(output_file.blank?) ? "--stdout=\'#{@work_dir}/output.txt\'" : nil} \'" +
                 "\'#{@work_dir}/solution\'"
