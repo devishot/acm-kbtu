@@ -136,7 +136,9 @@ class Tester
         @submit.status[:status] = verdict[0][8,9].strip
         @submit.status[:error]  = verdict
         @submit.save
-        
+
+        @submit.status[:error] << command
+
         return
       else
         #puts "!1  #{t[0]} | #{t[1]} | #{verdict}"
