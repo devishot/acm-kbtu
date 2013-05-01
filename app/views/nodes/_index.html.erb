@@ -7,35 +7,8 @@
 <div class="well">
   
   <% if can? :manage, Node %>
-    <script>
-      var fixHelper = function(e, ui) {
-        ui.children().each(function() {
-          $(this).width($(this).width());
-        });
-        return ui;
-      };
-
-      $(function() {
-          $( "#sortable").sortable({
-            //containment: "parent",
-            helper: fixHelper
-          }).disableSelection();
-          $( "#sortable").disableSelection();
-          $( "#sortable_button").click(function(){
-            var order = $("#sortable").sortable("toArray");
-            $.post("<%= upd_nodes_order_path %>", {
-                "order": order
-              }, 
-              function(response) {
-                //location.reload();
-                alert('Order was saved')
-              }
-            )
-          });
-      });
-    </script>
-
     <button id="sortable_button">Save</button>
+    
   <% end %>
 
   <table class="table">
@@ -56,7 +29,7 @@
           <td> <%= node.pages.count %> </td>
           <td>
               <%= link_to "", edit_node_path(node), :class=>"icon-pencil" %>
-              <%= link_to "", node, method: :delete, data: { confirm: 'Are you sure?' }, :class => "icon-trash" %>
+              <%= link_to "", node, method: :delete, confirm: 'Are you sure?', :class => "icon-trash" %>
           </td>
         </tr>
       <% end %>
