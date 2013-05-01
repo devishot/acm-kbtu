@@ -118,8 +118,8 @@ class Tester
       #copy current test's input to input for solution
       FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}/#{(input_file.blank?) ? 'input.txt' : input_file}"
       #RUN solution
-      ej_ex_sufix = (File.path(Rails.root).split('/')[2]=='user') ? 'forserver' : 'forlocal'
-      command = "\'#{@@system_path}/ejudge-execute-#{ej_ex_sufix}\' " +
+      ej_ex_version = (File.path(Rails.root).split('/')[2]=='user') ? 'forserver' : 'forlocal'
+      command = "\'#{@@system_path}/ejudge-execute-#{ej_ex_version}\' " +
                 "\'--workdir=#{@work_dir}\' " +
                 "\'--time-limit=#{@problem.time_limit}\' " +
                 "\'--max-vm-size=#{@problem.memory_limit}M\' " +
@@ -130,12 +130,10 @@ class Tester
       pid, stdin, stdout, stderr = Open4::popen4 command
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
+      verdict_status = (ej_ex_version=='forserver') ? verdict[1][8,9].strip : verdict[0][8,9].strip
 
-      puts command
-      #raise "#{File.exist?(@@system_path+'/ejudge-execute ')} #{File.exist?(@@system_path+'/ejudge-execute')} #{File.exist?(@@system_path+'/ejudge-execute')}"
-
-      if not verdict[0][8,9].strip == 'OK'
-        @submit.status[:status] = verdict[0][8,9].strip
+      if not verdict_status == 'OK'
+        @submit.status[:status] = verdict_status
         @submit.status[:error]  = verdict
         @submit.save
 
