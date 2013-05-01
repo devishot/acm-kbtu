@@ -10,10 +10,9 @@
   <div class="field">
     <%= text_area_tag :text, 
       (@problem.statement['text'].nil?) ? nil : @problem.statement['text'].html_safe, 
-      :class => 'field span9 tinymce', 
-      :placeholder=>"Statement text here..",
-      :style => "width:100%;" %>
-    <%= tinymce %>
+      :class => 'field tinymce', 
+      :placeholder=>"Statement text here.."
+      %>
   </div>
   <br />
 

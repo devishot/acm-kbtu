@@ -26,14 +26,13 @@
     </div>
   </div>
 
-
   <div class="control-group">
     <%= f.label :text_body, :class=>"control-label" %>
     <div class="controls">
-      <%= f.text_area :text_body, :rows => 15, :class=>"span9 tinymce" %>
-      <%= tinymce %>
+      <%= f.text_area :text_body, :rows => 9, :class=>"tinymce" %>
     </div>
   </div>
+
 
   <%= f.hidden_field :user, :value => current_user.id %>
   <%= f.hidden_field :old_node %>
