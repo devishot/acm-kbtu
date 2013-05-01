@@ -35,8 +35,11 @@ class ContestsController < ApplicationController
     #@contest = Contest.find_by(path: params[:id])
     @navpill = 5
 
-    participant = current_user.participants.where(contest: @contest).first
-    return if participant.nil?
+    if not current_user.participate? @contest
+      redirect_to contest_path(@contest.path), alert: 'Please, register to participate.'
+      return
+    end
+    participant = current_user.participants.where(contest: @contest).first    
 
     @summary = [[]]
     @contest.problems_count.times do |i|
