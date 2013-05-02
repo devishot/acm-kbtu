@@ -1,11 +1,21 @@
-<ul class="nav nav-tabs" id="body-bgcolor">
+<div id="body-bgcolor">
 
-  <% @nodes.each do |node| %>
+  <div style="background-color: whitesmoke; height: 105px;">
+    <img src="/KBTU-logo2.jpg" class="img-polaroid" style="height: 65px; width: 170px; margin: 15px; float: left;">
+    <div id="site-name" style="top: 40px; left: 10px; position: relative; font-family: Arial, Helvetica, sans-serif; color: #4c4742;">
+      <p style="font-size: 3.692em;">acm.kbtu.kz</p>
+      <small>Сектор подготовки к олимпиадам по программированию</small>
+    </div>
+  </div>
 
-    <li <%if !@node.nil? && @node.path == node.path%> class="active" <%end%> >
-      <%= link_to "#{node.name}", '/nodes/'+node.path %>
-    </li>
-  <% end %>
+  <ul class="nav nav-tabs" style="margin-top: 25px;">
+    <% @nodes.each do |node| %>
+      <li <%if !@node.nil? && @node.path == node.path%> class="active" <%end%> >
+        <%= link_to "#{node.name}", '/nodes/'+node.path %>
+      </li>
+    <% end %>
+
     <li><%= link_to "Contests", '/contests' %></li>
+  </ul>
 
-</ul>
+</div>

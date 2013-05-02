@@ -23,7 +23,7 @@
 
     <tbody id="sortable">
       <% @nodes.each do |node| %>
-        <tr id="<%= node.path %>">
+        <tr class="child" id="<%= node.path %>">
           <td> <%= node.name %> </td>
           <td> <%= node.path %> </td>
           <td> <%= node.pages.count %> </td>

@@ -17,4 +17,7 @@
 //= require tinymce/tinymce.min.js
 //= require tinymce.js
 //= require nodes.js
+//= require pages.js
+//= require contests.js
+
 //= require_self

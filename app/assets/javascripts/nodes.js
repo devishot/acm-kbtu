@@ -7,7 +7,8 @@ var fixHelper = function(e, ui) {
 
 $(function() {
     $( "#sortable").sortable({
-      //containment: "parent",
+      items: '> .child',
+      axis: 'y',      
       helper: fixHelper
     }).disableSelection();
     $( "#sortable").disableSelection();
@@ -18,7 +19,7 @@ $(function() {
         }, 
         function(response) {
           //location.reload();
-          alert('Order was saved')
+          alert('Order saved')
         }
       )
     });

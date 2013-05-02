@@ -13,6 +13,7 @@ class Contest
   field :duration,        type: Integer, :default => 300#minutes
   field :type,            type: Integer, :default => 0  #"ACM", "IOI"
   field :problems_count,  type: Integer, :default => 0  #problems[0] <- it is template for other problem
+  field :confirm_participants,  type: Boolean, :default => false
 
   belongs_to :user
   has_many :problems
@@ -49,7 +50,7 @@ class Contest
   end
 
   def started?
-    (self.time_start.nil? || Time.now < self.time_start) ? false : true
+    (!self.time_start.nil? && Time.now > self.time_start) ? true : false
   end
 
   def over?
@@ -61,35 +62,28 @@ class Contest
     self.duration = Contest.new(params).duration
   end
 
+  def stop
+    self.duration = ((DateTime.now - self.time_start)*24*60).to_i
+  end
+
   def restart(params)
+    #delete
     self.participants.destroy_all
-    #delete standings
+    #restart
     self.start(params, true)
   end
 
-  def stop
-    self.duration = 0
-  end
-
   def continue(params)
-    self.duration = self.get_left(true) + Contest.new(params).duration
+    time_now      = DateTime.now
+    new_duration  = Contest.new(params).duration.minutes
+    
+    self.time_start = self.time_start - self.time_start.sec.seconds + time_now.sec.seconds
+    self.duration = (((time_now + new_duration) - self.time_start)*24*60).to_i
   end
 
-  def get_left(without = false)
-    return if not self.started?
-    return 0 if ( self.over? && without==false )
-    now = DateTime.now.to_time
-    h2 = now.hour
-    m2 = now.min
-    con = self.time_start.to_time
-    h1 = con.hour
-    m1 = con.min
-    left = ((h2 - h1)*60 + (m2 - m1))
-    if without==true
-      left
-    else
-      (self.duration > left) ? self.duration - left : 0
-    end
+  def time_left
+    #return seconds
+    return (!self.started? || self.over?) ? 0 : (((self.time_start + self.duration.minutes) - DateTime.now)*24*60*60).to_i
   end
 
   def upd_problems_count(number)

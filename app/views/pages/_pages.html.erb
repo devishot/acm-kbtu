@@ -1,41 +1,8 @@
 <div class="well">
-
   <% @node = @pages[0].node %>
-  <% @sortable = "sortable" + @node.path %>
 
   <% if can? :manage, Node %>
-    <script>
-      var fixHelper = function(e, ui) {
-        ui.children().each(function() {
-          $(this).width($(this).width());
-        });
-        return ui;
-      };
-
-      $(function() {
-          $( "." + "<%= @sortable %>").sortable({
-            //containment: "parent",
-            helper: fixHelper
-          }).disableSelection();
-          $( "." + "<%= @sortable %>").disableSelection();
-          $( "." + "<%= @sortable %>" + 'button').click(function(){
-            var order = $("." + "<%= @sortable %>").sortable("toArray");
-            $.post("<%= upd_pages_order_path %>", {
-                "json": {
-                  "node": "<%= @node.path %>",
-                  "order": order
-                }
-              }, 
-              function(response) {
-                //location.reload();
-                alert('Order was saved')
-              }
-      \      )
-          });
-      });
-    </script>
-
-    <button class="<%= @sortable %>button">Save</button>
+    <button class="sortable_button">Save</button>
   <% end %>
 
   <table class="table">
@@ -48,9 +15,9 @@
       </tr>
     </thead>
 
-    <tbody class="<%= @sortable %>">
+    <tbody class="sortable" id="<%= @node.path %>">
       <% @pages.each do |page| %>
-        <tr id="<%= page.path %>">
+        <tr class="child" id="<%= page.path %>">
           <td> <%= page.text_title %> </td>
           <td> <%= page.user.name %> </td>
           <td> <%= page.created_at.to_s(:short) if !page.created_at.nil? %> </td>

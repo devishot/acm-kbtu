@@ -14,18 +14,19 @@
 
 
 <%= form_for(@contest, :url => contest_path(@contest.path)+'/control', :method => "PUT") do |f| %>
+<%= render 'contest_info' %>
   <table class="table table-bordered" style="width: 500px">
     <tr>
       <td>
-        <div style="position: relative; left: 150px;">
+        <div style="position: relative; left: 180px;">
           <% if @contest.over? then %>
-            <%= label_tag :duration, "Continue for" %>
+            <%= label_tag :duration, "Continue or Restart for" %>
           <% else %>
             <%= label_tag :duration, "Contest duration" %> 
           <% end %>
-          <%= f.number_field :duration, :in => 5..30000000 %>
+
+          <%= f.number_field :duration, :in => 1..30000000, :style => "width: 85px;" %> Minute
         </div>
-        <br />
       </td>
     </tr>
 
@@ -33,7 +34,7 @@
       <td style="width: 250px">
         <p>Start time</p>
         <%= f.datetime_select :time_start %>
-        <%= f.submit 'Update', :class => "btn" %>
+        <%= f.submit 'Update', :class => "btn", :style => "top:-4px; left:21px; position:relative;"%>
       </td>
       <td>
         <br />
@@ -55,12 +56,6 @@
       </td>
     </tr>
 
-    <tr>
-      <td>
-        <%= render 'contest_info' %>
-      </td>
-    </tr>
-
   </table>
 <% end %>
 
@@ -68,12 +63,10 @@
   <div class="btn-group">
     <%= link_to "Edit Problems", contest_path(@contest.path)+'/control_problems', 
         class: "btn" %>
-
     <%= link_to "Edit Participants", contest_path(@contest.path)+'/control_participants', 
         class: "btn" %>
   </div>
+  <small style="left: 52px; position: relative;">
+    <%= link_to "Submits status", contest_path(@contest.path)+'/control_status', class: "btn", :style => "width: 159px;" %>
+  </small>
 </div>
-<br />
-
-
-<%= link_to "Participants status", contest_path(@contest.path)+'/control_status', class: "btn" %>

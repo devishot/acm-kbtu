@@ -1,4 +1,4 @@
-<p>
+<p id="contest-info">
   Type:
   <b>
     <%= (@contest.type==0) ? "ACM" : "IOI" %>
@@ -15,18 +15,19 @@
   </b>
 
   Status:
-    <% if not @contest.started? %>
-      <b>NOT STARTED</b>
-    <% elsif @contest.over? %>
-      <b>OVER</b>
-    <% else %>
-      <b>RUN</b>
-    <% end %>
-
-  <% if not @contest.get_left.nil? %>
+  <b><%if not @contest.started?%> NOT STARTED <%elsif @contest.over?%> OVER <%else%> RUN <%end%></b>
+    
+  <% time_left = @contest.time_left #get seconds left %>
+  <% puts time_left %>
+  <% if time_left != 0 %>
+    <% m = (time_left/60).to_i %>
+    <% s = time_left - m*60 %>
     Left:
-    <b>
-      <%= @contest.get_left %>min
+    <b class="clock">
+      <% if m > 0 then %>
+        <span class="min"><%= m %></span> minutes
+      <% end %>
+      <span class="sec"><%= s %></span> seconds
     </b>
   <% end %>
 

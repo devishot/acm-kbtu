@@ -23,6 +23,19 @@
   </div>
   <br />
 
+  <div>
+    <label class="checkbox inline">
+      <%= f.label :confirm_participants, 'Yes' %>
+      <%= f.radio_button :confirm_participants, true %>
+    </label>
+    <label class="checkbox inline">
+      <%= f.label :confirm_participants, 'No' %>
+      <%= f.radio_button :confirm_participants, false %>
+    </label>
+    <small>Confirm participants</small>    
+  </div>
+  <br />
+
   <div class="control-group">
     <%= f.label :title, :class=>"control-label" %>
     <div class="controls">

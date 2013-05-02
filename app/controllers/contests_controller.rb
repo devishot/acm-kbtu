@@ -129,7 +129,7 @@ class ContestsController < ApplicationController
 
     elsif params[:commit] == "Restart"
       @contest.restart( params[:contest] )
-      ok = 'Contest REstarted'      
+      ok = 'Contest ReStarted'      
 
     elsif params[:commit] == "Stop"
       @contest.stop()
