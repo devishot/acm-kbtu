@@ -8,20 +8,20 @@
   </p>
 <% end %>
 
-<table class="table table-bordered table-hover table-condensed" >
+<table class="table table-hover table-condensed" >
   <thead>
     <tr>
-      <th>Name</th>
+      <th style="width:40px;">Place</th>
+      <th>Participant</th>
       <% for i in 1..@contest.problems_count %>
         <th><%= i%></th>
       <% end %>
-      <th>Score</th>
-      <th>Penalty</th>
+      <th style="width:70px;">Total</th>
+      <th style="width:70px;">Penalty</th>
     </tr>
   </thead>
 
   <tbody>
-
     <% paint = true %>
     <% @standings.each_with_index do |participant, index| participant.summarize %>
       <tr 
@@ -34,6 +34,7 @@
           <% end %>
         <%end%> 
       >
+        <td> <%= index + 1 %> </td>
         <td> <%= participant.user.name %> </td>
         <% for i in 1..@contest.problems_count %>
         <td><%= 
@@ -48,6 +49,7 @@
         <% end %>
         <td><%= participant.point %></td>
         <td><%= participant.penalty %></td>
+
       </tr>
     <% end %>
   </tbody>

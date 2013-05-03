@@ -3,8 +3,9 @@
 <% @contest.problems_count.times do |i| %>
 	<% @submissions = @summary[i+1] %>
 
-	<div class="well">
+	<div class="">
 	  <p>Problem <%= i+1 %></p>
 	  <%= render "submits/submits" %>
+    <br/>
 	</div>
 <% end %>

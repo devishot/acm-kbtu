@@ -10,6 +10,10 @@ class SubmitsController < ApplicationController
   #   redirect_to contests_url, :alert => "Contest ##{params[:id]} not found"
   # end
 
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to contest_path(@contest.path), :alert => exception.message
+  end
+
 
   # POST /submits
   # POST /submits.json
@@ -43,7 +47,6 @@ class SubmitsController < ApplicationController
     @submit.participant.submits << @submit
     @submit.save!
 
-    #raise @submit.inspect    
     #send for run
     Resque.enqueue(Tester, @submit.id)
 
@@ -102,6 +105,9 @@ private
 
   def load_submit
     @submit = @participant.submits.where(id: params[:submit]).first
+
+    authorize! :read, @submit
+
     redirect_to contest_problem_path(@contest.path, 1), :alert => "Submit not found" unless @submit
   end
 
