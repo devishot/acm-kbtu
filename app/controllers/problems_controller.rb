@@ -1,7 +1,7 @@
 class ProblemsController < ApplicationController
   include ActionView::Helpers::TextHelper
-  before_filter :find_contest, :except => [:index, :update, :update_statement]
-  before_filter :find_problem, :only => [:show, :edit, :edit_statement, :download_statement]
+  before_filter :find_contest,         :except => [:update, :update_statement]
+  before_filter :find_problem,         :only => [:show, :edit, :edit_statement, :download_statement]
   before_filter :find_contest_problem, :only => [:update, :update_statement]
   load_and_authorize_resource
 
@@ -10,12 +10,14 @@ class ProblemsController < ApplicationController
   end
 
   rescue_from CanCan::AccessDenied do |exception|
-    redirect_to contest_problem_path(params[:id], params[:problem]), :alert => exception.message
+    redirect_to contest_path(params[:id]), :alert => exception.message
   end
 
   # GET /contests/:id/problems
   def index
+    #@contest = Contest.find_by(path: params[:id])    
     @navpill = 2
+
     redirect_to contest_path(params[:id])+'/1'
   end
 

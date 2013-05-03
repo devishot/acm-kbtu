@@ -10,6 +10,31 @@ class ContestsController < ApplicationController
     redirect_to contests_url, :alert => exception.message
   end
 
+# messages
+  def messages
+    #@contest = Contest.find_by(path: params[:id])
+    @navpill = 4
+    @messages = Message.all
+  end
+
+  def new_message
+    @contest = Contest.find_by(path: params[:id])
+    @message = Message.new
+    @navpill = 4
+  end
+
+  def create_message
+    @message = Message.new(params[:message])
+    @message.participant = Participant.find_by(:user => current_user)
+    @contest = Contest.find(@message.participant.contest)
+    @message.save
+
+    redirect_to contest_messages_path(@contest.path)
+  end
+# end messages
+
+
+
   # GET /contests
   # GET /contests.json
   def index
@@ -36,7 +61,8 @@ class ContestsController < ApplicationController
     @navpill = 5
 
     if not current_user.participate? @contest
-      redirect_to contest_path(@contest.path), alert: 'Please, register to participate.'
+      alert = (@contest.over?) ? "Contest is over" : "Please, register to participate"
+      redirect_to contest_path(@contest.path), alert: alert
       return
     end
     participant = current_user.participants.where(contest: @contest).first    
@@ -47,29 +73,6 @@ class ContestsController < ApplicationController
       @summary[i+1] = participant.submits.where(problem: problem)
     end
   end
-
-# messages
-  def messages
-    #@contest = Contest.find_by(path: params[:id])
-    @navpill = 4
-    @messages = Message.all
-  end
-
-  def new_message
-    @contest = Contest.find_by(path: params[:id])
-    @message = Message.new
-    @navpill = 4
-  end
-
-  def create_message
-    @message = Message.new(params[:message])
-    @message.participant = Participant.find_by(:user => current_user)
-    @contest = Contest.find(@message.participant.contest)
-    @message.save
-
-    redirect_to contest_messages_path(@contest.path)
-  end
-# end messages
 
   def standings
     #@contest = Contest.find_by(path: params[:id])

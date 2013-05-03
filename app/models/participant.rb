@@ -48,7 +48,7 @@ class Participant
     self.point = 0
     self.penalty = 0    
     for i in 1..self.contest.problems_count
-      self.penalty += self.penalties[i].to_i if self.a[i].to_i > 0
+      self.penalty += self.penalties[i] if self.a[i]> 0
       self.point += 1 if self.a[i] > 0
     end
     self.save!

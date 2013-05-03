@@ -82,7 +82,7 @@ class Contest
   end
 
   def time_left
-    #return seconds
+    #return in seconds
     return (!self.started? || self.over?) ? 0 : (((self.time_start + self.duration.minutes) - DateTime.now)*24*60*60).to_i
   end
 
@@ -107,9 +107,17 @@ class Contest
       problem.use_template if not problem.order == 0
       problem.save
       self.problems << problem
+
     end
     self.problems_count = self.problems.size - 1
     self.save
+
+    self.participants.each do |participant|
+      b = Array.new(self.problems_count-participant.a.size+1, 0)
+      participant.a = participant.a + b
+      participant.penalties = participant.penalties + b
+      participant.save
+    end
   end
 
   def problems_destroy(from, to=nil)
@@ -122,7 +130,13 @@ class Contest
       self.problems.delete(problem)
     end
     self.problems_count = self.problems.size - 1
-    self.save    
+    self.save
+
+    self.participants.each do |participant|
+      participant.a = participant.a[0..self.problems_count]
+      participant.penalties = participant.penalties[0..self.problems_count]
+      participant.save
+    end
   end
 
   def put_problems(archive)

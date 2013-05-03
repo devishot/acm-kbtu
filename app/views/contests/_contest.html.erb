@@ -11,10 +11,7 @@
 <% end %>
 
 <div id="body-bgcolor">
-  <center style = "Но это центр, 
-                  тут только правда
-                  И если я об этом пишу,
-                  Значит так надо.">
+  <center>
     <h3>
       <%= @contest.title %>
     </h3>
@@ -27,7 +24,7 @@
   </center>
 
 
-  <% if @contest.user!=current_user && !current_user.admin? && !current_user.participate?(@contest) && !@contest.over? %>
+  <% if !current_user.participate?(@contest) && @contest.user!=current_user && !@contest.over? %>
     <%= link_to "Participate", contest_path(@contest.path) + "/participate", 
         :method => :post, 
         :class => "btn btn-small btn-primary"%>
@@ -37,9 +34,11 @@
 
 
   <ul class="nav nav-pills">
-    <li <%= "class=active" if @navpill==2 %> > 
-      <%= link_to "Problems",   "/contests/#{@contest.path}/problems" %>
-    </li>
+    <% if current_user.participate?(@contest) %>
+      <li <%= "class=active" if @navpill==2 %> > 
+        <%= link_to "Problems",   "/contests/#{@contest.path}/problems" %>
+      </li>        
+    <% end %>
 
     <li <%= "class=active" if @navpill==1 %> > 
       <%= link_to "Statement",   "/contests/#{@contest.path}/statement" %>
@@ -48,19 +47,24 @@
     <li <%= "class=active" if @navpill==3 %> > 
       <%= link_to "Standings",  "/contests/#{@contest.path}/standings" %>
     </li>
-    <li <%= "class=active" if @navpill==5 %> > 
-      <%= link_to "Summary",    "/contests/#{@contest.path}/summary" %>
-    </li>
-    <li class="dropdown" <% "class=dropdown active" if @navpill==4 %> >
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-          Clars
-          <b class="caret"></b>
+
+    <% if current_user.participate?(@contest) %>      
+      <li <%= "class=active" if @navpill==5 %> > 
+        <%= link_to "Summary",    "/contests/#{@contest.path}/summary" %>
+      </li>
+
+      <li class="dropdown" <% "class=dropdown active" if @navpill==4 %> >
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            Clars <b class="caret"></b>
         </a>
-      <ul class="dropdown-menu">
-        <li><%= link_to_if(1==0, "All clars", contest_messages_path(@contest.path)) %></li>
-        <li><%= link_to_if(1==0, "Submit clar", contest_new_message_path(@contest.path)) %></li>
-      </ul>
-    </li>
+        <ul class="dropdown-menu">
+          <li><%= link_to_if(1==0, "All clars", contest_messages_path(@contest.path)) %></li>
+          <li><%= link_to_if(1==0, "Submit clar", contest_new_message_path(@contest.path)) %></li>
+
+        </ul>
+      </li>
+    <% end %>
+
   </ul>
 
 </div>

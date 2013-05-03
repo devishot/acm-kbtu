@@ -2,71 +2,72 @@
 <br />
 <br />
 
-<%= link_to "Edit Info", edit_contest_path(@contest.path), class: "btn btn-warning" %>
-||||
-<%= link_to 'Destroy Contest', contest_path(@contest.path), 
-  method: :delete,
-  confirm: 'Are you sure?',
-  class: "btn btn-danger"
-%>
-<br />
-<br />
 
+<div class="well" style="width: 140px;">
+  <%= link_to "Edit Info", edit_contest_path(@contest.path), 
+      class: "btn btn-warning btn-block" %>
+  <%= link_to 'Destroy Contest', contest_path(@contest.path), 
+      method: :delete,
+      confirm: 'Are you sure?',
+      class: "btn btn-danger btn-block" %>
+</div>
 
-<%= form_for(@contest, :url => contest_path(@contest.path)+'/control', :method => "PUT") do |f| %>
-<%= render 'contest_info' %>
-  <table class="table table-bordered" style="width: 500px">
-    <tr>
-      <td>
-        <div style="position: relative; left: 180px;">
-          <% if @contest.over? then %>
-            <%= label_tag :duration, "Continue or Restart for" %>
+<div style="width: 550px; left: 200px; top:-123px; position: relative;" id="control-starter">
+  <%= render 'contest_info' %>
+
+  <%= form_for(@contest, :url => contest_path(@contest.path)+'/control', :method => "PUT") do |f| %>
+    <table class="table table-bordered" style="width: 500px">
+      <tr>
+        <td>
+          <div style="position: relative; left: 180px;">
+            <% if @contest.over? then %>
+              <%= label_tag :duration, "Continue or Restart for" %>
+            <% else %>
+              <%= label_tag :duration, "Contest duration" %> 
+            <% end %>
+
+            <%= f.number_field :duration, :in => 1..30000000, :style => "width: 85px;" %> Minute
+          </div>
+        </td>
+      </tr>
+
+      <tr style="text-align: center;">
+        <td style="width: 250px">
+          <p>Start time</p>
+          <%= f.datetime_select :time_start %>
+          <%= f.submit 'Update', :class => "btn", :style => "top:-4px; left:21px; position:relative;"%>
+        </td>
+        <td>
+          <br />
+          <br />
+          <center>OR<center>
+        </td>
+        <td style="width: 200px; text-align: center;">
+          <% if not @contest.started? then %>
+            <p>Start now</p>
+            <%= f.submit 'Start', :class => "btn" %>
+          <% elsif @contest.over? then %>
+            <p>Continue or Restart now</p>
+            <%= f.submit 'Continue', :class => "btn btn-block btn-primary" %>          
+            <%= f.submit 'Restart', :class => "btn btn-block" %>
           <% else %>
-            <%= label_tag :duration, "Contest duration" %> 
-          <% end %>
+            <p>Stop it</p>
+            <%= f.submit 'Stop', :class => "btn btn-danger" %>
+          <% end %>        
+        </td>
+      </tr>
 
-          <%= f.number_field :duration, :in => 1..30000000, :style => "width: 85px;" %> Minute
-        </div>
-      </td>
-    </tr>
+    </table>
+  <% end %>
 
-    <tr style="text-align: center;">
-      <td style="width: 250px">
-        <p>Start time</p>
-        <%= f.datetime_select :time_start %>
-        <%= f.submit 'Update', :class => "btn", :style => "top:-4px; left:21px; position:relative;"%>
-      </td>
-      <td>
-        <br />
-        <br />
-        <center>OR<center>
-      </td>
-      <td style="width: 200px; text-align: center;">
-        <% if not @contest.started? then %>
-          <p>Start now</p>
-          <%= f.submit 'Start', :class => "btn" %>
-        <% elsif @contest.over? then %>
-          <p>Continue or Restart now</p>
-          <%= f.submit 'Continue', :class => "btn btn-block btn-primary" %>          
-          <%= f.submit 'Restart', :class => "btn btn-block" %>
-        <% else %>
-          <p>Stop it</p>
-          <%= f.submit 'Stop', :class => "btn btn-danger" %>
-        <% end %>        
-      </td>
-    </tr>
+</div>
 
-  </table>
-<% end %>
 
-<div class="btn-toolbar">
-  <div class="btn-group">
-    <%= link_to "Edit Problems", contest_path(@contest.path)+'/control_problems', 
-        class: "btn" %>
-    <%= link_to "Edit Participants", contest_path(@contest.path)+'/control_participants', 
-        class: "btn" %>
-  </div>
-  <small style="left: 52px; position: relative;">
-    <%= link_to "Submits status", contest_path(@contest.path)+'/control_status', class: "btn", :style => "width: 159px;" %>
-  </small>
+<div class="well" style="width: 140px; top: -380px; position: relative; float: right;">
+  <%= link_to "Edit Problems", contest_path(@contest.path)+'/control_problems', 
+      class: "btn btn-block" %>
+  <%= link_to "Edit Participants", contest_path(@contest.path)+'/control_participants', 
+      class: "btn btn-block" %>
+  <%= link_to "Submits status", contest_path(@contest.path)+'/control_status', 
+      class: "btn btn-block btn-primary" %>
 </div>
