@@ -20,4 +20,11 @@
 //= require pages.js
 //= require contests.js
 
+//= require zclip/jquery.zclip.js
+
+//= require syntaxhighlighter/sh_main.js
+//= require syntaxhighlighter/lang/sh_cpp.js
+//= require syntaxhighlighter/lang/sh_pascal.js
+//= require submits.js
+
 //= require_self

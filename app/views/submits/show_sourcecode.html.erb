@@ -1,21 +1,43 @@
 <%= render "contests/contest" %>
 
-<%= link_to '<i class="icon-download-alt"></i> Sourcecode'.html_safe, 
-    submit_download_path(@participant.contest.path, @participant.path, @submit.id),
-    :class => 'btn' %> 
-<br />
-<br />
+<dl class="dl-horizontal">
+  <dt> Problem: </dt>
+  <dd> <%= link_to "#{@submit.problem.order_abc}", contest_problem_path(@participant.contest.path, @submit.problem.order) %> </dd>
+
+  <dt> Submit: </dt>
+  <dd> #<%= @submit.order %> </dd>
+
+  <dt> Status: </dt>
+  <dd <%= (@submit.status["status"]=="AC")? "class=text-success" : "class=text-error" %> > 
+    <%= @submit.status["status"] %> <dd>
+</dl>
+
+<%= link_to '<i class="icon-download-alt"></i> <b>Download</b>'.html_safe, 
+submit_download_path(@participant.contest.path, @participant.path, @submit.id),
+:class => 'btn btn-small', :style => "position: relative; left: 10px; top: 7px;" %> 
+
+<%= link_to '<b>Copy to Clipboard</b>'.html_safe, 
+submit_download_path(@participant.contest.path, @participant.path, @submit.id),
+:class => 'btn btn-small copy', :style => "position: relative; left: 20px; top: 7px;" %> 
 
 <% line_num=0 %>
 <% text=File.open(@submit.sourcecode, "r").read %>
 <% text.gsub!(/\r\n?/, "\n") %>
 
-<pre>
-  <code class="cpp">  
-    <% text.each_line do |line| %>
-      <%= line %> <!-- "#{line_num += 1} #{line}" -->
-    <% end %>
-  </code>
+<code>
+<pre class="sh_cpp" id="sourcecode">
+<% text.each_line do |line| %><%= (line[-1]=="\n") ? line[0..-2] : line %>
+<% end %>
 </pre>
+</code>
 
-<br />
+
+<div id="ModalCopied" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <small id="ModalCopiedLabel">Copy to Clipboard</small>
+  </div>
+  <div class="modal-body">
+    <strong>Code copied</strong>
+  </div>
+</div>
