@@ -1,10 +1,10 @@
 <%= render "contest" %>
 
 <% if not @last_success.nil? %>
-  <p>Last success by
-    <%= @last_success.participant.user.name %>
-    at <%= @last_success.created_at.strftime("%Y-%m-%d %H:%M") %>
-    . Problem <%= @last_success.problem.order %>
+  <p>Last success:
+    <%= @last_success.created_at.strftime("%H:%M:%S") %>,
+    <%= @last_success.participant.user.name %>,
+    problem <%= @last_success.problem.order_abc %>.
   </p>
 <% end %>
 
@@ -14,7 +14,7 @@
       <th style="width:40px;">Place</th>
       <th>Participant</th>
       <% for i in 1..@contest.problems_count %>
-        <th><%= i%></th>
+        <th><%= @contest.problems[i].order_abc %></th>
       <% end %>
       <th style="width:70px;">Total</th>
       <th style="width:70px;">Penalty</th>
@@ -52,5 +52,42 @@
 
       </tr>
     <% end %>
+
+    <tr>
+      <td>  </td>
+      <td> Total: </td>
+      <% sum_all = 0 %>
+      <% k_all = Array.new(@contest.problems_count+1) %>
+      <% for i in 1..@contest.problems_count %>
+        <% k_all[i] = @contest.problems[i].submits.count %>
+        <% sum_all = sum_all + k_all[i] %>
+        <td> <%= k_all[i] %> </td>
+      <% end %>
+      <td> <%= sum_all %> </td>
+    </tr>
+
+    <tr>
+      <td>  </td>
+      <td> Success: </td>
+      <% sum_success = 0 %>
+      <% k_success = Array.new(@contest.problems_count+1) %>
+      <% for i in 1..@contest.problems_count %>
+        <% k_success[i] = @contest.problems[i].submits.where(status: {:status=>"AC"}).count %>
+        <% sum_success = sum_success + k_success[i]%>
+        <td> <%= k_success[i] %> </td>
+      <% end %>
+      <td> <%= sum_success %> </td>
+    </tr>
+
+    <tr>
+      <td>  </td>
+      <td>  %: </td>
+      <% get_percent = lambda {|a, b| (a==0) ? "0%" : "#{(b*100)/a}%" } %>
+      <% for i in 1..@contest.problems_count %>
+        <td> <%= get_percent.call(k_all[i], k_success[i]) %> </td>
+      <% end %>
+      <td> <%= get_percent.call(sum_all, sum_success) %> </td>
+    </tr>
+
   </tbody>
 </table>

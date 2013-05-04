@@ -76,8 +76,7 @@ class ContestsController < ApplicationController
 
   def standings
     #@contest = Contest.find_by(path: params[:id])
-    @last_success = Submit.where(status: "AC").last
-    @last_success = nil if @last_success.to_a == nil
+    @last_success = Submit.where(id: @contest.last_success_submit).first
 
     @standings = @contest.participants.sort do |a, b|
       if a.point == b.point then

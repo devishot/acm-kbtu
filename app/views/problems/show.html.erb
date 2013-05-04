@@ -4,7 +4,7 @@
   <ul class="nav nav-tabs" id="body-bgcolor">
     <% for i in 1..@contest.problems_count %>
       <li <%= "class=active" if !@submit.nil? && @submit.problem.order == i %> >
-        <%= link_to "#{(@contest.problems_count>26) ? i : (i+64).chr}", "/contests/#{@contest.path}/#{i}" %>
+        <%= link_to "#{@contest.problems[i].order_abc}", "/contests/#{@contest.path}/#{i}" %>
       </li>
     <% end %>
   </ul>

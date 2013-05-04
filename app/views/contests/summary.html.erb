@@ -3,9 +3,11 @@
 <% @contest.problems_count.times do |i| %>
 	<% @submissions = @summary[i+1] %>
 
-	<div class="">
-	  <p>Problem <%= i+1 %></p>
-	  <%= render "submits/submits" %>
-    <br/>
-	</div>
+  <% if not @submissions.blank? %>
+  	<div>
+  	  <p>Problem <%= @contest.problems[i+1].order_abc %></p>
+  	  <%= render "submits/submits" %>
+      <br/>
+  	</div>    
+  <% end %>
 <% end %>

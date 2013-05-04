@@ -14,6 +14,7 @@ class Contest
   field :type,            type: Integer, :default => 0  #"ACM", "IOI"
   field :problems_count,  type: Integer, :default => 0  #problems[0] <- it is template for other problem
   field :confirm_participants,  type: Boolean, :default => false
+  field :last_success_submit, type: String
 
   belongs_to :user
   has_many :problems

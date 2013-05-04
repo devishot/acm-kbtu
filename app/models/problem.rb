@@ -71,6 +71,9 @@ class Problem
     self.problem_dir+"/statement"
   end
 
+  def order_abc
+    return self.contest.problems_count>26 ? self.order : (self.order+64).chr
+  end
 
   def template
     return self.contest.problems.find_by(order: 0)

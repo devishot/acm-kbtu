@@ -169,24 +169,23 @@ class Tester
     #skip set standing
     return if hidden==true
 
-
-    #//standings
+    #standings
     @submit = Submit.find(submit_id)
     @participant = @submit.participant
     @problem = @submit.problem
 
     if @submit.status['status'] == "AC"
       if @participant.a[@problem.order] <= 0
-        #p "AC"
         @participant.a[@problem.order] = @participant.a[@problem.order].abs+1
-        #p @participant.a
         @participant.penalties[@problem.order] += ((Time.now.to_i - @participant.contest.time_start.to_i)/60).to_i
-        #p @participant.penalties
         @participant.save!
+
+        #Contest: last_success
+        @participant.contest.last_success_submit = @submit.id
+        @participant.contest.save!
       end
     elsif ['WA', 'TL', 'RT', 'PT', 'SE'].include? @submit.status['status'] 
       if @participant.a[@problem.order] <= 0
-        #p "WA"
         @participant.a[@problem.order] -= 1
         @participant.penalties[@problem.order] += 20
         @participant.save!

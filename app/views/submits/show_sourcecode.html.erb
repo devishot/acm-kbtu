@@ -1,7 +1,5 @@
 <%= render "contests/contest" %>
 
-<%= @submit.participant.inspect %>
-
 <%= link_to '<i class="icon-download-alt"></i> Sourcecode'.html_safe, 
     submit_download_path(@participant.contest.path, @participant.path, @submit.id),
     :class => 'btn' %> 
@@ -19,4 +17,5 @@
     <% end %>
   </code>
 </pre>
+
 <br />
