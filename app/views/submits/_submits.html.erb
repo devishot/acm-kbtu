@@ -46,13 +46,15 @@
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel">Compilation Error</h3>
           </div>
-
+          
           <div class="modal-body">
+            <% extname = File.extname(i.sourcecode) %>
+            <% separator = "/#{File.basename(i.sourcecode)}:" #for .CPP %>
             <% i.status['error'].each do |error| %>
               <p>
-                <% if error.include? '/solution.cpp:' %>
-                  <% if error.include? '/solution.cpp: ' then %> <br /> <% end %>
-                  <%= error.partition('/solution.cpp:')[2] %>
+                <% if error.include?(separator) && extname=='.cpp' %>
+                  <% if error.include? separator+' ' then %> <br/> <%end%>
+                  <%= error.partition(separator)[2] %>
                 <% else %>
                   <%= error %>
                 <% end %>

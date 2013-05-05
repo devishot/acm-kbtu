@@ -4,10 +4,9 @@
 	<% @submissions = @summary[i+1] %>
 
   <% if not @submissions.blank? %>
-  	<div>
-  	  <p>Problem <%= @contest.problems[i+1].order_abc %></p>
-  	  <%= render "submits/submits" %>
-      <br/>
-  	</div>    
+    <dl class="dl-horizontal">
+      <dt>Problem <%= @contest.problems[i+1].order_abc %></dt>
+      <dd><%= render "submits/submits" %></dd> 
+    </dl>
   <% end %>
 <% end %>

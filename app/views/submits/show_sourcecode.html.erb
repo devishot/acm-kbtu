@@ -12,20 +12,40 @@
     <%= @submit.status["status"] %> <dd>
 </dl>
 
+
+<% if @submit.status["status"]=="CE" %>
+<pre>
+<% extname = File.extname(@submit.sourcecode) %>
+<% separator = "/#{File.basename(@submit.sourcecode)}:" #for .CPP %>
+<% @submit.status['error'].each do |error| %>
+<% if error.include?(separator) && extname=='.cpp' %><% if error.include? separator+' ' then %><br/><%end%><%= error.partition(separator)[2] %><% else %><%= error %><% end %><% end %></pre>
+<% end %>
+
+
+<div class="btn-group" style = "margin-bottom:15px;">
 <%= link_to '<i class="icon-download-alt"></i> <b>Download</b>'.html_safe, 
 submit_download_path(@participant.contest.path, @participant.path, @submit.id),
-:class => 'btn btn-small', :style => "position: relative; left: 10px; top: 7px;" %> 
+:class => 'btn btn-small' %>
 
 <%= link_to '<b>Copy to Clipboard</b>'.html_safe, 
 submit_download_path(@participant.contest.path, @participant.path, @submit.id),
-:class => 'btn btn-small copy', :style => "position: relative; left: 20px; top: 7px;" %> 
+:class => 'btn btn-small copy' %>
+</div>
 
 <% line_num=0 %>
 <% text=File.open(@submit.sourcecode, "r").read %>
 <% text.gsub!(/\r\n?/, "\n") %>
 
 <code>
-<pre class="sh_cpp" id="sourcecode">
+<pre style="width:30px;  float:left; position:relative; line-height: 1.61; font-size:1.12em;">
+<% text.each_line.count.times do |i| %>
+<%= i+1 %>
+<% end %>
+</pre>
+</code>
+
+<code>
+<pre class="sh_cpp" id="sourcecode" style="margin-left: 40px;  top:-22px; position:relative;">
 <% text.each_line do |line| %><%= (line[-1]=="\n") ? line[0..-2] : line %>
 <% end %>
 </pre>

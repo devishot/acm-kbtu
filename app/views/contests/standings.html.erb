@@ -60,20 +60,20 @@
       <% sum_all = 0 %>
       <% k_all = Array.new(@contest.problems_count+1) %>
       <% for i in 1..@contest.problems_count %>
-        <% k_all[i] = @contest.problems[i].submits.count %>
+        <% k_all[i] = @contest.problems[i].submits.where(hidden: false).count %>
         <% sum_all = sum_all + k_all[i] %>
         <td> <%= k_all[i] %> </td>
       <% end %>
       <td> <%= sum_all %> </td>
     </tr>
 
-    <tr>
+    <tr> 
       <td>  </td>
       <td> Success: </td>
       <% sum_success = 0 %>
       <% k_success = Array.new(@contest.problems_count+1) %>
       <% for i in 1..@contest.problems_count %>
-        <% k_success[i] = @contest.problems[i].submits.where(status: {:status=>"AC"}).count %>
+        <% k_success[i] = @contest.problems[i].submits.where(status: {:status=>"AC"}).where(hidden: false).count %>
         <% sum_success = sum_success + k_success[i]%>
         <td> <%= k_success[i] %> </td>
       <% end %>
