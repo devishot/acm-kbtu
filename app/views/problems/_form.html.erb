@@ -119,7 +119,8 @@
       <%= label_tag 'solution_file', "Verification" %>
       <%= file_field_tag 'solution_file' %>
 
-      <% status = @problem.get_checked_status %>
+      <% submit = @problem.get_solution %>
+      <% status = submit.status %>
       <% if not status.nil? then %>
         <% if status.empty? %>
           <span class="badge">
@@ -128,7 +129,7 @@
         <% elsif status['status'] == 'AC' %>
           <span class="label label-success">
             OK
-            (<%= File.ctime(@problem.checker_path).to_s(:long) %>)
+            (<%= submit.updated_at.to_s(:long) %>)
           </span>
         <% else %>
           <span class="label label-important">

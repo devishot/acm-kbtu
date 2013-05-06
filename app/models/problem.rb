@@ -343,10 +343,9 @@ class Problem
     return status
   end
 
-  def get_checked_status
+  def get_solution
     return nil if self.checked.nil?
-    submit = Submit.find( self.checked )
-    return submit.status
+    return Submit.find( self.checked )
   end
 
   def put_statement(ufile)
