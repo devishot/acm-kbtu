@@ -107,8 +107,8 @@ class Problem
     if not params[:problems].nil?
       problems_status = self.contest.put_problems(params[:problems]) 
       @status[:notice] << 'Contest: archive of problems uploaded'
-      problems_status[:notice].each {|x| @status[:notice] << x }
-      problems_status[:error].each {|x| @status[:alert] << x }
+      problems_status[:notice].each {|x| @status[:notice] << x } if not problems_status[:notice].nil?
+      problems_status[:error].each {|x| @status[:alert] << x } if not problems_status[:error].nil?
       return @status
     end
 
@@ -126,7 +126,7 @@ class Problem
         @status[:notice] << 'Tests uploaded'
       else
         @status[:alert]  << 'Tests not uploaded:'
-        tests_status[:error].each {|x| @status[:alert] << '---'+x }
+        tests_status[:error].each {|x| @status[:alert] << '---'+x } if not tests_status[:error].nil?
       end
     end
 
@@ -139,11 +139,11 @@ class Problem
 
       elsif checker_status[:status] == 'CE'
         @status[:alert] << 'Checker was not compiled(CE):'
-        checker_status[:error].each {|x| @status[:alert] << '---'+x }
+        checker_status[:error].each {|x| @status[:alert] << '---'+x } if not checker_status[:error].nil?
 
       elsif checker_status[:status] == 'SE'
         @status[:alert] << 'Checker is incorect(SE):'
-        checker_status[:error].each {|x| @status[:alert] << '---'+x }
+        checker_status[:error].each {|x| @status[:alert] << '---'+x } if not checker_status[:error].nil?
       end
       params[:problem].delete(:uploaded_checker)
       params[:problem].delete(:checker_mode)
@@ -161,7 +161,7 @@ class Problem
         @status[:notice] << 'solution added, problem checked'
       else
         @status[:alert]  << "solution is incorrect, got a #{solutions_status[:status]}"
-        solutions_status[:error].each {|x| @status[:alert] << '|   '+x }
+        solutions_status[:error].each {|x| @status[:alert] << '|   '+x } if not solutions_status[:error].nil?
       end
     #check again IF was uploaded
     elsif not self.checked.nil?
@@ -170,7 +170,7 @@ class Problem
         @status[:notice] << 'problem REchecked'
       else
         @status[:alert]  << "solution is incorrect, got a #{solutions_status[:status]}"
-        solutions_status[:error].each {|x| @status[:alert] << '|   '+x }
+        solutions_status[:error].each {|x| @status[:alert] << '|   '+x } if not solutions_status[:error].nil?
       end
     end
 
@@ -292,7 +292,7 @@ class Problem
               when 5, 1; "WA"
               else "SE"
             end
-            std_err.each {|x| status[:error] << x}
+            std_err.each {|x| status[:error] << x} if not std_err.nil?
             break;
           end
         end
@@ -348,7 +348,7 @@ class Problem
       status[:status] = 'OK'
     else
       status[:status] = submit.status['status']
-      submit.status['error'].each {|x| status[:error] << x }
+      submit.status['error'].each {|x| status[:error] << x } if not submit.status['error'].nil?
       status[:test] = submit.status['test']
     end
     return status
@@ -363,7 +363,7 @@ class Problem
     statement_dir = self.statement_dir
     #delete previous statement file IF exist
     if not self.statement['file_link'].blank?
-      File.delete File.join(statement_dir, self.statement['file_link'])
+      File.delete self.statement['file_link']
       statement['file_link'] = nil
     end
     FileUtils.mkdir_p statement_dir

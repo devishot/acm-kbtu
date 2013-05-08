@@ -176,6 +176,17 @@ class Contest
     #remove(delete) archive file
     File.delete File.join(tmp_dir, archive.original_filename)
 
+    #IF in folder THEN extract from
+    if Dir.entries(tmp_dir).count - 2 == 1
+      f = (Dir.entries(tmp_dir)-[".", ".."])[0]
+      if File.directory? tmp_dir+"/#{f}"
+         puts Dir.entries(tmp_dir+"/#{f}/.")
+        FileUtils.cp_r tmp_dir+"/#{f}/.", tmp_dir
+        FileUtils.rm_rf tmp_dir+"/#{f}"
+         puts Dir.entries(tmp_dir)
+      end
+    end
+
     #separate 'problems files' from other files
     files = Dir.entries(tmp_dir).sort[2..-1]
     problems_files = [{}]
@@ -381,7 +392,8 @@ class Contest
         if tests_status[:status] == 'OK'
           ret_status[:notice] << report_header + 'Tests OK'
         else
-          ret_status[:error] << report_header << '-' + tests_status[0]
+          ret_status[:error] << report_header << '-' + tests_status[:status]
+          tests_status[:error].each {|x| ret_status[:error] << '| ' + x } if not tests_status[:error].nil?
         end
       end
       ##put checker
@@ -396,7 +408,7 @@ class Contest
 
         else
           ret_status[:error]  << report_header + 'Checker got ' + checker_status[:status]
-          checker_status[:error].each {|x| ret_status[:error] << '-' + x } if not checker_status[:error].nil?
+          checker_status[:error].each {|x| ret_status[:error] << '|' + x } if not checker_status[:error].nil?
 
         end
       end
@@ -423,7 +435,7 @@ class Contest
           ret_status[:notice] << report_header + 'Solution OK'
         else
           ret_status[:error]  << report_header + "Solution got #{solution_status[:status]} at #{solution_status[:test]}"
-          solution_status[:error].each {|x| ret_status[:error] << x }
+          solution_status[:error].each {|x| ret_status[:error] << x } if not solution_status[:error].nil?
         end
       end
       problem.save
