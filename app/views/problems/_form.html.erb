@@ -120,7 +120,7 @@
       <%= file_field_tag 'solution_file' %>
 
       <% submit = @problem.get_solution %>
-      <% status = submit.status %>
+      <% status = (submit.nil?) ? nil : submit.status %>
       <% if not status.nil? then %>
         <% if status.empty? %>
           <span class="badge">

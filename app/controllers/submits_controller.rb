@@ -51,7 +51,7 @@ class SubmitsController < ApplicationController
     Resque.enqueue(Tester, @submit.id)
 
     respond_to do |format|
-      problem_path = contest_path(contest.path)+"/#{@submit.problem.order}"
+      problem_path = contest_problem_path(contest.path, @submit.problem.order)
       format.html { redirect_to problem_path, notice: 'Successfully submited.' }      
     end
   end

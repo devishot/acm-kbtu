@@ -224,8 +224,19 @@ class Problem
     end
     #remove(delete) archive
     File.delete File.join(tests_dir, archive.original_filename)
+
+    #IF in folder THEN extract from
+    if Dir.entries(tests_dir).count - 2 == 1
+      f = (Dir.entries(tests_dir)-[".", ".."])[0]
+      if File.directory? tests_dir+"/#{f}"
+        #raise Dir.entries(tests_dir+"/#{f}").inspect
+        FileUtils.cp_r tests_dir+"/#{f}/.", tests_dir
+        #raise Dir.entries(tests_dir).inspect
+        FileUtils.rm_rf tests_dir+"/#{f}"
+      end
+    end
     #check number of tests
-    tests_count = Dir.entries(tests_dir).count - 2
+    tests_count = Dir.entries(tests_dir).count - 2    
     if tests_count<2 || tests_count.modulo(2)==1
       status[:status] = 'SE'
       status[:error] << "there is only #{tests_count} files"
