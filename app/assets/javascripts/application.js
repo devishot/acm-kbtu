@@ -14,6 +14,7 @@
 //= require jquery.ui.js
 //= require jquery_ujs
 //= require bootstrap
+//= require bootstrapSwitch.min.js
 //= require tinymce/tinymce.min.js
 //= require tinymce.js
 //= require nodes.js

@@ -1,11 +1,18 @@
+<%= form_for(@problem, :multipart => true) do |f| %>
+
 <% if @problem.order!=0 %>
+  <div style = 'right: 0%; float: right; position: relative;' >
   <%= link_to '<i class="icon-pencil icon-white"></i> Edit statement'.html_safe, 
       contest_path(@contest.path)+"/#{@problem.order}/edit_statement", 
-      :class => 'btn btn-info',
-      :style => 'right: 0%; float: right; position: relative;' %>
+      :class => 'btn btn-info'%>
+
+  <div class="switch switch-small" data-on="danger" data-on-label="OFF" data-off-label="OK" >
+    <%= f.check_box :disabled %>
+  </div>
+  </div>
 <% end %>
 
-<%= form_for(@problem, :multipart => true) do |f| %>
+
   <%= hidden_field_tag :contest_id, @problem.contest.id %>
   <%= hidden_field_tag :problem_order, @problem.order %>
   <%= f.hidden_field :order %>

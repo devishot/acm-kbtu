@@ -18,14 +18,19 @@ class ProblemsController < ApplicationController
     #@contest = Contest.find_by(path: params[:id])    
     @navpill = 2
 
-    redirect_to contest_path(params[:id])+'/1'
+    @problem = @contest.problems.where(disabled: false).sort_by{|x| x.order}[1]
+    if @problem.nil? 
+      redirect_to contest_path(params[:id]), :alert => "There is no problems"
+    else
+      redirect_to contest_problem_path(params[:id], @problem.order)
+    end
   end
 
   # GET /contests/:id/:problem
   def show
     #@contest = Contest.find_by(path: params[:id])
     #@problem = @contest.problems.find_by(order: params[:problem])
-    if @problem.order == 0
+    if @problem.order == 0 || @problem.disabled == true
       redirect_to contest_path(@contest.path)
       return
     end

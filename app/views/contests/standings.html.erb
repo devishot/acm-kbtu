@@ -15,6 +15,7 @@
       <th style="width:40px;">Place</th>
       <th>Participant</th>
       <% for i in 1..@contest.problems_count %>
+        <% next if @contest.problems[i].disabled == true %>
         <th><%= @contest.problems[i].order_abc %></th>
       <% end %>
       <th style="width:70px;">Total</th>
@@ -38,6 +39,7 @@
         <td> <%= index + 1 %> </td>
         <td> <%= participant.user.name %> </td>
         <% for i in 1..@contest.problems_count %>
+        <% next if @contest.problems[i].disabled == true %>
         <td><%= 
           if participant.a[i] == 1
             "+"
@@ -60,6 +62,7 @@
       <% sum_all = 0 %>
       <% k_all = Array.new(@contest.problems_count+1) %>
       <% for i in 1..@contest.problems_count %>
+        <% next if @contest.problems[i].disabled == true %>
         <% k_all[i] = @contest.problems[i].submits.where(hidden: false).count %>
         <% sum_all = sum_all + k_all[i] %>
         <td> <%= k_all[i] %> </td>
@@ -73,6 +76,7 @@
       <% sum_success = 0 %>
       <% k_success = Array.new(@contest.problems_count+1) %>
       <% for i in 1..@contest.problems_count %>
+        <% next if @contest.problems[i].disabled == true %>
         <% k_success[i] = @contest.problems[i].submits.where(status: {:status=>"AC"}).where(hidden: false).count %>
         <% sum_success = sum_success + k_success[i]%>
         <td> <%= k_success[i] %> </td>
@@ -85,6 +89,7 @@
       <td>  %: </td>
       <% get_percent = lambda {|a, b| (a==0) ? "0%" : "#{(b*100)/a}%" } %>
       <% for i in 1..@contest.problems_count %>
+        <% next if @contest.problems[i].disabled == true %>
         <td> <%= get_percent.call(k_all[i], k_success[i]) %> </td>
       <% end %>
       <td> <%= get_percent.call(sum_all, sum_success) %> </td>

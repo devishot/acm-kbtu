@@ -19,6 +19,7 @@ class Problem
   field :checked,       type: String
   field :statement,     type: Hash,     :default =>
         {'title'=>'', 'text'=>'', 'inputs'=>[], 'outputs'=>[], 'file_link'=>''}
+  field :disabled,      type: Boolean,  :default => false
 
   belongs_to  :contest
   has_many    :submits
