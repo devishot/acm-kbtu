@@ -10,8 +10,26 @@ function countdown() {
         s.html(60);
     }
     if(parseInt(m.html()) <= 0) {
-        $('.clock').html('<span class="sec">59</span> seconds'); 
+        $('.clock').html('<span class="sec">59</span> seconds');
     }
     s.html(parseInt(s.html()-1));
 }
 setInterval('countdown()',1000);
+
+
+
+// Confirm participant
+$('.confirm').on('switch-change', function (e, data) {
+    var $el = $(data.el)
+      , value = data.value
+      , participant = $(this).attr("id")
+      , contest = $(this).attr("contest");
+
+    //console.log(contest, participant, value);
+
+    $.post("/contests/"+contest.toString()+"/confirm_participant/"+participant.toString(), 
+        {
+            "value": value
+        }
+    )
+});

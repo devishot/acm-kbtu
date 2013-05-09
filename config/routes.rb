@@ -6,6 +6,7 @@ AcmKbtu::Application.routes.draw do
   post  '/contests/:id/unpack' => 'contests#unpack'
   post  '/contests/:id/participate' => 'contests#participate'
   delete 'kill_participant' => 'contests#kill_participant'
+  post  '/contests/:id/confirm_participant/:participant' => 'contests#confirm_participant'
 
   get   '/contests/:id/control' => 'contests#control'
   put   '/contests/:id/control' => 'contests#control_update'

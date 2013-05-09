@@ -9,11 +9,15 @@
       <th>Name</th>
       <th>Submits</th>
       <th>Destroy participate</th>
+        <% if @contest.confirm_participants == true %>
+      <th>Confirm</th>
+        <% end %>      
     </tr>
   </thead>
 
   <tbody>
-    <% @contest.participants.each do |participant| %>
+    <% participants = (@contest.confirm_participants == false) ? @contest.participants : @contest.participants.sort{|x, y| if( x.confirmed? == y.confirmed?) then x.path <=> y.path elsif x.confirmed? then -1 else -1 end} %>
+    <% participants.each do |participant| %>
       <tr>
         <td> <%= participant.path %> </td>
         <td> <%= participant.user.name %> </td>
@@ -27,6 +31,13 @@
             :confirm => 'Are you sure?'
           %> 
         </td>
+          <% if @contest.confirm_participants == true %>
+        <td>
+          <div class="switch switch-small confirm" <%="contest=#{@contest.path} id=#{participant.path}" %> >
+            <input type="checkbox" <%= 'checked' if participant.confirmed %> >
+          </div>
+        </td>
+          <% end %>        
       </tr>
     <% end %>
   </tbody>

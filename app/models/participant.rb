@@ -2,19 +2,21 @@ class Participant
   include Mongoid::Document
 
   field :path, type: String
+  field :confirmed, type: Boolean, default: false
+
   belongs_to :user
   belongs_to :contest
   has_many :submits
   has_many :messages
   
 # for standings
-  field :penalty, type: Integer, default: 0
-  field :penalties, type: Array, default: []
-  field :a, type: Array, default: []
-  field :point, type: Integer, default: 0
+  field :penalty,   type: Integer,  default: 0
+  field :penalties, type: Array,    default: []
+  field :a,         type: Array,    default: []
+  field :point,     type: Integer,  default: 0
 
-  before_create :set_path, :create_folder, :set_standings
-  before_destroy :clear
+  before_create   :set_path, :create_folder, :set_standings
+  before_destroy  :clear
   
   def set_path
     participants = self.contest.participants

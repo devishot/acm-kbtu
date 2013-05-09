@@ -40,13 +40,20 @@ class ProblemsController < ApplicationController
     if current_user == @contest.user || current_user.admin?
       #nothing
     elsif not current_user.participate?(@contest)  then
-      redirect_to contest_path(@contest.path), alert: 'Please, register to participate.'
+      redirect_to contest_path(@contest.path), alert: 'Please, register to participate'
       return
     elsif not @contest.started?
-      redirect_to contest_path(@contest.path), alert: 'Contest does not started'
+      redirect_to contest_path(@contest.path), alert: 'Contest is not started'
+      return
+    end
+
+    participant = current_user.participant(@contest)
+
+    if @contest.confirm_participants==true && participant.confirmed==false
+      redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
       return
     else
-      participant = current_user.participants.find_by(contest: @contest)
+      #ALL OK
       @submit.participant = participant
       @submissions = participant.submits.where(problem: @problem)
     end

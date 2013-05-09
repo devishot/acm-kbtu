@@ -65,7 +65,13 @@ class ContestsController < ApplicationController
       redirect_to contest_path(@contest.path), alert: alert
       return
     end
-    participant = current_user.participants.where(contest: @contest).first    
+
+    participant = current_user.participant(@contest)
+
+    if @contest.confirm_participants==true && participant.confirmed==false
+      redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
+      return
+    end
 
     @summary = [[]]
     @contest.problems_count.times do |i|
@@ -78,7 +84,9 @@ class ContestsController < ApplicationController
     #@contest = Contest.find_by(path: params[:id])
     @last_success = Submit.where(id: @contest.last_success_submit).first
 
-    @standings = @contest.participants.sort do |a, b|
+    participants = (@contest.confirm_participants==false) ? @contest.participants : @contest.participants.where(confirmed: true)
+
+    @standings = participants.sort do |a, b|
       if a.point == b.point then
         a.penalty <=> b.penalty
       else
@@ -97,9 +105,9 @@ class ContestsController < ApplicationController
 
     participant = Participant.new();
     @contest.participants << participant      # participant.contest will be automatically created
-    current_user.participants << participant  # participant.user will be automatically created
-    
+    current_user.participants << participant  # participant.user will be automatically created    
     participant.save
+
     redirect_to contest_path(@contest.path)
   end
 
@@ -110,6 +118,16 @@ class ContestsController < ApplicationController
     participant.destroy
     redirect_to contest_path(contest.path)+"/control"
   end  
+
+  # POST /contests/:id/confirm_participant/:participant
+  def confirm_participant
+    #@contest = Contest.find_by(path: params[:id])
+    participant = @contest.participants.find_by(path: params[:participant].to_i)
+    participant.confirmed = (params[:value]=="false") ? false : true
+    participant.save
+
+    redirect_to contest_path(@contest.path)+"/control_participants"
+  end
 
   # GET /contests/:id/control
   def control
@@ -176,12 +194,20 @@ class ContestsController < ApplicationController
     if current_user == @contest.user || current_user.admin?
       #nothing
     elsif not current_user.participate?(@contest)  then
-      redirect_to contest_path(@contest.path), alert: 'Please, register to participate.'
+      redirect_to contest_path(@contest.path), alert: 'Please, register to participate'
       return
     elsif not @contest.started?
-      redirect_to contest_path(@contest.path), alert: 'Contest does not start'
+      redirect_to contest_path(@contest.path), alert: 'Contest is not started'
       return
     end
+
+    participant = current_user.participant(@contest)
+
+    if @contest.confirm_participants==true && participant.confirmed==false
+      redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
+      return
+    end
+
 
     statement = @contest.problems.find_by(order: 0).statement['file_link']
     if statement.blank?

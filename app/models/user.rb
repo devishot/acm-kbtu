@@ -9,6 +9,10 @@ class User
     (self.participants.where(contest: contest).count==0) ? false : true
   end
 
+  def participant(contest)
+    return self.participants.where(contest: contest).first
+  end
+
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable

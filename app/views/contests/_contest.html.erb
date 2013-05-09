@@ -30,6 +30,12 @@
         :class => "btn btn-small btn-primary"%>
     <br />
     <br />
+
+  <% elsif @contest.confirm_participants==true && current_user.participant(@contest).confirmed==false %>
+    <span class="label label-info">Your participation is not yet confirmed</span>
+    <br />
+    <br />
+
   <% end %>
 
 
@@ -38,11 +44,11 @@
       <li <%= "class=active" if @navpill==2 %> > 
         <%= link_to "Problems",   "/contests/#{@contest.path}/problems" %>
       </li>        
-    <% end %>
 
-    <li <%= "class=active" if @navpill==1 %> > 
-      <%= link_to "Statement",   "/contests/#{@contest.path}/statement" %>
-    </li>
+      <li <%= "class=active" if @navpill==1 %> > 
+        <%= link_to "Statement",   "/contests/#{@contest.path}/statement" %>
+      </li>
+    <% end %>
 
     <li <%= "class=active" if @navpill==3 %> > 
       <%= link_to "Standings",  "/contests/#{@contest.path}/standings" %>
