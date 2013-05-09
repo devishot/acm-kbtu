@@ -155,6 +155,14 @@ class Problem
       self.checker_mode = (self.template.checker_mode==2) ? 1 : 0
     end
 
+    #update params
+    r = self.update_attributes(params[:problem])
+    if r == true
+      @status[:notice] << 'Problem updated'
+    else
+      @status[:alert]  << 'Problem not updated'
+    end
+
     #put solution and CHECK TESTS AND CHECKER
     if not params[:solution_file].nil?
       solutions_status = self.put_solution(params[:solution_file])
@@ -175,20 +183,14 @@ class Problem
       end
     end
 
-    #update
-    r = self.update_attributes(params[:problem])
-    if r == true
-      @status[:notice] << 'Problem updated'
-    else
-      @status[:alert]  << 'Problem not updated'
-    end
-
-
     #Contest: push new template for all problems
     if self.order==0
       self.contest.upd_problems_template
       @status[:notice] << 'Contest: template pushed'
     end
+
+    #save
+    self.save
 
     return @status
   end
@@ -309,9 +311,9 @@ class Problem
       #delete checker
       self.checker_path = ''
       self.checker_mode = 0
-      FileUtils.rm_rf checker_dir      
+      FileUtils.rm_rf checker_dir
     end
-    self.save
+#    self.save
 
     return status;
   end
