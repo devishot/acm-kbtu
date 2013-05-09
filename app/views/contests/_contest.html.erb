@@ -31,7 +31,7 @@
     <br />
     <br />
 
-  <% elsif @contest.confirm_participants==true && current_user.participant(@contest).confirmed==false %>
+  <% elsif @contest.user!=current_user && @contest.confirm_participants==true && current_user.participant(@contest).confirmed==false %>
     <span class="label label-info">Your participation is not yet confirmed</span>
     <br />
     <br />

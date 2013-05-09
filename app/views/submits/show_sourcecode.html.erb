@@ -36,20 +36,9 @@ submit_download_path(@participant.contest.path, @participant.path, @submit.id),
 <% text=File.open(@submit.sourcecode, "r").read %>
 <% text.gsub!(/\r\n?/, "\n") %>
 
-<code>
-<pre style="width:30px;  float:left; position:relative; line-height: 1.61; font-size:1.12em;">
-<% text.each_line.count.times do |i| %>
-<%= i+1 %>
-<% end %>
+<pre class="sh_cpp prettyprint linenums" id="sourcecode">
+<ol class="linenums"><% text.each_line do |line| %><li><%= line %></li><% end %></ol>
 </pre>
-</code>
-
-<code>
-<pre class="sh_cpp" id="sourcecode" style="margin-left: 40px;  top:-22px; position:relative;">
-<% text.each_line do |line| %><%= (line[-1]=="\n") ? line[0..-2] : line %>
-<% end %>
-</pre>
-</code>
 
 
 <div id="ModalCopied" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
