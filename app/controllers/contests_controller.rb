@@ -185,7 +185,13 @@ class ContestsController < ApplicationController
 
   def control_status
     #@contest = Contest.find_by(path: params[:id])
-    @submits = Submit.where(problem_contest:  @contest_id).sort_by{ |submit| submit.updated_at}.reverse
+    @submits = []
+    @contest.participants.each do |participant|
+      next if @contest.confirm_participants==true && participant.confirmed==false
+      Submit.where(participant: participant).each { |x| @submits << x }
+    end
+
+    @submits = @submits.sort_by{ |submit| submit.updated_at}.reverse
   end
 
   # GET /contests/:id/statement
