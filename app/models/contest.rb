@@ -21,7 +21,7 @@ class Contest
   has_many :participants
 
   after_create :set_path, :create_folder, :create_template_problem
-  before_destroy :clear  
+  before_destroy :clear
   
   def set_path
     self.path = (Contest.exists?) ? 

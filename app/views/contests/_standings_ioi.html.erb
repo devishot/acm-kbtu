@@ -1,0 +1,41 @@
+<table class="table table-hover table-condensed" >
+  <thead>
+    <tr>
+      <th style="width:40px;">Place</th>
+      <th>Participant</th>
+      <% for i in 1..@contest.problems_count %>
+        <% next if @contest.problems[i].disabled == true %>
+        <th><%= @contest.problems[i].order_abc %></th>
+      <% end %>
+      <th style="width:70px;">Total</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% paint = true %>
+    <% place = 1 %>
+    <% @standings.each_with_index do |participant, index| participant %>
+      <% if index > 0 && participant.point != @standings[index-1].point %>
+        <% paint = paint ^ true %>
+        <% place += 1 %>
+      <% end %>
+      <tr <% if participant.user == current_user then %>
+          class='info'
+        <% elsif paint == true %>
+            style="background-color: #f9f9f9;"
+        <% end %> 
+      >
+        <td> <%= place %> </td>
+        <td> <%= participant.user.name %> </td>
+
+        <% for i in 1..@contest.problems_count %>
+          <% next if @contest.problems[i].disabled == true %>
+          <td><%= participant.attempt(i) %></td>
+        <% end %>
+
+        <td><%= participant.point %></td>
+      </tr>
+    <% end %>
+
+  </tbody>
+</table>

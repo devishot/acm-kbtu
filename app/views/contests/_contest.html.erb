@@ -45,20 +45,26 @@
         <%= link_to "Problems",   "/contests/#{@contest.path}/problems" %>
       </li>        
 
+      <% if not @contest.problems.find_by(order: 0).statement['file_link'].blank? %>
       <li <%= "class=active" if @navpill==1 %> > 
         <%= link_to "Statement",   "/contests/#{@contest.path}/statement" %>
       </li>
+      <% end %>
     <% end %>
 
+    <% if @contest.type==0 || (@contest.type==1 && @contest.over?) %>
     <li <%= "class=active" if @navpill==3 %> > 
       <%= link_to "Standings",  "/contests/#{@contest.path}/standings" %>
     </li>
+    <% end %>
 
     <% if current_user.participate?(@contest) %>      
       <li <%= "class=active" if @navpill==5 %> > 
         <%= link_to "Summary",    "/contests/#{@contest.path}/summary" %>
       </li>
+    <% end %>
 
+    <% if 1<0 %>
       <li class="dropdown" <% "class=dropdown active" if @navpill==4 %> >
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
             Clars <b class="caret"></b>

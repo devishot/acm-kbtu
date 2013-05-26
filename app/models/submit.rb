@@ -4,6 +4,7 @@ class Submit
   field :order,        type: Integer
 	field :sourcecode,   type: String
 	field :status,       type: Hash,      default: {}
+  field :tests_status, type: Array,     default: [{}]
   field :folder,       type: String
   field :hidden,       type: Boolean,   default: false 
 

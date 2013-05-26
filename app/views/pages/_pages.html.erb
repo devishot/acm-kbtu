@@ -2,7 +2,7 @@
   <% @node = @pages[0].node %>
 
   <% if can? :manage, Node %>
-    <button class="sortable_button">Save</button>
+    <button class="sortable_button" id="<%= @node.path %>">Save</button>
   <% end %>
 
   <table class="table">

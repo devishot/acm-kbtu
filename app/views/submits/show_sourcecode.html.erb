@@ -8,7 +8,7 @@
   <dd> #<%= @submit.order %> </dd>
 
   <dt> Status: </dt>
-  <dd <%= (@submit.status["status"]=="AC")? "class=text-success" : "class=text-error" %> > 
+  <dd <%= (["AC", "OK"].include? @submit.status["status"])? "class=text-success" : "class=text-error" %> > 
     <%= @submit.status["status"] %> <dd>
 </dl>
 

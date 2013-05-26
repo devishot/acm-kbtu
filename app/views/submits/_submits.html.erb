@@ -3,9 +3,17 @@
     <tr>
       <th>#</th>
       <th>Submitted</th>
+
+    <% if @contest.type == 0 %>
       <th>Tested</th>
+    <% end %>
+
       <th>Status</th>
+
+    <% if @contest.type == 0 %>
       <th>Test</th>
+    <% end %>
+
       <th>Source</th>
     </tr>
   </thead>
@@ -14,7 +22,7 @@
     <% @submissions.sort_by { |obj| obj.updated_at }.reverse_each do |i| %>
       <tr <%= case i.status['status']
               when nil, "";"class=warning"
-              when "AC";"class=success"
+              when "AC", "OK";"class=success"
               when "PE";"class=info"
               else "class=error"
             end
@@ -22,9 +30,13 @@
       >
         <td style="width: 20px;">  <%= i.order %>  </td>
         <td style="width: 80px;">  <%= i.created_at.to_s(:time_s) %>  </td>
+
+      <% if @contest.type == 0 %>
         <td style="width: 80px;">
           <%= (i.status['status'].blank?) ? "pending" : i.updated_at.to_s(:time_s) %>
         </td>
+      <% end %>
+
         <td style="width: 50px;">
           <!-- Button to trigger modal IF status is CE -->
           <% if not i.status['status']=='CE' %>
@@ -33,11 +45,16 @@
             <a href="#CE<%= i.id %>" role="button" class="btn" data-toggle="modal">CE</a> 
           <% end %>
         </td>
+
+      <% if @contest.type == 0 %>
         <td style="width: 40px;">  <%= i.status['test'] %>  </td>
+      <% end %>
+      
         <td style="width: 80px;">  
           <%= link_to "view code", submit_view_path(i.participant.contest.path, i.participant.path, i.id), :target => '_blank' %> 
         </td>
       </tr>
+
 
       <!-- Modal -->
       <% if i.status['status']=='CE' then %>

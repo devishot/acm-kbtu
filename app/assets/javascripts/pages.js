@@ -6,18 +6,18 @@ var fixHelper = function(e, ui) {
 };
 
 $(function() {
-    $( ".sortable").sortable({
+    $(".sortable").sortable({
       axis: 'y',
       items: '> .child',
       helper: fixHelper
     }).disableSelection();
-    $( ".sortable").disableSelection();
-    $( ".sortable_button  ").click(function(){
-      var order = $(".sortable").sortable("toArray");
-      alert("Hello"+$( ".sortable").attr('id'))
+    $(".sortable").disableSelection();
+    $(".sortable_button").click(function(){
+      var node = this.id
+      var order = $("#"+node+".sortable").sortable("toArray")      
       $.post("/upd_pages_order", {
           "json": {
-            "node": "<%= @node.path %>",
+            "node": node,
             "order": order
           }
         }, 

@@ -35,28 +35,26 @@ class ProblemsController < ApplicationController
       return
     end
 
-    @submit = Submit.new({:problem => @problem, :hide => true})
 
     if current_user == @contest.user || current_user.admin?
       #nothing
     elsif not current_user.participate?(@contest)  then
       redirect_to contest_path(@contest.path), alert: 'Please, register to participate'
       return
+    end
+    participant = current_user.participant(@contest)
+    if @contest.confirm_participants==true && participant.confirmed==false
+      redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
+      return
     elsif not @contest.started?
       redirect_to contest_path(@contest.path), alert: 'Contest is not started'
       return
     end
 
-    participant = current_user.participant(@contest)
 
-    if @contest.confirm_participants==true && participant.confirmed==false
-      redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
-      return
-    else
-      #ALL OK
-      @submit.participant = participant
-      @submissions = participant.submits.where(problem: @problem)
-    end
+    @submit = Submit.new({:problem => @problem, :hide => true})
+    @submit.participant = participant
+    @submissions = participant.submits.where(problem: @problem)
 
     @navpill = 2
     respond_to do |format|

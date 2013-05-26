@@ -11,7 +11,13 @@
       <th>Participant</th>
       <th>Problem</th>
       <th>Status</th>
-      <th>Test</th>
+
+      <% if @contest.type==0 %> 
+        <th>Test</th>
+      <% elsif @contest.type==1 %>
+        <th>Point</th>
+      <% end %>
+
       <th>Error</th>
     </tr>
   </thead>
@@ -47,7 +53,13 @@
         </td>
 
         <td style="width: 20px;">
-          <%= submit.status['test'] %>
+          <% if @contest.type==0 %>
+            <%= submit.status['test'] %>
+          <% elsif @contest.type==1 && !(["CE", "SE"].include? submit.status['status']) %>
+            <a href="#ioisubmitModal<%= submit.id %>" role="button" class="btn" data-toggle="modal">
+              <%= submit.status['point'] %>
+            </a>
+          <% end %>
         </td>
 
         <td style="width: 35px;">
@@ -56,6 +68,7 @@
           <% end %>
         </td>
       </tr>
+
 
       <% if not submit.status['error'].blank? then %>
         <div class="modal hide fade"  id="myModal<%= submit.id %>"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -67,6 +80,40 @@
           <div class="modal-body">
             <% submit.status['error'].each do |error| %>
               <p> <%= error %> </p>
+            <% end %>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+      <% end %>
+
+
+      <% if @contest.type==1 %>
+        <div class="modal hide fade"  id="ioisubmitModal<%= submit.id %>"  tabindex="-1" role="dialog" aria-labelledby="ioisubmitModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="ioisubmitModalLabel"> 
+              Participant: <%= submit.participant.user.name %>;
+              Problem:     <%= submit.problem.order_abc %>;
+              Point:       <%= submit.status['point'] %>
+            </h3>
+          </div>
+
+          <div class="modal-body">
+            <% submit.tests_status.each_with_index do |p, i| %>
+              <% next if i==0 %>
+              Test # <%= i %>, status: <%= p['status'] %>
+              <% if not p['status']=='OK' %>
+                <% p['error'].each do |err| %>
+                  <br/>
+                  <span class="label label-important">
+                    <%= err.html_safe %>              
+                  </span>              
+                <% end %>
+              <% end %>
+              <br/>
             <% end %>
           </div>
 

@@ -3,6 +3,7 @@ function countdown() {
     var s = $('.sec');  
     if(m.length == 0 && parseInt(s.html()) <= 0) {
         $('.clock').html('Contest is over');
+        clearInterval(intervalID)
         location.reload();
     }
     if(parseInt(s.html()) <= 0) {
@@ -14,7 +15,7 @@ function countdown() {
     }
     s.html(parseInt(s.html()-1));
 }
-setInterval('countdown()',1000);
+var intervalID = setInterval('countdown()',1000);
 
 
 

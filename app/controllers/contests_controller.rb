@@ -61,8 +61,7 @@ class ContestsController < ApplicationController
     @navpill = 5
 
     if not current_user.participate? @contest
-      alert = (@contest.over?) ? "Contest is over" : "Please, register to participate"
-      redirect_to contest_path(@contest.path), alert: alert
+      redirect_to contest_path(@contest.path), alert: "Please, register to participate"
       return
     end
 
@@ -82,19 +81,32 @@ class ContestsController < ApplicationController
 
   def standings
     #@contest = Contest.find_by(path: params[:id])
-    @last_success = Submit.where(id: @contest.last_success_submit).first
+    @navpill = 3
 
-    participants = (@contest.confirm_participants==false) ? @contest.participants : @contest.participants.where(confirmed: true)
+    participant = current_user.participant(@contest)
 
-    @standings = participants.sort do |a, b|
-      if a.point == b.point then
-        a.penalty <=> b.penalty
-      else
-        b.point <=> a.point
-      end
+    if @contest.confirm_participants==true && participant.confirmed==false
+      redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
+      return
+    elsif @contest.type==1 && !@contest.over? #IOI
+      redirect_to contest_path(@contest.path), alert: 'Contest is not finished'
+      return
     end
 
-    @navpill = 3
+    participants = (@contest.confirm_participants==false) ? @contest.participants : @contest.participants.where(confirmed: true)
+    if @contest.type==0 #ACM
+      @standings = participants.sort do |a, b|
+        if a.point == b.point then
+          a.penalty <=> b.penalty
+        else
+          b.point <=> a.point
+        end
+      end
+      @last_success = Submit.where(id: @contest.last_success_submit).first
+
+    elsif @contest.type==1 #IOI
+      @standings = participants.sort { |a, b| b.point <=> a.point }
+    end
   end
 
   # post /contests/:id/participate
@@ -197,23 +209,22 @@ class ContestsController < ApplicationController
   # GET /contests/:id/statement
   def download_statement
     #@contest = Contest.find_by(path: params[:id])
+
+
     if current_user == @contest.user || current_user.admin?
       #nothing
     elsif not current_user.participate?(@contest)  then
       redirect_to contest_path(@contest.path), alert: 'Please, register to participate'
       return
+    end
+    participant = current_user.participant(@contest)    
+    if @contest.confirm_participants==true && participant.confirmed==false
+      redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
+      return
     elsif not @contest.started?
       redirect_to contest_path(@contest.path), alert: 'Contest is not started'
       return
     end
-
-    participant = current_user.participant(@contest)
-
-    if @contest.confirm_participants==true && participant.confirmed==false
-      redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
-      return
-    end
-
 
     statement = @contest.problems.find_by(order: 0).statement['file_link']
     if statement.blank?
