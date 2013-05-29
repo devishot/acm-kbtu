@@ -11,6 +11,13 @@
     </div>
   <% end %>
 
+
+  <%= f.hidden_field :user, :value => current_user.id %>
+  <%= f.hidden_field :old_node %>
+  <%= f.hidden_field :path %>
+  <%= f.hidden_field :order %>
+
+
   <div class="control-group">
     <%= f.label :node, :class=>"control-label" %>
     <div class="controls">
@@ -26,6 +33,7 @@
     </div>
   </div>
 
+
   <div class="control-group">
     <%= f.label :text_body, :class=>"control-label" %>
     <div class="controls">
@@ -33,15 +41,7 @@
     </div>
   </div>
 
-
-  <%= f.hidden_field :user, :value => current_user.id %>
-  <%= f.hidden_field :old_node %>
-  <%= f.hidden_field :path %>
-  <%= f.hidden_field :order %>
-
-  <div class="control-group">
-    <div class="controls">
-      <%= f.submit %>
-    </div>
+  <div style="float:right;">
+    <%= f.submit nil, :class => 'btn' %>
   </div>
 <% end %>

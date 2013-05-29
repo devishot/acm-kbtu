@@ -28,3 +28,16 @@ $(function() {
       )
     });
 });
+
+
+tinyMCE.init({
+  mode: 'textareas',
+  theme: 'modern',
+  plugins: [
+    "autoresize advlist autolink link image lists charmap preview hr anchor pagebreak spellchecker",
+    "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+    "save table contextmenu directionality emoticons template paste textcolor"
+  ],
+  width: 697 //like a span9
+})
+

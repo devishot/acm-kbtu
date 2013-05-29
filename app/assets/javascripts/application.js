@@ -15,8 +15,7 @@
 //= require jquery_ujs
 //= require bootstrap
 //= require bootstrapSwitch.min.js
-//= require tinymce/tinymce.min.js
-//= require tinymce.js
+//= require tinymce
 //= require nodes.js
 //= require pages.js
 //= require contests.js
