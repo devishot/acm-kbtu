@@ -38,6 +38,6 @@ tinyMCE.init({
     "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
     "save table contextmenu directionality emoticons template paste textcolor"
   ],
-  width: 697 //like a span9
+  width: 697, //like a span9
+  selector: "textarea.tinymce",
 })
-

@@ -8,10 +8,11 @@ AcmKbtu::Application.routes.draw do
   delete 'kill_participant' => 'contests#kill_participant'
   post  '/contests/:id/confirm_participant/:participant' => 'contests#confirm_participant'
 
-  get   '/contests/:id/control' => 'contests#control'
+  get   '/contests/:id/control' => 'contests#control', as: :contest_control
   put   '/contests/:id/control' => 'contests#control_update'
   match '/contests/:id/control_problems' => 'contests#control_problems', as: :contest_control_problems
-  put   '/contests/:id/control_problems_count' => 'contests#control_problems_count'  
+  put   '/contests/:id/control_problems_count' => 'contests#control_problems_count'
+  put   '/contests/:id/control_submit_limit' => 'contests#control_submit_limit', as: :control_submit_limit
   match '/contests/:id/control_participants' => 'contests#control_participants'
   match '/contests/:id/control_status' => 'contests#control_status'
 

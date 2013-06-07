@@ -187,12 +187,23 @@ class ContestsController < ApplicationController
     #@contest = Contest.find_by(path: params[:id])
   end
 
-  # PUT /contests/:id/control_problems
+  # PUT /contests/:id/control_problems_count
   def control_problems_count
     #@contest = Contest.find_by(path: params[:id])
     @contest.upd_problems_count(params[:problems_count].to_i)
 
     redirect_to contest_path(@contest.path)+'/control_problems', notice: 'Problems count updated'
+  end
+
+
+  # PUT /contests/:id/control_submit_limit
+  def control_submit_limit
+    if !params[:submit_limit].blank? && params[:submit_limit].to_i >= 0
+      @contest.submit_limit = params[:submit_limit].to_i
+      @contest.save!
+    end
+
+    redirect_to contest_control_path(@contest.path), notice: 'IOI submits limit updated'
   end
 
   def control_status

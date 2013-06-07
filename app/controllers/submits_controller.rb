@@ -24,8 +24,17 @@ class SubmitsController < ApplicationController
     })
 
     contest = @submit.problem.contest
+    problem_path = contest_problem_path(contest.path, @submit.problem.order)
     #return if contest OVER
-    redirect_to problem_path, error: 'Contest is over' if contest.over?
+    if contest.over?
+      redirect_to problem_path, error: 'Contest is over' 
+      return
+    end
+    #IOI if Attempts exhausted
+    if contest.ioi? && @submit.participant.attempts(@submit.problem.id)<=0
+      redirect_to problem_path, error: 'Attempts exhausted'
+      return
+    end
 
     if contest.problems_count > 26 
       name_prefix = "#{@submit.problem.order}" + '#'
@@ -51,7 +60,6 @@ class SubmitsController < ApplicationController
     Resque.enqueue(Tester, @submit.id)
 
     respond_to do |format|
-      problem_path = contest_problem_path(contest.path, @submit.problem.order)
       format.html { redirect_to problem_path, notice: 'Successfully submited.' }      
     end
   end

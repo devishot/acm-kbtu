@@ -61,7 +61,7 @@ class Participant
     self.save!
   end
 
-  def attempt(problem_number)
+  def attempt(problem_number)#for standings
     i = problem_number
     if self.contest.type==1 #IOI
       return self.a[i]
@@ -76,6 +76,10 @@ class Participant
       end
 
     end
+  end
+
+  def attempts(problem_id)#for limit
+    return self.contest.submit_limit - self.submits.where(problem: problem_id).where('status.status' => 'OK').count
   end
 
 end

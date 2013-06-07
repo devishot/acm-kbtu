@@ -71,3 +71,14 @@
   <%= link_to "Submits status", contest_path(@contest.path)+'/control_status', 
       class: "btn btn-block btn-primary" %>
 </div>
+
+
+<% if @contest.ioi? %>
+  <div class="well" style="width: 140px; top: -220px; left: 180px; position: relative; float: right;">
+    <%= form_tag(control_submit_limit_path(@contest.path), :method => "PUT") do %>
+      <%= label_tag :submit_limit, "IOI submit attempts" %>
+      <%= number_field_tag :submit_limit, @contest.submit_limit, :class => "input-mini" %> Attempts
+      <%= submit_tag 'Update', :class => "btn" %>
+    <% end %>
+  </div>
+<% end %>

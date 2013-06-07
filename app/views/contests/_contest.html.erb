@@ -17,7 +17,7 @@
     </h3>
 
     <p class="muted">
-      <%= @contest.description %>
+      <%= @contest.description.html_safe %>
     </p>
 
     <%= render 'contests/contest_info' %>
