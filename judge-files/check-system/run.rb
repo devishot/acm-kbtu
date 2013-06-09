@@ -107,7 +107,7 @@ class Tester
     #compile sourcecode
     compile_status = Compiler.compile(@source_code, "#{@work_dir}/solution")
     if not compile_status[:status] == 'OK' then
-      @submit.status = compile_status        
+      @submit.status = compile_status
       @submit.save!
       return
     end
@@ -144,32 +144,35 @@ class Tester
         @submit.tests_status[i+1][:status] = verdict_status
         @submit.tests_status[i+1][:error]  = verdict
 
-        if @contest.type == 0 #ACM
+        if @contest.type == 0 || @submit.hidden == true #ACM or submit.HIDDEN
           @submit.status[:status] = verdict_status
           @submit.status[:error]  = verdict
           @submit.status[:test]   = i+1
           @submit.save!
           return
         end
+
       else
         #puts "!1  #{t[0]} | #{t[1]} | #{verdict}"
         #CHECK(COMPARE answer and test's answer)
         checker_status = self.check(t[0], t[1], (output_file.blank?) ? 'output.txt' : output_file, i+1)
         @submit.tests_status[i+1][:status] = checker_status[:status]
         @submit.tests_status[i+1][:error]  = checker_status[:error]
-        
-        if @contest.type == 0 #ACM
+
+        #(ACM||HIDDEN) & WRONG
+        if (@contest.type == 0 || @submit.hidden == true) && checker_status[:status]!='OK'
           @submit.status[:status] = checker_status[:status]
-          @submit.status[:error]  = checker_status[:error]        
+          @submit.status[:error]  = checker_status[:error]
           @submit.status[:test]   = i+1
           @submit.save!
           return
         end
+
       end
     end
 
 
-    @submit.status[:status] = (@contest.type == 0) ? 'AC' : 'OK' #ACM : IOI
+    @submit.status[:status] = (@contest.type == 0 || @submit.hidden == true) ? 'AC' : 'OK' #ACM : IOI
     @submit.save!
 
     return
@@ -203,7 +206,7 @@ class Tester
         k += 1 if submit.tests_status[i+1]['status'] == "OK"
       end
       get_percent = lambda {|a, b| (a==0) ? 0 : (b*100)/a }
-      participant.a[problem.order] = get_percent.call(tests_count, k)
+      participant.a[problem.order] = [participant.a[problem.order], get_percent.call(tests_count, k)].max
       submit.status[:point] = get_percent.call(tests_count, k)
       submit.save!
       participant.summarize

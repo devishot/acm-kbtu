@@ -48,7 +48,8 @@ class Participant
 
   def summarize
     self.point    = 0
-    self.penalty  = 0    
+    self.penalty  = 0
+
     for i in 1..self.contest.problems_count
       next if self.a[i] <= 0
       if self.contest.type==0 #ACM
@@ -58,6 +59,7 @@ class Participant
         self.point += self.a[i]
       end
     end
+
     self.save!
   end
 

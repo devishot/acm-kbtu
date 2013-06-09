@@ -31,7 +31,7 @@
       <% participant = submit.participant %>
       <tr <%= case submit.status['status']
               when "";"class=warning"
-              when "AC";"class=success"
+              when "AC","OK";"class=success"
               when "PE";"class=info"
               else "class=error"
             end %> 

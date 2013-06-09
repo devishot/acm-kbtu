@@ -19,7 +19,7 @@
   </thead>
 
   <tbody>
-    <% @submissions.sort_by { |obj| obj.updated_at }.reverse_each do |i| %>
+    <% @submissions.sort_by { |obj| obj.updated_at }.reverse_each do |i| %>      
       <tr <%= case i.status['status']
               when nil, "";"class=warning"
               when "AC", "OK";"class=success"
