@@ -171,8 +171,11 @@ class Tester
       end
     end
 
-
-    @submit.status[:status] = (@contest.type == 0 || @submit.hidden == true) ? 'AC' : 'OK' #ACM : IOI
+    if (@contest.type == 0 || @submit.hidden == true)
+      @submit.status = {:status=>"AC"}
+    else
+      @submit.status[:status] = 'OK'  
+    end  
     @submit.save!
 
     return
