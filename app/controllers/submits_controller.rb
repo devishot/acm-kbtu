@@ -57,7 +57,9 @@ class SubmitsController < ApplicationController
     @submit.save!
 
     #send for run
-    Resque.enqueue(Tester, @submit.id)
+    require "#{Rails.root}/judge-files/check-system/run"
+    Tester.perform(@submit.id, true) #Tester(submit.id, hidden=true)
+    #Resque.enqueue(Tester, @submit.id)
 
     respond_to do |format|
       format.html { redirect_to problem_path, notice: 'Successfully submited.' }      
