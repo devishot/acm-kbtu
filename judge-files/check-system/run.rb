@@ -11,7 +11,7 @@ class Tester
   def initialize(submit_id, hidden=false)
     @init_status = false
 
-    raise Submit.all.inspect
+    raise "#{Submit.all[0..-1]} | #{submit_id}"
     @submit = Submit.find(submit_id)
     @submit.status = {:status => '', :error => [], :test => ''}
     @submit.tests_status = [{}] #empty, full in Run
