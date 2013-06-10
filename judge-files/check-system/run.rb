@@ -198,6 +198,7 @@ class Tester
     contest = problem.contest    
     participant = submit.participant
 
+
     if contest.type == 1 #IOI
       return if ["CE", "SE"].include? submit.status['status']
       tests_count = submit.tests_status.count - 1
@@ -213,6 +214,7 @@ class Tester
       participant.save!
       return
     end
+
 
     #ACM
     if submit.status['status'] == "AC"

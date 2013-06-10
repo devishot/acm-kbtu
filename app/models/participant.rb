@@ -49,18 +49,18 @@ class Participant
   def summarize
     self.point    = 0
     self.penalty  = 0
-
     for i in 1..self.contest.problems_count
       next if self.a[i] <= 0
+
       if self.contest.type==0 #ACM
         self.penalty  += self.penalties[i] 
         self.point    += 1
+
       elsif self.contest.type==1 #IOI
+
         self.point += self.a[i]
       end
     end
-
-    self.save!
   end
 
   def attempt(problem_number)#for standings

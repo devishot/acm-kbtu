@@ -58,7 +58,7 @@ class SubmitsController < ApplicationController
 
     #send for run
     require "#{Rails.root}/judge-files/check-system/run"
-    Tester.perform(@submit.id, true) #Tester(submit.id, hidden=true)
+    Tester.perform(@submit.id) #Tester(submit.id, hidden=false)
     #Resque.enqueue(Tester, @submit.id)
 
     respond_to do |format|
