@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"margin",
+				"margin-top"
+			],
+			[
 				"pro",
 				"problem"
 			],
@@ -347,38 +351,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "app/views/problems/_form.html.erb",
-			"settings":
-			{
-				"buffer_size": 5004,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "judge-files/check-system/run.rb",
-			"settings":
-			{
-				"buffer_size": 7914,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "app/models/problem.rb",
-			"settings":
-			{
-				"buffer_size": 12753,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "app/models/participant.rb",
-			"settings":
-			{
-				"buffer_size": 2039,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -408,16 +380,21 @@
 	},
 	"file_history":
 	[
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/run.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_status.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/run.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/application.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/stylesheets/application.css",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_standings_acm.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/participant.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/submits_controller.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/problem.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/problems_controller.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/_form.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/submits/_submits.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/pages.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/pages/_form.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/show.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/submits_controller.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/problems_controller.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/participant.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/contests_controller.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/routes.rb",
@@ -443,8 +420,6 @@
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/standings_acm.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_form.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/submit.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/problem.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/_form.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/stylesheets/syntaxhighlighter/sh_style.css",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/user.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_participants.html.erb",
@@ -475,7 +450,6 @@
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/nodes.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/nodes/_index.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/nodes/_previews.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/application.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/_header.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/jquery.ui.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/tinymse.js",
@@ -537,7 +511,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 93.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"/home/devishot/Documents/Programming/Rails/acm-kbtu",
@@ -557,6 +531,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"heade",
+			"put_sol",
+			"solu",
 			"@contest.typ",
 			"rai",
 			"raise",
@@ -664,121 +641,8 @@
 	"groups":
 	[
 		{
-			"selected": 1,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "app/views/problems/_form.html.erb",
-					"settings":
-					{
-						"buffer_size": 5004,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3338,
-								3338
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Rails/HTML (Rails).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1488.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "judge-files/check-system/run.rb",
-					"settings":
-					{
-						"buffer_size": 7914,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6890,
-								6890
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3494.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "app/models/problem.rb",
-					"settings":
-					{
-						"buffer_size": 12753,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								11744,
-								11744
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5994.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "app/models/participant.rb",
-					"settings":
-					{
-						"buffer_size": 2039,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1200,
-								1200
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 594.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
