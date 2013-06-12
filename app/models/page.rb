@@ -14,7 +14,8 @@ class Page
   before_create :set_path
 
   def set_path
-   self.path = (Page.where(node: self.node).count + 1).to_s()
+    node_pages = Page.where(node: self.node)
+    self.path = node_pages.blank? ? '1' : (node_pages.sort!{|t1,t2| t2.path.to_i <=> t1.path.to_i}[0].path.to_i + 1).to_s()
   end
   
 end

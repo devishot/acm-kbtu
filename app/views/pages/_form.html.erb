@@ -21,7 +21,7 @@
   <div class="control-group">
     <%= f.label :node, :class=>"control-label" %>
     <div class="controls">
-      <%= f.collection_select(:node, @nodes, :id, :name) %>
+      <%= f.collection_select(:node, @nodes, :id, :name, {:selected => (@page.node.blank?) ? @nodes[0].id : @page.node.id}) %>
     </div>
   </div>
 
