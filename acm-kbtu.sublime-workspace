@@ -380,6 +380,8 @@
 	},
 	"file_history":
 	[
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/contests_controller.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_status.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/run.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/application.html.erb",
@@ -394,9 +396,7 @@
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/pages.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/pages/_form.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/show.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/contests_controller.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/routes.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/contest.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/Gemfile",

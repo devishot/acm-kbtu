@@ -17,15 +17,15 @@
       <p>
         <%= @page.text_body.html_safe %>
       </p>
-
-      <% if can? :destroy, @page %>
-        <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path+'/destroy' %> |
-      <% end %>
-      <% if can? :edit, @page %>
-        <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %> |
-      <% end %>
-      <%= link_to 'Back', :back %>
     </article>
-    <br />
+    <%= link_to 'Back', :back %> |
+    <% if can? :edit, @page %>
+      <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %> |
+    <% end %>
+    <% if can? :destroy, @page %>
+      <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path+'/destroy' %>
+    <% end %>
+    <br/>
+    <br/>
   </div>
 </div>

@@ -8,66 +8,62 @@
 </head>
 <body id="body-bgcolor">
 
-  <div class="container" id="header">
+  <div id="wrap">
+    <div class="container">
+      <header>
+        <%= render 'layouts/menu' %>
+      </header>
 
-    <%= render 'layouts/menu' %>
-
-    <% if !notice.blank? %>
-      <div class="alert alert-success well">
-        <a class="close" data-dismiss="alert" href="#">×</a>
-        <% if notice.kind_of?(Array) %>
-          <% len = notice.length %>
-          <% len.times do |i|  %>
-            <% next if i+1==len && notice[i].empty? %>
-            <%= notice[i] %>
-            <br /> 
+      <% if !notice.blank? %>
+        <div class="alert alert-success well">
+          <a class="close" data-dismiss="alert" href="#">×</a>
+          <% if notice.kind_of?(Array) %>
+            <% len = notice.length %>
+            <% len.times do |i|  %>
+              <% next if i+1==len && notice[i].empty? %>
+              <%= notice[i] %>
+              <br /> 
+            <% end %>
+          <% else %>
+            <%= notice %>
           <% end %>
-        <% else %>
-          <%= notice %>
-        <% end %>
-      </div>
-    <% end %>
-
-    <% if !alert.blank? %>
-      <div class="alert alert-error well">
-        <a class="close" data-dismiss="alert" href="#">×</a>
-        <% if alert.kind_of?(Array) %>
-          <% len = alert.length %>
-          <% len.times do |i|  %>
-            <% next if i+1==len && alert[i].empty? %>
-            <%= alert[i] %>
-            <br /> 
-          <% end %>
-        <% else %>
-          <%= alert.html_safe %>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
-
-
-  <div class="container" id="main">
-    <div class="content">
-      <div class="wrapper">
-        <div class="proper-content">
-          <%= yield %>
         </div>
+      <% end %>
 
-         <div class="push"></div>
-      </div>      
+      <% if !alert.blank? %>
+        <div class="alert alert-error well">
+          <a class="close" data-dismiss="alert" href="#">×</a>
+          <% if alert.kind_of?(Array) %>
+            <% len = alert.length %>
+            <% len.times do |i|  %>
+              <% next if i+1==len && alert[i].empty? %>
+              <%= alert[i] %>
+              <br /> 
+            <% end %>
+          <% else %>
+            <%= alert.html_safe %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= yield %>
     </div>
+
+    <div id="push"></div>
   </div>
 
-  <div class="footer-wrapper container">
-    <footer>
+
+  <footer>
+    <div class="container">
       <p class="muted credit" >
+        Made in KBTU | 
         Created by
         <%= link_to "Sattar Stamkulov", "http://www.linkedin.com/in/stamkulov" %>
         and
         <%= link_to "Azamat Mukhamejanov", "http://www.linkedin.com/pub/azamat-mukhamejanov/45/a2b/590" %>.
       </p>
-    </footer>
-  </div>
+    </div>
+  </footer>
 
 </body>
 <%= javascript_include_tag "application" %>
