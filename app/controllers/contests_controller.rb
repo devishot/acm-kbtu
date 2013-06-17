@@ -84,8 +84,7 @@ class ContestsController < ApplicationController
     @navpill = 3
 
     participant = current_user.participant(@contest)
-
-    if @contest.confirm_participants==true && participant.confirmed==false
+    if current_user.participate?(@contest) && @contest.confirm_participants==true && participant.confirmed==false
       redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
       return
     elsif @contest.type==1 && !@contest.over? #IOI
