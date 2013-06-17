@@ -24,18 +24,19 @@
   </center>
 
 
-  <% if !current_user.participate?(@contest) && @contest.user!=current_user && !@contest.over? %>
-    <%= link_to "Participate", contest_path(@contest.path) + "/participate", 
-        :method => :post, 
-        :class => "btn btn-small btn-primary"%>
-    <br />
-    <br />
+  <% if not @contest.user == current_user %>
+    <% if !@contest.over? && !current_user.participate?(@contest) %>
+      <%= link_to "Participate", contest_path(@contest.path) + "/participate", 
+          :method => :post, 
+          :class => "btn btn-small btn-primary"%>
+      <br />
+      <br />
 
-  <% elsif @contest.user!=current_user && @contest.confirm_participants==true && current_user.participant(@contest).confirmed==false %>
-    <span class="label label-info">Your participation is not yet confirmed</span>
-    <br />
-    <br />
-
+    <% elsif current_user.participate?(@contest) && @contest.confirm_participants==true && current_user.participant(@contest).confirmed==false %>
+      <span class="label label-info">Your participation is not yet confirmed</span>
+      <br />
+      <br />
+    <% end %>
   <% end %>
 
 
