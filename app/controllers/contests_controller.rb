@@ -88,7 +88,7 @@ class ContestsController < ApplicationController
     if @contest.confirm_participants==true && participant.confirmed==false
       redirect_to contest_path(@contest.path), alert: "Please, wait confirmation"
       return
-    elsif 1<0 # @contest.type==1 && !@contest.over? #IOI
+    elsif @contest.type==1 && !@contest.over? #IOI
       redirect_to contest_path(@contest.path), alert: 'Contest is not finished'
       return
     end
