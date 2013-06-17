@@ -29,7 +29,7 @@ AcmKbtu::Application.routes.draw do
   match '/contests/:id/:problem' => 'problems#show', as: :contest_problem
   match '/contests/:id/:problem/edit' => 'problems#edit'
   put   '/contests/:id/:problem' => 'problems#update'
-  match '/contests/:id/:problem/edit_statement' => 'problems#edit_statement'  
+  match '/contests/:id/:problem/edit_statement' => 'problems#edit_statement', as: :contest_problem_edit
   put   '/contests/:id/:problem/update_statement' => 'problems#update_statement'
   match '/contests/:id/:problem/statement' => 'problems#download_statement'
 

@@ -94,10 +94,10 @@ class ProblemsController < ApplicationController
   def update_statement
     #@contest = Contest.find(params[:contest_id])
     #@problem = @contest.problems.find_by(order: params[:problem_order])
-    inputs = []
+    inputs  = []
     outputs = []
     3.times do |i|
-      inputs << params["input#{i}"]
+      inputs  << params["input#{i}"]
       outputs << params["output#{i}"]
     end
     @problem.statement = {:title => params[:title], 
@@ -108,14 +108,14 @@ class ProblemsController < ApplicationController
     #put statement file
     if not params[:statement].nil?
       @problem.put_statement(params[:statement])
-    end                          
+    end
 
     respond_to do |format|
       if @problem.save
-        format.html { redirect_to contest_problem_path(@contest.path, @problem.order), 
+        format.html { redirect_to contest_control_problems_path(@contest.path)+"?tab=#{@problem.order}", 
           notice: 'Problem\'s statement was successfully updated.' }
       else
-        format.html { redirect_to contest_problem_path(@contest.path, @problem.order), 
+        format.html { redirect_to contest_problem_edit_path(@contest.path, @problem.order), 
           alert:  'ERROR: Problem\'s statement was not updated.' }
       end
     end
