@@ -127,13 +127,13 @@ class Tester
       #RUN solution
       ej_ex_version = (File.path(Rails.root).split('/')[2]=='user') ? 'forserver' : 'forlocal'
       command = "\'#{@@system_path}/ejudge-execute-#{ej_ex_version}\' " +
-                "\'--workdir=#{@work_dir}\' " +
-                "\'--time-limit-millis=#{(@problem.time_limit*1000).to_i}\' " +
-                "\'--max-vm-size=#{@problem.memory_limit}M\' " +
-                "\'--memory-limit\' " +
-                "#{(input_file.blank?)  ? "\'--stdin=#{@work_dir}/input.txt\'"   : nil} " +
-                "#{(output_file.blank?) ? "\'--stdout=#{@work_dir}/output.txt\'" : nil} " +
-                "\'#{@work_dir}/solution\'"
+                "--workdir=\'#{@work_dir}\' " +
+                "--time-limit-millis=#{(@problem.time_limit*1000).to_i} " +
+                "--max-vm-size=#{@problem.memory_limit}M " +
+                "--memory-limit " +
+                "#{(input_file.blank?)  ? "--stdin=input.txt"   : nil} " +
+                "#{(output_file.blank?) ? "--stdout=output.txt" : nil} " +
+                "solution"
       pid, stdin, stdout, stderr = Open4::popen4 command
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines

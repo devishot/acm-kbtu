@@ -15,7 +15,7 @@ class Participant
   field :a,         type: Array,    default: []
   field :point,     type: Integer,  default: 0
 
-  before_create   :set_path, :create_folder, :set_standings
+  before_create   :set_path, :set_standings
   before_destroy  :clear
   
   def set_path
@@ -23,10 +23,6 @@ class Participant
     self.path = (participants.exists?) ? 
         ( participants.all.sort_by{|i| i.path.to_i}.last.path.to_i + 1 ).to_s : '1'
   end
-
-  def create_folder
-    FileUtils.mkdir_p self.participant_dir
-  end     
 
   def set_standings
     contest.problems_count.times do |i|
