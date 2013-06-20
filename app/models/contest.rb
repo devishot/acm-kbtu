@@ -91,7 +91,7 @@ class Contest
     new_duration  = Contest.new(params).duration.minutes
     
     self.time_start = self.time_start - self.time_start.sec.seconds + time_now.sec.seconds
-    self.duration = (((time_now + new_duration) - self.time_start)*24*60).to_i
+    self.duration = (((time_now + new_duration) - self.time_start)*24*60).to_i + 1
   end
 
   def time_left

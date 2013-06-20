@@ -15,24 +15,31 @@
         <!-- <th>Description</th> -->
         <th>Start time</th>
         <th>Duration</th>
+        <th>Status</th>
         <th></th>
       </tr>
     </thead>
 
-  <% @contests.each do |contest| %>
     <tbody>
-      <tr>
-        <td><%= contest.title %></td>
-        <td><%= (contest.type==0) ? "ACM" : "IOI" %></td>
-        <!-- <td><%= contest.description %></td> -->
-        <td>
-          <%= (contest.time_start.nil?) ? 'Not started' : contest.time_start.to_s(:well_datetime)%>
-        </td>
-        <td><%= contest.duration %> min </td>
-        <td><%= link_to 'Show', contest_path(contest.path) %></td>
-      </tr>
+      <% @contests.each do |contest| %>
+        <tr class="<%= if contest.started? && !contest.over? then 'success' end %>">
+          <td><%= contest.title %></td>
+          <td><%= (contest.type==0) ? "ACM" : "IOI" %></td>
+          <td>
+            <%= (contest.time_start.nil?) ? 'Not started' : contest.time_start.to_s(:well_datetime)%>
+          </td>
+          <td><%= contest.duration %> min </td>
+          <td> 
+            <% if contest.started? && !contest.over? %> 
+                  Run
+            <% elsif contest.over? %>
+                  Over
+            <% end %>
+          </td>
+          <td><%= link_to 'Show', contest_path(contest.path) %></td>
+        </tr>
+      <% end %>
     </tbody>
-  <% end %>
   </table>
 
   <br />
