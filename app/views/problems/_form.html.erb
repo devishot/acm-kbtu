@@ -33,7 +33,7 @@
 
   <div class="form-inline">
     <%= f.label :time_limit, "Time limit", :class => 'control-label' %>
-    <%= f.number_field :time_limit, :in => 1..5, :class => 'span1' %>
+    <%= f.number_field :time_limit, :in => 1..100, :step => 0.5, :class => 'span1' %>
 
     <%= f.label :memory_limit , "Memory limit", :style => 'margin-left: 30px;' %>
     <%= f.number_field :memory_limit, :in => 16..512, :step => 16, :class => 'span1'%>

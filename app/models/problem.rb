@@ -8,7 +8,7 @@ class Problem
   include Compiler
   field :order,         type: Integer
   field :global_path,   type: String
-  field :time_limit,    type: Integer,  :default => 2 #seconds
+  field :time_limit,    type: Float,    :default => 2.0 #seconds
   field :memory_limit,  type: Integer,  :default => 256 #Megabytes
   field :input_file,    type: String    # nil || 'input.txt' || 'a.in'
   field :output_file,   type: String
