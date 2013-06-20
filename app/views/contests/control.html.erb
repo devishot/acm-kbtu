@@ -75,10 +75,17 @@
 
 <% if @contest.ioi? %>
   <div class="well" style="width: 140px; top: -220px; left: 180px; position: relative; float: right;">
-    <%= form_tag(control_submit_limit_path(@contest.path), :method => "PUT") do %>
-      <%= label_tag :submit_limit, "IOI submit attempts" %>
-      <%= number_field_tag :submit_limit, @contest.submit_limit, :class => "input-mini" %> Attempts
-      <%= submit_tag 'Update', :class => "btn" %>
+    <%= form_tag(control_ioi_path(@contest.path), :method => "PUT") do %>
+      <legend>IOI Settings</legend>
+      <%= label_tag :submit_limit, "submit attempts" %>
+      <%= number_field_tag :submit_limit, @contest.submit_limit, :class => "input-mini" %>
+
+      <%= label_tag :full_feedback, "Full feedback" %>
+      <div class="switch switch-small">
+        <%= check_box_tag :full_feedback, "true", @contest.full_feedback %>
+      </div>
+      <hr />
+    <%= submit_tag 'Update', :class => "btn" %>
     <% end %>
   </div>
 <% end %>

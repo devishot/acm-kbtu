@@ -55,7 +55,7 @@
         <td style="width: 20px;">
           <% if @contest.type==0 %>
             <%= submit.status['test'] %>
-          <% elsif @contest.type==1 && !(["CE", "SE"].include? submit.status['status']) %>
+          <% elsif @contest.ioi? && !(["CE", "SE"].include? submit.status['status']) %>
             <a href="#ioisubmitModal<%= submit.id %>" role="button" class="btn" data-toggle="modal">
               <%= submit.status['point'] %>
             </a>

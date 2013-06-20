@@ -1,4 +1,4 @@
-<h1>Contests</h1>
+<legend>Contests</legend>
 
 <% if can? :create, Contest %>
   <%= link_to 'New Contest', new_contest_path, :class => "btn btn-primary" %>
@@ -26,7 +26,7 @@
         <td><%= (contest.type==0) ? "ACM" : "IOI" %></td>
         <!-- <td><%= contest.description %></td> -->
         <td>
-          <%= (contest.time_start.nil?) ? 'Not started' : contest.time_start.strftime("%Y-%m-%d %H:%M")%>
+          <%= (contest.time_start.nil?) ? 'Not started' : contest.time_start.to_s(:well_datetime)%>
         </td>
         <td><%= contest.duration %> min </td>
         <td><%= link_to 'Show', contest_path(contest.path) %></td>

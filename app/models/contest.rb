@@ -13,9 +13,12 @@ class Contest
   field :duration,        type: Integer, :default => 300#minutes
   field :type,            type: Integer, :default => 0  #"ACM", "IOI"
   field :problems_count,  type: Integer, :default => 0  #problems[0] <- it is template for other problem
-  field :submit_limit,    type: Integer, :default => 20 #for IOI  
   field :confirm_participants,  type: Boolean, :default => false
   field :last_success_submit, type: String
+  #for IOI
+  field :submit_limit,    type: Integer, :default => 100
+  field :full_feedback,   type: Boolean, :default => false 
+
 
   belongs_to :user
   has_many :problems, :order => 'order ASC'

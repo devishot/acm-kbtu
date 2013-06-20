@@ -18,12 +18,12 @@
         <%= @page.text_body.html_safe %>
       </p>
     </article>
-    <%= link_to 'Back', :back %> |
+    <%= link_to 'Back', :back %>
     <% if can? :edit, @page %>
-      <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %> |
+      | <%= link_to 'Edit', '/pages/'+@page.node.path+'/'+@page.path+'/edit' %>
     <% end %>
     <% if can? :destroy, @page %>
-      <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path+'/destroy' %>
+      | <%= link_to 'DESTROY', '/pages/'+@page.node.path+'/'+@page.path+'/destroy' %>
     <% end %>
     <br/>
     <br/>

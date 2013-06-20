@@ -12,7 +12,7 @@ AcmKbtu::Application.routes.draw do
   put   '/contests/:id/control' => 'contests#control_update'
   match '/contests/:id/control_problems' => 'contests#control_problems', as: :contest_control_problems
   put   '/contests/:id/control_problems_count' => 'contests#control_problems_count'
-  put   '/contests/:id/control_submit_limit' => 'contests#control_submit_limit', as: :control_submit_limit
+  put   '/contests/:id/control_ioi' => 'contests#control_ioi', as: :control_ioi
   match '/contests/:id/control_participants' => 'contests#control_participants'
   match '/contests/:id/control_status' => 'contests#control_status'
 

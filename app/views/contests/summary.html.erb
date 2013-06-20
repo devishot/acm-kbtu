@@ -1,5 +1,35 @@
 <%= render "contest" %>
 
+
+<% if @contest.ioi? && @contest.full_feedback %>
+  <div class="well">
+    <table class="table table-condensed" >
+      <thead>
+        <tr>
+          <% for i in 1..@contest.problems_count %>
+            <% next if @contest.problems[i].disabled == true %>
+            <th><%= @contest.problems[i].order_abc %></th>
+          <% end %>
+          <th style="width:70px;">Total</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <% participant = current_user.participant(@contest) %>
+          <% for i in 1..@contest.problems_count %>
+            <% next if @contest.problems[i].disabled == true %>
+            <td><%= participant.attempt(i) %></td>
+          <% end %>
+
+          <td><%= participant.point %></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+<% end %>
+
 <% @contest.problems_count.times do |i| %>
 	<% @submissions = @summary[i+1] %>
 

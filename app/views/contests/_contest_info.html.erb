@@ -6,7 +6,7 @@
 
   Start:
   <b>
-    <%= (@contest.started?) ? @contest.time_start.strftime("%Y-%m-%d %H:%M") : 'Not started'%>
+    <%= (@contest.started?) ? @contest.time_start.to_s(:well_datetime) : 'Not started'%>
   </b>
   
   Duration:

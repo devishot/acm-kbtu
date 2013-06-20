@@ -14,6 +14,10 @@
       <th>Test</th>
     <% end %>
 
+    <% if @contest.ioi? && @contest.full_feedback %>
+      <th>Points</th>
+    <% end %>
+
       <th>Source</th>
     </tr>
   </thead>
@@ -46,8 +50,16 @@
           <% end %>
         </td>
 
-      <% if @contest.type == 0 %>
+      <% if @contest.acm? %>
         <td style="width: 40px;">  <%= i.status['test'] %>  </td>
+      <% end %>
+
+      <% if @contest.ioi? && @contest.full_feedback && !(["CE", "SE"].include? i.status['status']) %>
+        <td style="width: 40px;">
+          <a href="#ioisubmitModal<%= i.id %>" role="button" class="btn" data-toggle="modal">
+            <%= i.status['point'] %>
+          </a>
+        </td>
       <% end %>
       
         <td style="width: 80px;">  
@@ -76,6 +88,35 @@
                   <%= error %>
                 <% end %>
               </p>
+            <% end %>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+      <% end %>
+
+
+      <% if @contest.ioi? && @contest.full_feedback %>
+        <div class="modal hide fade"  id="ioisubmitModal<%= i.id %>"  tabindex="-1" role="dialog" aria-labelledby="ioisubmitModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="ioisubmitModalLabel"> 
+              Problem:     <%= i.problem.order_abc %>;
+              Point:       <%= i.status['point'] %>
+            </h3>
+          </div>
+
+          <div class="modal-body">
+            <% i.tests_status.each_with_index do |p, i| %>
+              <% next if i==0 %>
+              Test # <%= i %>, 
+              status: <span class="label 
+                  <%= if p['status']=='OK' then 'label-success' elsif p['status']=='TL' then 'label-info' else 'label-important' end %> "> 
+                  <%= p['status'] %> 
+                </span>
+              <br/>
             <% end %>
           </div>
 

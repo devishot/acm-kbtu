@@ -197,14 +197,16 @@ class ContestsController < ApplicationController
   end
 
 
-  # PUT /contests/:id/control_submit_limit
-  def control_submit_limit
+  # PUT /contests/:id/control_ioi
+  def control_ioi
     if !params[:submit_limit].blank? && params[:submit_limit].to_i >= 0
       @contest.submit_limit = params[:submit_limit].to_i
-      @contest.save!
     end
 
-    redirect_to contest_control_path(@contest.path), notice: 'IOI submits limit updated'
+    @contest.full_feedback = !params[:full_feedback].nil?
+    
+    @contest.save!
+    redirect_to contest_control_path(@contest.path), notice: 'IOI Settings updated'
   end
 
   def control_status
