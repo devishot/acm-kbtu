@@ -56,10 +56,8 @@ class SubmitsController < ApplicationController
     @submit.participant.submits << @submit
     @submit.save!
 
-    #send for run
-    require "#{Rails.root}/judge-files/check-system/run"
-    Tester.perform(@submit.id) #Tester(submit.id, hidden=false)
-    #Resque.enqueue(Tester, @submit.id)
+    #send for run    
+    Resque.enqueue(Tester, @submit.id) #Tester(@submit.id, hidden=false)
 
     respond_to do |format|
       format.html { redirect_to problem_path, notice: 'Successfully submited.' }      
@@ -121,59 +119,4 @@ private
     redirect_to contest_problem_path(@contest.path, 1), :alert => "Submit not found" unless @submit
   end
 
-  # # GET /submits/1
-  # # GET /submits/1.json
-  # def show
-  #   @submit = Submit.find(params[:id])
-
-  #   respond_to do |format|
-  #     format.html # show.html.erb
-  #     format.json { render json: @submit }
-  #   end
-  # end
-
-  # # GET /submits/new
-  # # GET /submits/new.json
-  # def new
-  #   @submit = Submit.new
-
-  #   respond_to do |format|
-  #     format.html # new.html.erb
-  #     format.json { render json: @submit }
-  #   end
-  # end
-
-  # # GET /submits/1/edit
-  # def edit
-  #   @submit = Submit.find(params[:id])
-  # end
-
-
-  # PUT /submits/1
-  # PUT /submits/1.json
-  # def update
-  #   @submit = Submit.find(params[:id])
-
-  #   respond_to do |format|
-  #     if @submit.update_attributes(params[:submit])
-  #       format.html { redirect_to @submit, notice: 'Submit was successfully updated.' }
-  #       format.json { head :no_content }
-  #     else
-  #       format.html { render action: "edit" }
-  #       format.json { render json: @submit.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end
-
-  # # DELETE /submits/1
-  # # DELETE /submits/1.json
-  # def destroy
-  #   @submit = Submit.find(params[:id])
-  #   @submit.destroy
-
-  #   respond_to do |format|
-  #     format.html { redirect_to submits_url }
-  #     format.json { head :no_content }
-  #   end
-  # end
 end

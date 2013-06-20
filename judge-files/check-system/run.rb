@@ -102,7 +102,6 @@ class Tester
     return checker_status
   end
 
-
   def run()
     #compile sourcecode
     compile_status = Compiler.compile(@source_code, "#{@work_dir}/solution")

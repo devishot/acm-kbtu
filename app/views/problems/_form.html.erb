@@ -12,6 +12,7 @@
   </div>
 <% end %>
 
+  <% #= raise @problem.inspect %>
 
   <%= hidden_field_tag :contest_id, @problem.contest.id %>
   <%= hidden_field_tag :problem_order, @problem.order %>
@@ -100,13 +101,6 @@
           <% checkers = Dir.entries("#{Rails.root}/judge-files/check-system/checkers").sort[2..-1] %>
           <%= f.select :checker, checkers %>
         </td>
-
-        <% if not @problem.order==0 then %>
-          <td>
-            <p>Template checker</p>
-            view code here..
-          </td>
-        <% end %>
 
         <td>
           <p>Own checker</p>

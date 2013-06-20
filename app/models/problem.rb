@@ -135,7 +135,7 @@ class Problem
     if not params[:problem][:uploaded_checker].nil?
       checker_status = self.put_checker(params[:problem][:uploaded_checker])
 
-      if checker_status[:status] == 'OK'
+      if ['OK', 'checking..'].include? checker_status[:status]
         @status[:notice] << 'Checker compiled'
 
       elsif checker_status[:status] == 'CE'
@@ -232,9 +232,7 @@ class Problem
     if Dir.entries(tests_dir).count - 2 == 1
       f = (Dir.entries(tests_dir)-[".", ".."])[0]
       if File.directory? tests_dir+"/#{f}"
-        #raise Dir.entries(tests_dir+"/#{f}").inspect
         FileUtils.cp_r tests_dir+"/#{f}/.", tests_dir
-        #raise Dir.entries(tests_dir).inspect
         FileUtils.rm_rf tests_dir+"/#{f}"
       end
     end
@@ -276,44 +274,21 @@ class Problem
     if compile_status[:status] == 'OK'
       self.checker_path = checker_dir+'/'+ufile.original_filename
       #check on tests
-      if self.tests_uploaded? then
-        Dir.entries(self.tests_dir).sort[2..-1].each_slice(2) do |t|
-          #puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"
-          next if not File.basename(t[0], '.*') == File.basename(t[1], '.*') 
-          #puts "#{self.tests_dir} | #{t[0]} | #{t[1]}"          
-          command = "\'#{self.checker_dir}/checker\' \'#{self.tests_dir+'/'+t[0]}\' \'#{self.tests_dir+'/'+t[1]}\' \'#{self.tests_dir+'/'+t[1]}\'"
-          #puts command
-          pid, stdin, stdout, stderr = Open4::popen4 command
-          ignored, open4_status = Process::waitpid2 pid
-          std_out = stdout.gets
-          std_err = stderr.gets
-          if open4_status.exitstatus > 0 then #OK is 0
-            status[:status] = 'SE'
-            status[:error] << "checker on test | #{t[0]} : #{t[1]} | got:"
-            status[:error] << case open4_status.exitstatus
-              when 4, 2; "PE"
-              when 5, 1; "WA"
-              else "SE"
-            end
-            std_err.each {|x| status[:error] << x} if not std_err.nil?
-            break;
-          end
-        end
-      end
-      status[:status] = 'OK' if status[:status].empty?        
+      self.save!
+      status[:status] == 'checking..'
+      Resque.enqueue(TestCheckerJob, self.id) if self.tests_uploaded?
+
     else
       status = compile_status
+      if status[:status] == 'OK'
+        self.checker_mode = 2
+      else
+        #delete checker
+        self.checker_path = ''
+        self.checker_mode = 0
+        FileUtils.rm_rf checker_dir
+      end
     end
-
-    if status[:status] == 'OK'
-      self.checker_mode = 2
-    else
-      #delete checker
-      self.checker_path = ''
-      self.checker_mode = 0
-      FileUtils.rm_rf checker_dir
-    end
-#    self.save
 
     return status;
   end
@@ -341,7 +316,7 @@ class Problem
       :hidden     => true
     })
     self.checked = submit.id
-    Tester.perform(submit.id, true) #Tester(submit.id, hidden=true)
+    Tester.perform(submit.id, true) #Tester(submit.id, hidden=false)
     #parse status
     while true
       submit.reload

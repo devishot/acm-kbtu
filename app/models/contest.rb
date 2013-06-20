@@ -18,8 +18,8 @@ class Contest
   field :last_success_submit, type: String
 
   belongs_to :user
-  has_many :problems
-  has_many :participants
+  has_many :problems, :order => 'order ASC'
+  has_many :participants, :order => 'created_at DESC'
 
   after_create :set_path, :create_folder, :create_template_problem
   before_destroy :clear
