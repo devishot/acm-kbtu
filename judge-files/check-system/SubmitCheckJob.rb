@@ -184,7 +184,7 @@ class Tester
 
 
   def self.perform(submit_id, hidden=false)
-    puts "Hello"
+    raise "Suck"
     @@system_path = "#{Rails.root}/judge-files/check-system"
 
     a = Tester.new(submit_id, hidden)
