@@ -11,8 +11,6 @@ class Tester
   def initialize(submit_id, hidden=false)
     @init_status = false
 
-    raise "#{Submit.all[0..-1]} \n\nsubmit_id"
-
     @submit = Submit.find(submit_id)
     @submit.status = {:status => '', :error => [], :test => ''}
     @submit.tests_status = [{}] #empty, full in Run
@@ -184,7 +182,6 @@ class Tester
 
 
   def self.perform(submit_id, hidden=false)
-    raise "Suck"
     @@system_path = "#{Rails.root}/judge-files/check-system"
 
     a = Tester.new(submit_id, hidden)
