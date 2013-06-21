@@ -54,12 +54,16 @@
         <td style="width: 40px;">  <%= i.status['test'] %>  </td>
       <% end %>
 
-      <% if @contest.ioi? && @contest.full_feedback && !(["CE", "SE"].include? i.status['status']) %>
-        <td style="width: 40px;">
-          <a href="#ioisubmitModal<%= i.id %>" role="button" class="btn" data-toggle="modal">
-            <%= i.status['point'] %>
-          </a>
-        </td>
+      <% if @contest.ioi? && @contest.full_feedback %>
+        <% if not (["CE", "SE"].include? i.status['status']) %>
+          <td style="width: 40px;">
+            <a href="#ioisubmitModal<%= i.id %>" role="button" class="btn" data-toggle="modal">
+              <%= i.status['point'] %>
+            </a>
+          </td>
+        <% else %>
+          <td style="width: 40px;"></td>
+        <% end %>
       <% end %>
       
         <td style="width: 80px;">  

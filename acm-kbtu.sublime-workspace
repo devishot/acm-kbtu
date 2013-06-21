@@ -4,12 +4,16 @@
 		"selected_items":
 		[
 			[
-				"margin",
-				"margin-top"
-			],
-			[
 				"pro",
 				"problem"
+			],
+			[
+				"chec",
+				"checking"
+			],
+			[
+				"margin",
+				"margin-top"
 			],
 			[
 				"sub",
@@ -220,10 +224,6 @@
 				"statement_dir"
 			],
 			[
-				"chec",
-				"checker_path"
-			],
-			[
 				"checker",
 				"checker_mode"
 			],
@@ -380,29 +380,38 @@
 	},
 	"file_history":
 	[
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/problems_controller.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/submits/_submits.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_status.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/index.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_standings_acm.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/application.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/_menu.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/contest.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/environment.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest_info.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/pages/show.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/summary.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/standings.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/contests_controller.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/routes.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/participant.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/TestCheckerJob.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/_form.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/SubmitCheckJob.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/problem.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/run.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/submits_controller.rb",
+		"/home/devishot/Desktop/Day03/Pre-Intermediate/a.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/problems_controller.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/page.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/pages/_form.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/stylesheets/application.css",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/application.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/pages/show.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/nodes/_previews.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/pages/main.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_status.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/run.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_standings_acm.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/participant.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/submits_controller.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/problem.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/_form.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/submits/_submits.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/pages.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/show.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/contest.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/Gemfile",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/stylesheets/tinymce_fontsize.css",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/tinymce.yml",
@@ -416,11 +425,9 @@
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/tinymce/jquery.tinymce.min.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/tinymce/plugins/autoresize/plugin.min.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/contests.js",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest_info.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/pages/_pages.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_standings_ioi.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/submits/show_sourcecode.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/standings.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/standings_acm.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_form.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/submit.rb",
@@ -435,7 +442,6 @@
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/system-intializer.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/sources/system-intializer.rb",
 		"/home/devishot/Downloads/test/a-plus-b/solution.cpp",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/summary.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/submits.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/zclip/jquery.zclip.js",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/jquery.zclip.min.js",
@@ -488,7 +494,6 @@
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/mongoid.yml",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/public/404.html",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/public/422.html",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/_menu.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/public/500.html",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/images/rails.png",
 		"/home/devishot/Downloads/one archive/settings.json",
@@ -502,11 +507,7 @@
 		"/home/devishot/Downloads/ejudge/checkers/delphi/testlib.pas",
 		"/home/devishot/Downloads/contest-dfs/_test/include/delphi/testlib.pas",
 		"/home/devishot/.cache/.fr-lQrFfo/testlib/testlib.pas",
-		"/home/devishot/.cache/.fr-spxooQ/testlib-olympiads-1-0/TESTLIB.PAS",
-		"/home/devishot/Downloads/ejudge/configure",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/boot.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/work/1.cpp",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/Rakefile"
+		"/home/devishot/.cache/.fr-spxooQ/testlib-olympiads-1-0/TESTLIB.PAS"
 	],
 	"find":
 	{
@@ -514,7 +515,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 93.0,
 		"where_history":
 		[
 			"/home/devishot/Documents/Programming/Rails/acm-kbtu",
@@ -534,6 +535,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"sub",
+			"Submits",
+			"Submit",
+			"put_che",
+			"self",
+			"put_che",
+			"put_c",
+			"checker",
+			"che",
+			"pchec",
+			"put_che",
 			"participate?",
 			"edit",
 			"heade",
@@ -630,6 +642,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"problem",
 			"sourcecode",
 			"'error'",
 			"'status'",
@@ -696,6 +709,10 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"route",
+				"config/routes.rb"
+			]
 		],
 		"width": 0.0
 	},

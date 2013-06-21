@@ -32,6 +32,8 @@
           <td> 
             <% if contest.started? && !contest.over? %> 
                   Run
+            <% elsif not contest.started? %>
+                  soon..                  
             <% elsif contest.over? %>
                   Over
             <% end %>
