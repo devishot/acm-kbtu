@@ -11,7 +11,7 @@
   
   Duration:
   <b>
-    <%= @contest.duration %>min
+    <%= @contest.duration %> m
   </b>
 
   Status:
@@ -25,9 +25,9 @@
     Left:
     <b class="clock">
       <% if m > 0 then %>
-        <span class="min"><%= m %></span> minutes
+        <span class="min"><%= m %></span> m
       <% end %>
-      <span class="sec"><%= s %></span> seconds
+      <span class="sec"><%= s %></span> s
     </b>
   <% end %>
 

@@ -1,5 +1,5 @@
 class ContestsController < ApplicationController
-  before_filter :load_contest, :except => [:index, :kill_participant, :new, :create]
+  before_filter :load_contest, :except => [:index, :kill_participant, :new, :create, :recheck]
   load_and_authorize_resource  :except => [:index]
 
   rescue_from Mongoid::Errors::DocumentNotFound do |exception|
@@ -129,7 +129,7 @@ class ContestsController < ApplicationController
     contest = Contest.find(params[:contest])
     participant = contest.participants.find(params[:participant])
     participant.destroy
-    redirect_to contest_path(contest.path)+"/control"
+    redirect_to contest_path(contest.path)+"/control_participants"
   end  
 
   # POST /contests/:id/confirm_participant/:participant
@@ -220,11 +220,19 @@ class ContestsController < ApplicationController
     @submits = @submits.sort_by{ |submit| submit.updated_at}.reverse
   end
 
+  def recheck
+    submit = Submit.where(id: params[:submit_id]).first
+    if submit.blank?
+      redirect_to :back, :alert => "Submit ##{params[:submit_id]} not found"
+    else
+      Resque.enqueue(Tester, submit.id)
+      redirect_to contest_control_status_path(submit.participant.contest.path), :notice => "Submit rechecked"
+    end
+  end
+
   # GET /contests/:id/statement
   def download_statement
     #@contest = Contest.find_by(path: params[:id])
-
-
     if current_user == @contest.user || current_user.admin?
       #nothing
     elsif not current_user.participate?(@contest)  then

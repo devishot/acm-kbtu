@@ -12,8 +12,11 @@
       class: "btn btn-danger btn-block" %>
 </div>
 
-<div style="width: 550px; left: 220px; top:-123px; position: relative;" id="control-starter">
-  <%= render 'contest_info' %>
+<div style="width: 530px; left: 220px; top:-123px; position: relative;" id="control-starter">
+  <center>
+    <p> <%= @contest.title %> </p>
+    <%= render 'contest_info' %>
+  </center>
 
   <%= form_for(@contest, :url => contest_path(@contest.path)+'/control', :method => "PUT") do |f| %>
     <table class="table table-bordered" style="width: 500px">

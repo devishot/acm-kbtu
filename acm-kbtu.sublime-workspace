@@ -351,6 +351,22 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "app/controllers/contests_controller.rb",
+			"settings":
+			{
+				"buffer_size": 8764,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "judge-files/check-system/SubmitCheckJob.rb",
+			"settings":
+			{
+				"buffer_size": 7999,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -380,6 +396,12 @@
 	},
 	"file_history":
 	[
+		"/home/devishot/Desktop/Day06/Inter/Inter day 6/sol/nebel-a3.cpp",
+		"/home/devishot/Desktop/Day06/Inter/Inter day 6/sol/nebel-a3_printf.cpp",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/TestCheckerJob.rb",
+		"/home/devishot/Desktop/Day06/Inter/Inter day 6/sol/a3.cpp",
+		"/home/devishot/Desktop/Day06/Inter/Inter day 6/sol/c2.cpp",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/SubmitCheckJob.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/submits/_submits.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_status.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/index.html.erb",
@@ -396,9 +418,7 @@
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/contests_controller.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/routes.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/participant.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/TestCheckerJob.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/_form.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/SubmitCheckJob.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/problem.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/run.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/submits_controller.rb",
@@ -503,11 +523,7 @@
 		"/media/devishot/Data/SkyDrive/Documents/Programming/Olympiads(University)/ACM ICPC/contest DFS/O/a.cpp",
 		"/media/devishot/Data/SkyDrive/Documents/Программирование/Резерв(универ)/ACM ICPC/contest DFS/M/a.cpp",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/submits/index.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/show.html.erb",
-		"/home/devishot/Downloads/ejudge/checkers/delphi/testlib.pas",
-		"/home/devishot/Downloads/contest-dfs/_test/include/delphi/testlib.pas",
-		"/home/devishot/.cache/.fr-lQrFfo/testlib/testlib.pas",
-		"/home/devishot/.cache/.fr-spxooQ/testlib-olympiads-1-0/TESTLIB.PAS"
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/show.html.erb"
 	],
 	"find":
 	{
@@ -515,7 +531,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 93.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"/home/devishot/Documents/Programming/Rails/acm-kbtu",
@@ -535,6 +551,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"puts",
 			"sub",
 			"Submits",
 			"Submit",
@@ -659,8 +676,65 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "app/controllers/contests_controller.rb",
+					"settings":
+					{
+						"buffer_size": 8764,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3950,
+								3950
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2360.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "judge-files/check-system/SubmitCheckJob.rb",
+					"settings":
+					{
+						"buffer_size": 7999,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4674,
+								4674
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1080.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],

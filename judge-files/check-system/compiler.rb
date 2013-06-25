@@ -8,7 +8,7 @@ module Compiler
 
     #check source_code
     src_code = File.expand_path(src_code)
-    src_code_ext = File.extname(src_code)
+    src_code_ext = File.extname(src_code).downcase
     if not File.exist?(src_code)
       return {:status => 'SE', 
               :error => ["there is no \"#{src_code}\""]}

@@ -78,7 +78,6 @@ class Tester
                         "\'#{@tests_path}/#{tout}\'"
     pid, stdin, stdout, stderr = Open4::popen4 command
     ignored, open4_status = Process::waitpid2 pid
-
     std_out = stdout.readlines
     std_err = stderr.readlines
     #puts "!2   #{std_err} | #{std_out}"
@@ -123,8 +122,10 @@ class Tester
       input_file  = @problem.input_file
       output_file = @problem.output_file
       #copy current test's input to input for solution
-      FileUtils.cp @tests_path+'/'+t[0], "#{@work_dir}/#{(input_file.blank?) ? 'input.txt' : input_file}"
-      #RUN solution
+      test_input_file = "#{@work_dir}/#{(input_file.blank?) ? 'input.txt' : input_file}"
+      FileUtils.cp @tests_path+'/'+t[0], test_input_file
+      IO.popen("sed -i 's/\r$//' \'#{test_input_file}\'") #Convert Unix endlines to Windows
+      #RUN solution      
       ej_ex_version = (File.path(Rails.root).split('/')[2]=='user') ? 'forserver' : 'forlocal'
       command = "\'#{@@system_path}/ejudge-execute-#{ej_ex_version}\' " +
                 "--workdir=\'#{@work_dir}\' " +
@@ -138,7 +139,6 @@ class Tester
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
       verdict_status = (ej_ex_version=='forserver') ? verdict[1][8,9].strip : verdict[0][8,9].strip      
-
       if not verdict_status == 'OK'
         @submit.tests_status[i+1][:status] = verdict_status
         @submit.tests_status[i+1][:error]  = verdict

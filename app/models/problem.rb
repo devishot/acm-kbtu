@@ -94,10 +94,6 @@ class Problem
         :checker_path => self.template.checker_path,
         :checker_mode => 1,
       )
-    else
-      self.update_attributes(
-        :checker_mode => 0,
-      )      
     end
   end
 
@@ -135,15 +131,10 @@ class Problem
     if not params[:problem][:uploaded_checker].nil?
       checker_status = self.put_checker(params[:problem][:uploaded_checker])
 
-      if ['OK', 'checking..'].include? checker_status[:status]
+      if ['OK'].include? checker_status[:status]
         @status[:notice] << 'Checker compiled'
-
-      elsif checker_status[:status] == 'CE'
-        @status[:alert] << 'Checker was not compiled(CE):'
-        checker_status[:error].each {|x| @status[:alert] << '---'+x } if not checker_status[:error].nil?
-
-      elsif checker_status[:status] == 'SE'
-        @status[:alert] << 'Checker is incorect(SE):'
+      else
+        @status[:alert] << "Checker is incorrect, got a (#{checker_status[:status]}):"
         checker_status[:error].each {|x| @status[:alert] << '---'+x } if not checker_status[:error].nil?
       end
       params[:problem].delete(:uploaded_checker)
@@ -273,21 +264,47 @@ class Problem
     compile_status = Compiler.compile(checker_dir+'/'+ufile.original_filename, checker_dir+'/checker', true)
     if compile_status[:status] == 'OK'
       self.checker_path = checker_dir+'/'+ufile.original_filename
+      status[:status] = 'OK'
       #check on tests
-      self.save!
-      status[:status] == 'checking..'
-      Resque.enqueue(TestCheckerJob, self.id) if self.tests_uploaded?
+      Dir.entries(self.tests_dir).sort[2..-1].each_slice(2) do |t|
+        command = "\'#{self.checker_dir}/checker\' " + 
+                  "\'#{self.tests_dir+'/'+t[0]}\' " +
+                  "\'#{self.tests_dir+'/'+t[1]}\' " + 
+                  "\'#{self.tests_dir+'/'+t[1]}\'"
+        pid, stdin, stdout, stderr = Open4::popen4 command
+        ignored, open4_status = Process::waitpid2 pid
+        std_out = stdout.gets
+        std_err = stderr.gets
+        if open4_status.exitstatus > 0 then #OK is 0
+          status[:status] = 'SE'
+          status[:error] << "checker on test | #{t[0]} : #{t[1]} | got:"
+          status[:error] << case open4_status.exitstatus
+            when 4, 2; "PE"
+            when 5, 1; "WA"
+            else "SE"
+          end
+          if not std_err.nil?
+            if std_err.kind_of? String
+              status[:error] << std_err
+            elsif std_err.kind_of? Array            
+              std_err.each {|x| status[:error] << x}
+            end
+          end
+          break;
+        end
+      end
 
     else
       status = compile_status
-      if status[:status] == 'OK'
-        self.checker_mode = 2
-      else
-        #delete checker
-        self.checker_path = ''
-        self.checker_mode = 0
-        FileUtils.rm_rf checker_dir
-      end
+    end
+
+    if status[:status] == 'OK'
+      self.checker_mode = 2
+    else
+      #delete checker
+      self.checker_path = ''
+      self.checker_mode = 0
+      FileUtils.rm_rf checker_dir
     end
 
     return status;
