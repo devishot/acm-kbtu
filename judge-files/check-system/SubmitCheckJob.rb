@@ -115,8 +115,11 @@ class Tester
     end
 
     #get every test(pair of 'file' and 'file.ans', or 'file.in' and 'file.out')
+
+    ## sort{|a,b| if a.size==b.size then a<=>b else a.size <=> b.size end }
     Dir.entries(@tests_path).sort[2..-1].each_slice(2).with_index do |t, i|
       next if not File.basename(t[0], '.*') == File.basename(t[1], '.*')
+      #puts "#{i}:  #{t[0]} #{t[1]}"
       @submit.tests_status << {:status => '', :error => []}
 
       input_file  = @problem.input_file
@@ -138,7 +141,11 @@ class Tester
       pid, stdin, stdout, stderr = Open4::popen4 command
       ignored, open4_status = Process::waitpid2 pid
       verdict = stderr.readlines
-      verdict_status = (ej_ex_version=='forserver') ? verdict[1][8,9].strip : verdict[0][8,9].strip      
+      verdict_status = ""
+      verdict.each do |line|
+        verdict_status = line[8..-1].chomp; break if line.include? "Status: "
+      end
+      #verdict_status = (ej_ex_version=='forserver') ? verdict[1][8,9].strip : verdict[0][8,9].strip
       if not verdict_status == 'OK'
         @submit.tests_status[i+1][:status] = verdict_status
         @submit.tests_status[i+1][:error]  = verdict

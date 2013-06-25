@@ -226,8 +226,17 @@ class ContestsController < ApplicationController
       redirect_to :back, :alert => "Submit ##{params[:submit_id]} not found"
     else
       Resque.enqueue(Tester, submit.id)
-      redirect_to contest_control_status_path(submit.participant.contest.path), :notice => "Submit rechecked"
+      redirect_to contest_control_status_path(submit.participant.contest.path), :notice => "Submit send to recheck"
     end
+  end
+
+  def recheck_problem
+    problem = @contest.problems.where(order: params[:problem]).first
+    problem.submits.each do |submit|
+      Resque.enqueue(Tester, submit.id)
+    end
+    #raise params.inspect
+    redirect_to contest_control_status_path(@contest.path), :notice => "Problem will be rechecked"
   end
 
   # GET /contests/:id/statement

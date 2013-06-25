@@ -22,7 +22,7 @@ class Problem
   field :disabled,      type: Boolean,  :default => false
 
   belongs_to  :contest
-  has_many    :submits
+  has_many    :submits, :order => 'created_at ASC'
 
 
   after_create    :set_global_path, :create_folder

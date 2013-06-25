@@ -8,6 +8,13 @@
 </center>
 
 
+<div>
+  <%= form_tag contest_recheck_problem_path(@contest.path), :method => 'put' do %>
+    <%= select_tag "problem", options_from_collection_for_select(@contest.problems[1..-1], "order", "order_abc") %>
+    <%= submit_tag "recheck", confirm: 'Are you sure?' %>
+  <% end %>
+</div>
+
 <table class="table table-striped table-bordered table-hover table-condensed" 
        style="width: 600px;">
   <thead>
