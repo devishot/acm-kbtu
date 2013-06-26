@@ -119,7 +119,6 @@ class Tester
     ## sort{|a,b| if a.size==b.size then a<=>b else a.size <=> b.size end }
     Dir.entries(@tests_path).sort[2..-1].each_slice(2).with_index do |t, i|
       next if not File.basename(t[0], '.*') == File.basename(t[1], '.*')
-      #puts "#{i}:  #{t[0]} #{t[1]}"
       @submit.tests_status << {:status => '', :error => []}
 
       input_file  = @problem.input_file
@@ -133,6 +132,7 @@ class Tester
       command = "\'#{@@system_path}/ejudge-execute-#{ej_ex_version}\' " +
                 "--workdir=\'#{@work_dir}\' " +
                 "--time-limit-millis=#{(@problem.time_limit*1000).to_i} " +
+                "--real-time-limit=#{(@problem.time_limit+1).to_i} " +
                 "--max-vm-size=#{@problem.memory_limit}M " +
                 "--memory-limit " +
                 "#{(input_file.blank?)  ? "--stdin=\'#{@work_dir}\'/input.txt"   : nil} " +
