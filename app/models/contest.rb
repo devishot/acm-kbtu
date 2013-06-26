@@ -17,7 +17,12 @@ class Contest
   field :last_success_submit, type: String
   #for IOI
   field :submit_limit,    type: Integer, :default => 100
-  field :full_feedback,   type: Boolean, :default => false 
+  field :full_feedback,   type: Boolean, :default => false
+  #for ACM
+  field :frozen,          type: Boolean, :default => true
+  field :frozen_start,    type: Integer, :default => 60 #starts X minute before end
+  field :frozen_show,     type: Integer, :default => 0 #0-auto, 1-hide, 2-show
+  field :standings_dump,  type: Hash
 
 
   belongs_to :user
@@ -62,6 +67,52 @@ class Contest
     "#{Rails.root}/judge-files/contests/#{self.path}"
   end
 
+  def make_standings_dump!
+    return  if not self.standings_dump.nil?
+    self.standings_dump = {}
+    self.standings_dump[:participants] = []
+    participants = (self.confirm_participants==false) ? self.participants : self.participants.where(confirmed: true)
+    participants.sort! do |a, b|
+      if a.point == b.point then
+        a.penalty <=> b.penalty
+      else
+        b.point <=> a.point
+      end
+    end
+    participants.each_with_index do |p, i|
+      self.standings_dump[:participants] << {}
+      self.standings_dump[:participants][i][:id] = p.id
+      self.standings_dump[:participants][i][:point] = p.point
+      self.standings_dump[:participants][i][:penalty] = p.penalty
+      self.standings_dump[:participants][i][:attempt] = [nil]
+      for j in 1..self.problems_count
+        if self.problems[j].disabled == true
+          self.standings_dump[:participants][i][:attempt] << nil
+          next
+        end
+        self.standings_dump[:participants][i][:attempt] << p.attempt(j)
+      end
+    end
+    self.standings_dump[:last_success] = Submit.where(id: self.last_success_submit).first
+    self.standings_dump[:problems_count] = self.problems_count
+    self.standings_dump[:problems] = [nil]
+    for i in 1..self.problems_count
+      if self.problems[i].disabled==true then self.standings_dump[:problems]<<nil; next; end 
+      self.standings_dump[:problems] << {
+        :order_abc => self.problems[i].order_abc,
+        :submits   => self.problems[i].submits.where(hidden: false).count,
+        :success_submits => self.problems[i].submits.where(status: {:status=>"AC"}).where(hidden: false).count
+      }
+    end
+
+    self.save!
+  end
+
+  def frozen?
+    return false if !self.acm? || self.frozen==false || self.frozen_show==2 || (self.time_left==0 && self.frozen_show==0) || self.frozen_start*60 < self.time_left
+    return true  if self.frozen_start*60 >= self.time_left || self.frozen_show==1
+  end
+
   def started?
     (!self.time_start.nil? && Time.now > self.time_start) ? true : false
   end
@@ -82,6 +133,8 @@ class Contest
   def restart(params)
     #delete
     self.participants.destroy_all
+    #ACM: delete FROZEN dump
+    self.standings_dump = nil
     #restart
     self.start(params, true)
   end

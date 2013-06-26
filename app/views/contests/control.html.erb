@@ -92,3 +92,25 @@
     <% end %>
   </div>
 <% end %>
+
+
+<% if @contest.acm? %>
+  <div class="well" style="width: 140px; top: -220px; left: 180px; position: relative; float: right;">
+    <%= form_tag(control_acm_path(@contest.path), :method => "PUT") do %>
+      <legend>ACM Settings</legend>
+      <%= label_tag :frozen, "Frozen" %>
+      <div class="switch switch-small toggle-button"  id="frozen_tumbler">
+        <%= check_box_tag :frozen, "true", @contest.frozen %>
+      </div>
+
+      <div id="frozen_settings" style="display:<%= @contest.frozen ? 'block' : 'none' %>;">
+        <%= label_tag :frozen_start, "start before .." %>
+        <%= number_field_tag :frozen_start, @contest.frozen_start, :class => "input-mini" %> minute
+
+        <%= select_tag(:frozen_show, options_for_select([["Auto show", 0], ["Hide", 1], ["Show", 2]], @contest.frozen_show) ) %>
+      </div>
+      <hr />
+    <%= submit_tag 'Update', :class => "btn" %>
+    <% end %>
+  </div>
+<% end %>

@@ -80,4 +80,16 @@ class Participant
     return self.contest.submit_limit - self.submits.where(problem: problem_id).where('status.status' => 'OK').count
   end
 
+  def acm_point
+    self.point if not self.contest.frozen?
+  end
+
+  def acm_penalty
+    self.penalty if not self.contest.frozen?
+  end
+
+  def acm_attempt(problem_no)
+    self.attempt(problem_no) if not self.contest.frozen?
+  end
+
 end

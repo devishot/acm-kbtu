@@ -1,0 +1,96 @@
+
+<% if not @standings_dump['last_success'].nil? %>
+  <% @last_success = @standings_dump['last_success'] %>
+  <p>Last success:
+    <%= @last_success.created_at.strftime("%H:%M:%S") %>,
+    <%= @last_success.participant.user.name %>,
+    problem <%= @last_success.problem.order_abc %>.
+  </p>
+<% end %>
+
+<center> <legend> FROZEN </legend> </center>
+
+
+
+<table class="table table-hover table-condensed" >
+  <thead>
+    <tr>
+      <th style="width:40px;">Place</th>
+      <th>Participant</th>
+      <% for i in 1..@standings_dump['problems_count'] %>
+        <% next if @standings_dump['problems'][i].nil? %>
+        <th><%= @standings_dump['problems'][i]['order_abc'] %></th>
+      <% end %>
+      <th style="width:70px;">Total</th>
+      <th style="width:70px;">Penalty</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% paint = true %>
+    <% @standings_dump['participants'].each_with_index do |participant_info, index| %>
+      <% participant_user = Participant.where(id: participant_info['id']).first %>
+      <% next if participant_user.nil? %>
+      <% participant_user = participant_user.user %>
+      <tr 
+        <% if participant_user == current_user then %>
+          class='info'
+        <% else %>
+          <% if index > 0 && participant_info['point'] != @standings_dump['participants'][index-1]['point'] then paint = paint ^ true end %>
+          <% if paint == true %>
+            style="background-color: #f9f9f9;"
+          <% end %>
+        <%end%> 
+      >
+        <td> <%= index + 1 %> </td>
+        <td> <%= participant_user.name %> </td>
+      <% for i in 1..@standings_dump['problems_count'] %>
+        <% next if @standings_dump['problems'][i].nil? %>
+        <td><%= participant_info['attempt'][i] %></td>
+      <% end %>
+        <td><%= participant_info['point'] %></td>
+        <td><%= participant_info['penalty'] %></td>
+      </tr>
+    <% end %>
+
+    <tr>
+      <td>  </td>
+      <td> Total: </td>
+      <% sum_all = 0 %>
+      <% k_all = Array.new(@standings_dump['problems_count']+1) %>
+      <% for i in 1..@standings_dump['problems_count'] %>
+        <% next if @standings_dump['problems'][i].nil? %>
+        <% k_all[i] = @standings_dump['problems'][i]['submits'] %>
+        <% sum_all = sum_all + k_all[i] %>
+        <td> <%= k_all[i] %> </td>
+      <% end %>
+      <td> <%= sum_all %> </td>
+    </tr>
+
+    <tr> 
+      <td>  </td>
+      <td> Success: </td>
+      <% sum_success = 0 %>
+      <% k_success = Array.new(@standings_dump['problems_count']+1) %>
+      <% for i in 1..@standings_dump['problems_count'] %>
+        <% next if @standings_dump['problems'][i].nil? %>
+        <% k_success[i] = @standings_dump['problems'][i]['success_submits'] %>
+        <% sum_success = sum_success + k_success[i]%>
+        <td> <%= k_success[i] %> </td>
+      <% end %>
+      <td> <%= sum_success %> </td>
+    </tr>
+
+    <tr>
+      <td>  </td>
+      <td>  %: </td>
+      <% get_percent = lambda {|a, b| (a==0) ? "0%" : "#{(b*100)/a}%" } %>
+      <% for i in 1..@standings_dump['problems_count'] %>
+        <% next if @standings_dump['problems'][i].nil? %>
+        <td> <%= get_percent.call(k_all[i], k_success[i]) %> </td>
+      <% end %>
+      <td> <%= get_percent.call(sum_all, sum_success) %> </td>
+    </tr>
+
+  </tbody>
+</table>

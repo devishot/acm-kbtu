@@ -34,3 +34,11 @@ $('.confirm').on('switch-change', function (e, data) {
         }
     )
 });
+
+$('#frozen_tumbler').on('switch-change', function (e, data) {
+    value = data.value;
+    if( value===true )
+        $("#frozen_settings").show();
+    else
+        $("#frozen_settings").hide();
+});

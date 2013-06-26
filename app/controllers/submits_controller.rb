@@ -18,6 +18,11 @@ class SubmitsController < ApplicationController
   # POST /submits
   # POST /submits.json
   def create
+    contest = Participant.find(params[:participant]).contest
+    if contest.frozen? && contest.standings_dump.nil?
+      contest.make_standings_dump!
+    end
+
     @submit = Submit.create({ 
       :problem => params[:problem],
       :participant => params[:participant]

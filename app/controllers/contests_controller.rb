@@ -96,14 +96,19 @@ class ContestsController < ApplicationController
 
     participants = (@contest.confirm_participants==false) ? @contest.participants : @contest.participants.where(confirmed: true)
     if @contest.type==0 #ACM
-      @standings = participants.sort do |a, b|
-        if a.point == b.point then
-          a.penalty <=> b.penalty
-        else
-          b.point <=> a.point
+      @contest.make_standings_dump! if @contest.frozen? && @contest.standings_dump.nil?
+      if @contest.frozen? && !(current_user == @contest.user || current_user.admin?)
+        @standings_dump = @contest.standings_dump        
+      else
+        @standings = participants.sort do |a, b|
+          if a.point == b.point then
+            a.penalty <=> b.penalty
+          else
+            b.point <=> a.point
+          end
         end
+        @last_success = Submit.where(id: @contest.last_success_submit).first
       end
-      @last_success = Submit.where(id: @contest.last_success_submit).first
 
     elsif @contest.type==1 #IOI
       @standings = participants.sort { |a, b| b.point <=> a.point }
@@ -207,6 +212,16 @@ class ContestsController < ApplicationController
     
     @contest.save!
     redirect_to contest_control_path(@contest.path), notice: 'IOI Settings updated'
+  end
+
+  # PUT /contests/:id/control_acm
+  def control_acm
+    @contest.frozen = !params[:frozen].nil?
+    @contest.frozen_start = params[:frozen_start].to_i
+    @contest.frozen_show  = params[:frozen_show].to_i
+    
+    @contest.save!
+    redirect_to contest_control_path(@contest.path), notice: 'ACM Settings updated'
   end
 
   def control_status

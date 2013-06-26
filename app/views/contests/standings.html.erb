@@ -1,7 +1,12 @@
 <%= render "contest" %>
 
 <% if @contest.type==0 %>
-  <%= render "standings_acm" %>
+  <% if @contest.frozen? && !(current_user == @contest.user || current_user.admin?) %>
+    <%= render "standings_acm_frozen" %>
+  <% else %>
+    <%= render "standings_acm" %>
+  <% end %>
+
 <% elsif @contest.type==1 %>
   <%= render "standings_ioi" %>
 <% end %>

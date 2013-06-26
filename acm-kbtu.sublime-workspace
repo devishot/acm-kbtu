@@ -4,6 +4,30 @@
 		"selected_items":
 		[
 			[
+				"fro",
+				"frozen"
+			],
+			[
+				"part",
+				"participants"
+			],
+			[
+				"pa",
+				"participant_user"
+			],
+			[
+				"st",
+				"standings_dump"
+			],
+			[
+				"time",
+				"time_left"
+			],
+			[
+				"verd",
+				"verdict_status"
+			],
+			[
 				"ver",
 				"verdict_status"
 			],
@@ -36,10 +60,6 @@
 				"submit"
 			],
 			[
-				"pa",
-				"params"
-			],
-			[
 				"submit",
 				"submit_limit"
 			],
@@ -64,10 +84,6 @@
 				"get_percent"
 			],
 			[
-				"st",
-				"status"
-			],
-			[
 				"test",
 				"tests_status"
 			],
@@ -82,10 +98,6 @@
 			[
 				"su",
 				"submissions"
-			],
-			[
-				"part",
-				"participant"
 			],
 			[
 				"partici",
@@ -142,10 +154,6 @@
 			[
 				"ex",
 				"except"
-			],
-			[
-				"time",
-				"time_now"
 			],
 			[
 				"sec",
@@ -360,34 +368,60 @@
 	"buffers":
 	[
 		{
+			"file": "app/models/contest.rb",
+			"settings":
+			{
+				"buffer_size": 17435,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "app/controllers/contests_controller.rb",
 			"settings":
 			{
-				"buffer_size": 9428,
+				"buffer_size": 10016,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/views/contests/control_status.html.erb",
+			"file": "app/views/contests/control.html.erb",
 			"settings":
 			{
-				"buffer_size": 4784,
+				"buffer_size": 4224,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "config/routes.rb",
+			"contents": "Searching 1391 files for \"puts \"\n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/acm-kbtu.sublime-workspace:\n  606  			\"rai\",\n  607  			\"raise\",\n  608: 			\"puts \",\n  609  			\"puts\",\n  610  			\"tests_s\",\n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/app/assets/javascripts/jquery.ui.js:\n  881        btnIsLeft = (event.which === 1),\n  882        // event.target.nodeName works around a bug in IE 8 with\n  883:       // disabled inputs (#7620)\n  884        elIsCancel = (typeof this.options.cancel === \"string\" && event.target.nodeName ? $(event.target).closest(this.options.cancel).length : false);\n  885      if (!btnIsLeft || elIsCancel || !this._mouseCapture(event)) {\n  ...\n 6631        // Textareas are always multi-line\n 6632        isTextarea ? true :\n 6633:       // Inputs are always single-line, even if inside a contentEditable element\n 6634:       // IE also treats inputs as contentEditable\n 6635        isInput ? false :\n 6636        // All other element types are determined by whether or not they're contentEditable\n ....\n 7600    this._curInst = null; // The current instance in use\n 7601    this._keyEvent = false; // If the last event was a key event\n 7602:   this._disabledInputs = []; // List of date picker inputs that have been disabled\n 7603    this._datepickerShowing = false; // True if the popup picker is showing , false if not\n 7604    this._inDialog = false; // True if showing within a \"dialog\", false if not\n ....\n 7956          prop(\"disabled\", false);\n 7957      }\n 7958:     this._disabledInputs = $.map(this._disabledInputs,\n 7959        function(value) { return (value === target ? null : value); }); // delete entry\n 7960    },\n ....\n 7984          prop(\"disabled\", true);\n 7985      }\n 7986:     this._disabledInputs = $.map(this._disabledInputs,\n 7987        function(value) { return (value === target ? null : value); }); // delete entry\n 7988      this._disabledInputs[this._disabledInputs.length] = target;\n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/problems_controller.rb:\n   95      #@contest = Contest.find(params[:contest_id])\n   96      #@problem = @contest.problems.find_by(order: params[:problem_order])\n   97:     inputs  = []\n   98:     outputs = []\n   99      3.times do |i|\n  100:       inputs  << params[\"input#{i}\"]\n  101:       outputs << params[\"output#{i}\"]\n  102      end\n  103      @problem.statement = {:title => params[:title], \n  104                            :text => params[:text], \n  105:                           :inputs => inputs, \n  106:                           :outputs => outputs }\n  107  \n  108      #put statement file\n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/contest.rb:\n  246        f = (Dir.entries(tmp_dir)-[\".\", \"..\"])[0]\n  247        if File.directory? tmp_dir+\"/#{f}\"\n  248:          puts Dir.entries(tmp_dir+\"/#{f}/.\")\n  249          FileUtils.cp_r tmp_dir+\"/#{f}/.\", tmp_dir\n  250          FileUtils.rm_rf tmp_dir+\"/#{f}\"\n  251:          puts Dir.entries(tmp_dir)\n  252        end\n  253      end\n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest_info.html.erb:\n   19      \n   20    <% time_left = @contest.time_left #get seconds left %>\n   21:   <% puts time_left %>\n   22    <% if time_left != 0 %>\n   23      <% m = (time_left/60).to_i %>\n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/SubmitCheckJob.rb:\n   81      std_out = stdout.readlines\n   82      std_err = stderr.readlines\n   83:     #puts \"!2   #{std_err} | #{std_out}\"\n   84      checker_status[:status] = case open4_status.exitstatus\n   85        when 0; \"OK\"\n   ..\n  160  \n  161        else\n  162:         #puts \"!1  #{t[0]} | #{t[1]} | #{verdict}\"\n  163          #CHECK(COMPARE answer and test's answer)\n  164          checker_status = self.check(t[0], t[1], (output_file.blank?) ? 'output.txt' : output_file, i+1)\n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/compiler.rb:\n   37        #get error\n   38        compile_err = stderr.readlines #we need to save, it will changed\n   39:       #puts \"#{stdout.readlines} | #{compile_err} | #{open4_status}\"\n   40  \n   41      elsif src_code_ext == \".pas\" || src_code_ext == \".dpr\"\n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/include/testlib.h:\n    3   * in your code. In this case testlib overrides compiler specific \"random()\".\n    4   *\n    5:  * If you can't compile your code and compiler outputs something about \n    6   * ambiguous call of \"random_shuffle\", \"rand\" or \"srand\" it means that \n    7   * you shouldn't use them. Use \"shuffle\", and \"rnd.next()\" instead of them\n    .\n 1262      /* As \"readChar()\" but ensures that the result is equal to the space (code=32). */\n 1263      char readSpace();\n 1264:     /* Puts back the character into the stream. */\n 1265      void unreadChar(char c);\n 1266  \n\n/home/devishot/Documents/Programming/Rails/acm-kbtu/system-intializer.rb:\n   10    next if not File.extname(i) == \".cpp\"\n   11    command = \"g++ -I #{testlib_path} #{checkers_source+i} -o #{checkers_path+File.basename(i, \".*\")}\"\n   12:   puts command\n   13    pid, stdin, stdout, stderr = Open4::popen4 command\n   14    ignored, open4_status = Process::waitpid2 pid\n   15:   puts stderr.readlines, stdout.readlines  \n   16  end\n   17  \n   18: puts \"Checkers compiled\"\n\n26 matches across 9 files\n",
 			"settings":
 			{
-				"buffer_size": 4807,
+				"buffer_size": 5391,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "app/assets/javascripts/contests.js",
+			"settings":
+			{
+				"buffer_size": 1140,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/models/problem.rb",
+			"file": "app/views/contests/_standings_acm_frozen.html.erb",
 			"settings":
 			{
-				"buffer_size": 12295,
+				"buffer_size": 3248,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/models/participant.rb",
+			"settings":
+			{
+				"buffer_size": 2164,
 				"line_ending": "Unix"
 			}
 		},
@@ -395,7 +429,15 @@
 			"file": "judge-files/check-system/SubmitCheckJob.rb",
 			"settings":
 			{
-				"buffer_size": 8359,
+				"buffer_size": 8393,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/views/contests/standings.html.erb",
+			"settings":
+			{
+				"buffer_size": 309,
 				"line_ending": "Unix"
 			}
 		}
@@ -428,16 +470,19 @@
 	},
 	"file_history":
 	[
-		"/home/devishot/Desktop/IOI 2007/Day 1 (as day 2)/aliens-interactive/checker.cpp",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/submits_controller.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_standings_acm.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_status.html.erb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/SubmitCheckJob.rb",
+		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/routes.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/problem.rb",
+		"/home/devishot/Desktop/IOI 2007/Day 1 (as day 2)/aliens-interactive/checker.cpp",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/problems/_form.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/participant.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/submit.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/SubmitCheckJob.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/compiler.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/TestCheckerJob.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/contests_controller.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_status.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest_info.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/control_participants.html.erb",
@@ -447,7 +492,6 @@
 		"/home/devishot/Desktop/Day06/Inter/Inter day 6/sol/c2.cpp",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/submits/_submits.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/index.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_standings_acm.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/application.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/layouts/_menu.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/models/contest.rb",
@@ -455,9 +499,7 @@
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/pages/show.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/summary.html.erb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/standings.html.erb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/config/routes.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/judge-files/check-system/run.rb",
-		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/submits_controller.rb",
 		"/home/devishot/Desktop/Day03/Pre-Intermediate/a.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/controllers/problems_controller.rb",
 		"/home/devishot/Documents/Programming/Rails/acm-kbtu/app/views/contests/_contest.html.erb",
@@ -563,7 +605,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 93.0,
 		"where_history":
 		[
 			"/home/devishot/Documents/Programming/Rails/acm-kbtu",
@@ -583,6 +625,12 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"puts ",
+			"raise",
+			"[:",
+			":",
+			"@contest.standings_dump",
+			"problems_count",
 			"temp",
 			"put_che",
 			"puts",
@@ -693,6 +741,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"@standings_dump",
 			"problem",
 			"sourcecode",
 			"'error'",
@@ -710,23 +759,23 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 8,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "app/controllers/contests_controller.rb",
+					"file": "app/models/contest.rb",
 					"settings":
 					{
-						"buffer_size": 9428,
+						"buffer_size": 17435,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7187,
-								7187
+								1948,
+								1948
 							]
 						],
 						"settings":
@@ -736,25 +785,53 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3999.0,
+						"translation.y": 1226.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "app/views/contests/control_status.html.erb",
+					"file": "app/controllers/contests_controller.rb",
 					"settings":
 					{
-						"buffer_size": 4784,
+						"buffer_size": 10016,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								437,
-								437
+								2914,
+								2914
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1554.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "app/views/contests/control.html.erb",
+					"settings":
+					{
+						"buffer_size": 4224,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3309,
+								3309
 							]
 						],
 						"settings":
@@ -764,81 +841,225 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "config/routes.rb",
-					"settings":
-					{
-						"buffer_size": 4807,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								988,
-								988
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1520.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "app/models/problem.rb",
 					"settings":
 					{
-						"buffer_size": 12295,
+						"buffer_size": 5391,
 						"regions":
 						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										161,
+										166
+									],
+									[
+										441,
+										446
+									],
+									[
+										788,
+										793
+									],
+									[
+										891,
+										896
+									],
+									[
+										1206,
+										1211
+									],
+									[
+										1242,
+										1247
+									],
+									[
+										1537,
+										1542
+									],
+									[
+										1762,
+										1767
+									],
+									[
+										2204,
+										2209
+									],
+									[
+										2229,
+										2234
+									],
+									[
+										2280,
+										2285
+									],
+									[
+										2325,
+										2330
+									],
+									[
+										2523,
+										2528
+									],
+									[
+										2577,
+										2582
+									],
+									[
+										2588,
+										2593
+									],
+									[
+										2829,
+										2834
+									],
+									[
+										2985,
+										2990
+									],
+									[
+										3227,
+										3232
+									],
+									[
+										3504,
+										3509
+									],
+									[
+										3680,
+										3685
+									],
+									[
+										4096,
+										4101
+									],
+									[
+										4481,
+										4486
+									],
+									[
+										4807,
+										4812
+									],
+									[
+										5134,
+										5139
+									],
+									[
+										5271,
+										5276
+									],
+									[
+										5339,
+										5344
+									]
+								],
+								"scope": ""
+							}
 						},
 						"selection":
 						[
 							[
-								1093,
-								1093
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"detect_indentation": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 648.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "judge-files/check-system/SubmitCheckJob.rb",
+					"file": "app/assets/javascripts/contests.js",
 					"settings":
 					{
-						"buffer_size": 8359,
+						"buffer_size": 1140,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5138,
-								5138
+								1107,
+								1107
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 216.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "app/views/contests/_standings_acm_frozen.html.erb",
+					"settings":
+					{
+						"buffer_size": 3248,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1712,
+								1712
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Rails/HTML (Rails).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 702.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "app/models/participant.rb",
+					"settings":
+					{
+						"buffer_size": 2164,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1988,
+								1988
 							]
 						],
 						"settings":
@@ -848,7 +1069,61 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2376.0,
+						"translation.y": 834.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "judge-files/check-system/SubmitCheckJob.rb",
+					"settings":
+					{
+						"buffer_size": 8393,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7630,
+								7630
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3996.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "app/views/contests/standings.html.erb",
+					"settings":
+					{
+						"buffer_size": 309,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								75,
+								75
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Rails/HTML (Rails).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
