@@ -70,7 +70,7 @@ class Contest
   def make_standings_dump!
     return  if not self.standings_dump.nil?
     self.standings_dump = {}
-    self.standings_dump[:participants] = []
+    self.standings_dump["participants"] = []
     participants = (self.confirm_participants==false) ? self.participants : self.participants.where(confirmed: true)
     participants.sort! do |a, b|
       if a.point == b.point then
@@ -80,28 +80,28 @@ class Contest
       end
     end
     participants.each_with_index do |p, i|
-      self.standings_dump[:participants] << {}
-      self.standings_dump[:participants][i][:id] = p.id
-      self.standings_dump[:participants][i][:point] = p.point
-      self.standings_dump[:participants][i][:penalty] = p.penalty
-      self.standings_dump[:participants][i][:attempt] = [nil]
+      self.standings_dump["participants"] << {}
+      self.standings_dump["participants"][i]["id"] = p.id
+      self.standings_dump["participants"][i]["point"] = p.point
+      self.standings_dump["participants"][i]["penalty"] = p.penalty
+      self.standings_dump["participants"][i]["attempt"] = [nil]
       for j in 1..self.problems_count
         if self.problems[j].disabled == true
-          self.standings_dump[:participants][i][:attempt] << nil
+          self.standings_dump["participants"][i]["attempt"] << nil
           next
         end
-        self.standings_dump[:participants][i][:attempt] << p.attempt(j)
+        self.standings_dump["participants"][i]["attempt"] << p.attempt(j)
       end
     end
-    self.standings_dump[:last_success] = Submit.where(id: self.last_success_submit).first
-    self.standings_dump[:problems_count] = self.problems_count
-    self.standings_dump[:problems] = [nil]
+    self.standings_dump["last_success"] = (Submit.where(id: self.last_success_submit).first.nil?) ? nil : Submit.where(id: self.last_success_submit).first.id
+    self.standings_dump["problems_count"] = self.problems_count
+    self.standings_dump["problems"] = [nil]
     for i in 1..self.problems_count
-      if self.problems[i].disabled==true then self.standings_dump[:problems]<<nil; next; end 
-      self.standings_dump[:problems] << {
-        :order_abc => self.problems[i].order_abc,
-        :submits   => self.problems[i].submits.where(hidden: false).count,
-        :success_submits => self.problems[i].submits.where(status: {:status=>"AC"}).where(hidden: false).count
+      if self.problems[i].disabled==true then self.standings_dump["problems"]<<nil; next; end 
+      self.standings_dump["problems"] << {
+        "order_abc" => self.problems[i].order_abc,
+        "submits"   => self.problems[i].submits.where(hidden: false).count,
+        "success_submits" => self.problems[i].submits.where(status: {:status=>"AC"}).where(hidden: false).count
       }
     end
 

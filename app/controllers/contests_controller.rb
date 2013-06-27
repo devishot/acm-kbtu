@@ -98,7 +98,7 @@ class ContestsController < ApplicationController
     if @contest.type==0 #ACM
       @contest.make_standings_dump! if @contest.frozen? && @contest.standings_dump.nil?
       if @contest.frozen? && !(current_user == @contest.user || current_user.admin?)
-        @standings_dump = @contest.standings_dump        
+        @standings_dump = @contest.standings_dump
       else
         @standings = participants.sort do |a, b|
           if a.point == b.point then

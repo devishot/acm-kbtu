@@ -1,6 +1,6 @@
 
 <% if not @standings_dump['last_success'].nil? %>
-  <% @last_success = @standings_dump['last_success'] %>
+  <% @last_success = Submit.find(@standings_dump['last_success']) %>
   <p>Last success:
     <%= @last_success.created_at.strftime("%H:%M:%S") %>,
     <%= @last_success.participant.user.name %>,
@@ -9,8 +9,6 @@
 <% end %>
 
 <center> <legend> FROZEN </legend> </center>
-
-
 
 <table class="table table-hover table-condensed" >
   <thead>
